@@ -1,6 +1,6 @@
 package sistemareserva.modelo;
 
-public class Entidade {
+public abstract class Entidade {
     protected int id;
 
     public int getId(){
