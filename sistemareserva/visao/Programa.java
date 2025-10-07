@@ -396,8 +396,7 @@ public class Programa {
         return false;
     }
 
-    //*******************************************
-    // MÉTODO a REINTRODUZIDO: Necessário para a nova funcionalidade de filtro.
+    //metodo que le as entradas de 'sim/nao' para saber se o o usuario quer filtrar os objetos da sala
     private static boolean lerSimNao(String mensagem) {
         while (true) {
             System.out.print(mensagem);
@@ -411,7 +410,6 @@ public class Programa {
             }
         }
     }
-    //*******************************************
 
     // (lerInteiro e lerDataHora continuam iguais)
     // constantemente fica recebendo que opcao o usuario quer acessar
