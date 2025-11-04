@@ -18,7 +18,7 @@ public class Programa {
 
     public static void main(String[] args) {
         carregarDadosIniciais();
-        System.out.println("\n=== SISTEMA DE RESERVA DE SALAS ===");
+        System.out.println("\n=== SISTEMAaaa DE RESERVA DE SALAS ===");
         System.out.println("Bem-vindo ao sistema de gerenciamento de reservas!\n");
         // ... (O resto do main continua igual) ...
         int opcao;
@@ -349,7 +349,7 @@ public class Programa {
     // ... (buscarSalasDisponiveis e salaEstaOcupada continuam iguais, apenas usando buscaId implicitamente via outra lógica)
     //opcao8 menu
     private static void buscarSalasDisponiveis() {
-        System.out.println("\n--- BUSCAR SALAS DISPONÍVEIS POR PERÍODO ---");
+        System.out.println("\n--- BUSCAR SALAS DISPONIVEIS POR PERIODO ---");
         //le a entrada de dados ja convertendo com a fucnao nativa para saber se no horario especificado vai ter salas
         LocalDateTime dataHoraInicio = lerDataHora("Data e hora de início (dd/MM/yyyy HH:mm): ");
         LocalDateTime dataHoraFim = lerDataHora("Data e hora de fim (dd/MM/yyyy HH:mm): ");
@@ -396,7 +396,6 @@ public class Programa {
         return false;
     }
 
-    //metodo que le as entradas de 'sim/nao' para saber se o o usuario quer filtrar os objetos da sala
     private static boolean lerSimNao(String mensagem) {
         while (true) {
             System.out.print(mensagem);
@@ -410,6 +409,7 @@ public class Programa {
             }
         }
     }
+    //*******************************************
 
     // (lerInteiro e lerDataHora continuam iguais)
     // constantemente fica recebendo que opcao o usuario quer acessar
