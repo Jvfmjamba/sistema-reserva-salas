@@ -18,7 +18,7 @@ public class Programa {
 
     public static void main(String[] args) {
         carregarDadosIniciais();
-        System.out.println("\n=== SISTEMAaaa DE RESERVA DE SALAS ===");
+        System.out.println("\n=== SISTEMA DE RESERVA DE SALAS ===");
         System.out.println("Bem-vindo ao sistema de gerenciamento de reservas!\n");
         // ... (O resto do main continua igual) ...
         int opcao;
