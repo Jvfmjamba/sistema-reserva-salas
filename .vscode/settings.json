@@ -1,0 +1,7 @@
+{
+    // Este comando SOBRESCREVE o global, mas SÓ para este projeto.
+    // É o comando "mágico" para o sistema de reservas.
+    "code-runner.executorMap": {
+        "java": "cd $workspaceRoot && javac -encoding UTF-8 -d out sistemareserva/modelo/*.java sistemareserva/persistencia/*.java sistemareserva/visao/Programa.java && [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; java -Dfile.encoding=UTF-8 -cp out sistemareserva.visao.Programa"
+    }
+}
