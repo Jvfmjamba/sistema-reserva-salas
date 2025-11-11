@@ -114,86 +114,38 @@ public class Programa {
         System.out.println("Pessoa cadastrada com sucesso! ID: " + pessoa.getId());
     }
 
+    //alexandre aqui vou ter que mudar toda a logica de criar reserva, por causa da mudança que o matheus pediu
 
+    //*******************************************
+    // INÍCIO DA ALTERAÇÃO - MÉTODO 'criarReserva'
+    // Este método foi reescrito para se adaptar ao novo modelo
+    // onde as datas ficam em ItemReserva, e não em Reserva.
+    //*******************************************
     private static void criarReserva() {
         System.out.println("\n--- CRIAR RESERVA ---");
 
-        // ler data e hora com funcao nativa java
-        LocalDateTime dataHoraInicio = lerDataHora("Data e hora de início (dd/MM/yyyy HH:mm): ");
-        LocalDateTime dataHoraFim = lerDataHora("Data e hora de fim (dd/MM/yyyy HH:mm): ");
-
-        //checagem anti batata do usuario
-        if (dataHoraFim.isBefore(dataHoraInicio) || dataHoraFim.isEqual(dataHoraInicio)) {
-            System.out.println("Erro: Data/hora de fim deve ser posterior à data/hora de início!");
-            return;
-        }
-
-        // 1. Busca inicial por salas disponíveis no período.
-        List<Sala> salasDisponiveis = new ArrayList<>();
-        for (Sala sala : banco.getSalas().listarTodos()) {
-            if (!salaEstaOcupada(sala, dataHoraInicio, dataHoraFim)) {
-                salasDisponiveis.add(sala);
-            }
-        }
-
-        if (salasDisponiveis.isEmpty()) {
-            System.out.println("Nenhuma sala disponível para este período.");
-            return;
-        }
-
-        // aqui pergunta se o usuario quer filtrar por recursos
-        System.out.println("\nEncontramos " + salasDisponiveis.size() + " sala(s) disponível(is) no período solicitado.");
-        boolean querFiltrar = lerSimNao("Deseja filtrar por capacidade ou recursos? (s/n): ");
-
-        List<Sala> salasFiltradas = salasDisponiveis; // começa com todas as salas disponiveis
-
-        if (querFiltrar) {
-            int capacidadeMinima = lerInteiro("Qual a capacidade mínima de pessoas? (0 para ignorar): ");
-            boolean precisaProjetor = lerSimNao("Precisa de projetor? (s/n): ");
-            boolean precisaComputador = lerSimNao("Precisa de computador? (s/n): ");
-            boolean precisaAr = lerSimNao("Precisa de ar-condicionado? (s/n): ");
-            boolean precisaQuadro = lerSimNao("Precisa de quadro? (s/n): ");
-
-            // AQUI USA UMA a API de Streams do Java para filtrar a lista
-            salasFiltradas = salasDisponiveis.stream()
-                    .filter(sala -> sala.getCapacidade() >= capacidadeMinima)
-                    .filter(sala -> !precisaProjetor || sala.temProjetor())
-                    .filter(sala -> !precisaComputador || sala.temComputador())
-                    .filter(sala -> !precisaAr || sala.temArCondicionado())
-                    .filter(sala -> !precisaQuadro || sala.temQuadro())
-                    .collect(Collectors.toList());
-        }
-
-        if (salasFiltradas.isEmpty()) {
-            System.out.println("Nenhuma sala disponível atende aos seus critérios de filtro.");
-            return;
-        }
-
-        System.out.println("\n--- Salas que atendem à sua busca ---");
-        for (Sala sala : salasFiltradas) {
-            System.out.println(sala);
-        }
-        System.out.println("----------------------------------------------");
-
-        int idResponsavel = lerInteiro("Digite o SEU ID para prosseguir com a reserva (ou digite 0 para cancelar): ");
-        if (idResponsavel == 0) {
+        // a logica mudou, agr a gente pede o responsavel primeiro
+        int idResponsavel =lerInteiro("Digite o SEU ID para a reserva (ou digite 0 para cancelar): ");
+        if (idResponsavel == 0){
             System.out.println("Operação de reserva cancelada pelo usuário.");
-            return; // Interrompe o método criarReserva e volta ao menu principal.
+            return;
         }
-        Pessoa responsavel = banco.getPessoas().buscaId(idResponsavel);
+        Pessoa responsavel =banco.getPessoas().buscaId(idResponsavel);
 
-        if (responsavel == null) {
+        if (responsavel==null){
             System.out.println("Erro: Pessoa não encontrada!");
             return;
         }
 
-        // criar reserva
-        Reserva reserva = new Reserva(responsavel, dataHoraInicio, dataHoraFim);
+        // criar reserva (agora só com o responsável)
+        Reserva reserva = new Reserva(responsavel);
 
-        // O usuario agora escolhe as salas da lista ja filtrada
         // adicionar salas à reserva
         boolean adicionandoSalas = true;
         while (adicionandoSalas) {
+            System.out.println("\n--- Adicionando Sala à Reserva (Responsável: " + responsavel.getNome() + ") ---");
+            listarSalas(); // Mostra as salas cadastradas
+
             //se digitar 0 ele sai do metodo
             int idSala = lerInteiro("Digite o ID da sala para adicionar à reserva (0 para concluir): ");
 
@@ -201,36 +153,56 @@ public class Programa {
                 //checa se existe uma sala acessando um objeto dela que no caso é o objeto item
                 if (reserva.getItensDaReserva().isEmpty()) {
                     System.out.println("Erro: A reserva deve ter pelo menos uma sala!");
-                    continue;
+                    continue; // Volta ao início do loop
                 }
                 //interrompe a variavel para parar de adicionar
                 adicionandoSalas = false;
             } else {
                 //vai adicionando salas e criando
-                Sala salaEscolhida = null;
-                for (Sala s : salasFiltradas) {
-                    if (s.getId() == idSala) {
-                        salaEscolhida = s;
-                        break;
-                    }
+                Sala salaEscolhida = banco.getSalas().buscaId(idSala);
+                if (salaEscolhida == null) {
+                    System.out.println("Erro: Sala com ID " + idSala + " não encontrada.");
+                    continue; // Volta ao início do loop
                 }
 
-                //confere se a sala existe e reserva ela
-                if (salaEscolhida != null) {
-                    ItemReserva item = new ItemReserva(salaEscolhida);
-                    reserva.adicionarItem(item);
-                    // Remove da lista para não ser escolhida de novo
-                    salasFiltradas.remove(salaEscolhida);
-                    System.out.println("Sala '" + salaEscolhida.getId() + "' adicionada à reserva.");
+                // pede a data e hora pra esse item especifico
+                System.out.println("Defina o período para a Sala ID " + salaEscolhida.getId() + ":");
+                // ler data e hora com funcao nativa java
+                LocalDateTime dataHoraInicio = lerDataHora("  Data e hora de início (dd/MM/yyyy HH:mm): ");
+                LocalDateTime dataHoraFim = lerDataHora("  Data e hora de fim (dd/MM/yyyy HH:mm): ");
+
+                //checagem anti batata do usuario
+                if (dataHoraFim.isBefore(dataHoraInicio) || dataHoraFim.isEqual(dataHoraInicio)) {
+                    System.out.println("Erro: Data/hora de fim deve ser posterior à de início!");
+                    continue; // Volta ao início do loop
+                }
+
+                // verifica o conflito pra essa sala pra esse hoario
+                if (salaEstaOcupada(salaEscolhida, dataHoraInicio, dataHoraFim)) {
+                    System.out.println("ERRO: A sala " + salaEscolhida.getId() + " já está ocupada nesse período!");
+                    System.out.println("Por favor, escolha outra sala ou outro horário.");
                 } else {
-                    System.out.println("Erro: ID de sala inválido ou já adicionado. Escolha um ID da lista acima.");
+                    //confere se a sala existe e reserva ela
+                    ItemReserva item = new ItemReserva(salaEscolhida, dataHoraInicio, dataHoraFim);
+                    reserva.adicionarItem(item);
+                    System.out.println(">>> Sala '" + salaEscolhida.getId() + "' adicionada com sucesso! <<<");
                 }
             }
         }
-        //registra aa reserva no banco de dados
+
+        // registra aa reserva no banco de dados
         banco.getReservas().inserir(reserva);
+        // adiciona a reserva na lista da pessoa 
+        responsavel.adicionarReserva(reserva);
+        
         System.out.println("Reserva criada com sucesso! ID: " + reserva.getId());
+        //mostra o resumo da reserva usando o novo toString() de Reserva
+        System.out.println(reserva.toString());
     }
+
+     //alexandre aqui vou ter que mudar toda a logica de criar reserva, por causa da mudança que o matheus pediu
+
+     
 
     //exibe as pessoas ja criadas
     private static void listarPessoas() {
@@ -263,6 +235,9 @@ public class Programa {
         }
     }
 
+    //alexandre aqui to mudando a logica da funcao buscarreservas por pessoas tmb
+
+
     private static void buscarReservasPorPessoa() {
         System.out.println("\n--- BUSCAR MINHAS RESERVAS ---");
         //recebe o id do usuario pelo scanner
@@ -275,35 +250,26 @@ public class Programa {
             return;
         }
 
-        List<Reserva> todasAsReservas = banco.getReservas().listarTodos();
-        List<Reserva> reservasDaPessoa = new ArrayList<>();
-
-        //verifica se o objeto reserva existe
-        for (Reserva reserva : todasAsReservas) {
-            //verifica se o id de quem fez a reserva é o mesmo de quem está tentando cancelar
-            if (reserva.getResponsavel().getId() == idResponsavel) {
-                reservasDaPessoa.add(reserva);
-            }
-        }
+        List<Reserva> reservasDaPessoa = pessoa.getMinhasReservas();
 
         //caso do usuario nao ter reserva no seu id
         if (reservasDaPessoa.isEmpty()) {
             System.out.println("Nenhuma reserva encontrada para " + pessoa.getNome() + ".");
         } else {
-            //imprime todas reservas que estao no id do usuario
+            // imprime todas reservas que estao no id do usuario
             System.out.println("\n--- Reservas de " + pessoa.getNome() + " ---");
             for (Reserva reserva : reservasDaPessoa) {
-                System.out.println("Reserva ID: " + reserva.getId());
-                System.out.println("  Período: " + reserva.getDataHoraInicio().format(formatter) +
-                        " até " + reserva.getDataHoraFim().format(formatter));
-                System.out.println("  Salas reservadas:");
-                for (ItemReserva item : reserva.getItensDaReserva()) {
-                    System.out.println("    - " + item.getSala());
-                }
-                System.out.println();
+                System.out.println(reserva.toString());
+                System.out.println("--------------------");
             }
         }
     }
+
+    //alexandre aqui to mudando a logica da funcao buscarreservas por pessoas tmb
+
+        //**************** 
+
+    //alexandre aqui to mudando a logica da funcao cancelarreserva tmb
 
     //acessa o banco de dados e exclui umaa reserva feita pelo usuario
     private static void cancelarReserva() {
@@ -318,15 +284,7 @@ public class Programa {
             return;
         }
 
-        //antiga listarReservas(), apenas mostra as reservas do usuario
-        List<Reserva> todasAsReservas = banco.getReservas().listarTodos();
-        List<Reserva> reservasDaPessoa = new ArrayList<>();
-        for (Reserva r : todasAsReservas) {
-            //verifica se o id do usuaario é o mesmo id de quem criou a reserva
-            if (r.getResponsavel().getId() == idResponsavel) {
-                reservasDaPessoa.add(r);
-            }
-        }
+        List<Reserva> reservasDaPessoa = pessoa.getMinhasReservas();
 
         //caso id nao tenha feito reserva
         if (reservasDaPessoa.isEmpty()) {
@@ -336,26 +294,32 @@ public class Programa {
 
         //puxa as reservas com bse no id
         System.out.println("\n--- Suas Reservas Atuais ---");
-        for (Reserva r : reservasDaPessoa) {
-            System.out.println("Reserva ID: " + r.getId() + " | Início: " + r.getDataHoraInicio().format(formatter) + " Fim: " +  r.getDataHoraFim().format(formatter));
+        for (Reserva r : reservasDaPessoa){
+            System.out.println("Reserva ID: " + r.getId() + " | Itens na reserva: " + r.getItensDaReserva().size());
         }
 
         int idReserva = lerInteiro("Digite o ID da reserva que deseja cancelar: ");
 
         //confere se o id do usuario é compativel com quem fez a reserva e se ela existe
         Reserva reservaParaCancelar = banco.getReservas().buscaId(idReserva);
-        if (reservaParaCancelar == null || reservaParaCancelar.getResponsavel().getId() != idResponsavel) {
+        if (reservaParaCancelar == null || reservaParaCancelar.getResponsavel().getId() != idResponsavel){
             System.out.println("Erro: Reserva não encontrada ou não pertence a você.");
             return;
         }
 
 
-        if (banco.getReservas().excluir(idReserva)) {
+        if(banco.getReservas().excluir(idReserva)){
+            // IMPORTANTE: Remove a reserva da lista da pessoa também
+            // (Você precisa criar este método 'removerReserva' em Pessoa.java)
+            pessoa.removerReserva(reservaParaCancelar);
+            
             System.out.println("Reserva cancelada com sucesso!");
-        } else {
+        }else{
             System.out.println("Erro: Não foi possível cancelar a reserva.");
         }
     }
+
+    //alexandre aqui to mudando a logica da funcao cancelarreserva tmb
 
     // ... (buscarSalasDisponiveis e salaEstaOcupada continuam iguais, apenas usando buscaId implicitamente via outra lógica)
     //opcao8 menu
@@ -436,22 +400,31 @@ public class Programa {
         }
     }
 
+
+    //alexandre aqui to mudando a logica da funcao salaestaocupada tmb
+
     //verifica se existe conflito de horarios entre uma nova reserva e outra ja existente
-    private static boolean salaEstaOcupada(Sala sala, LocalDateTime inicio, LocalDateTime fim) {
+    private static boolean salaEstaOcupada(Sala sala, LocalDateTime inicioDesejado, LocalDateTime fimDesejado) {
         // le toda a lista de reservas do banco de dados e verifica se alguma vai dar conflito
-        for (Reserva reserva : banco.getReservas().listarTodos()) {
-            //le o atributo individualmente
-            for (ItemReserva item : reserva.getItensDaReserva()) {
-                if (item.getSala().getId() == sala.getId()) {
+        for (Reserva reservaFeita : banco.getReservas().listarTodos()){
+            // le o atributo individualmente (de cada ItemReserva)
+            for (ItemReserva itemAgendado : reservaFeita.getItensDaReserva()){
+                if (itemAgendado.getSala().getId() == sala.getId()) {
+                    LocalDateTime inicioAgendado = itemAgendado.getDataHoraInicio();
+                    LocalDateTime fimAgendado = itemAgendado.getDataHoraFim();
+
                     // verifica se há sobreposição de horários
-                    if (inicio.isBefore(reserva.getDataHoraFim()) && fim.isAfter(reserva.getDataHoraInicio())) {
-                        return true;
+                    if (inicioDesejado.isBefore(fimAgendado) && fimDesejado.isAfter(inicioAgendado)) {
+                        return true; //conflito encontrado
                     }
                 }
             }
         }
-        return false;
+        return false; // nenhum conflito encontrado para esta sala.
     }
+
+
+    //alexandre aqui to mudando a logica da funcao salaestaocupada tmb
 
     private static boolean lerSimNao(String mensagem) {
         while (true) {
