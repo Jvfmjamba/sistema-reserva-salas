@@ -17,7 +17,7 @@ public class Programa {
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     public static void main(String[] args) {
-        carregarDadosIniciais();
+        BancoDeDados.carregarDadosIniciais();
         System.out.println("\n=== SISTEMA DE RESERVA DE SALAS ===");
         System.out.println("Bem-vindo ao sistema de gerenciamento de reservas!\n");
         // ... (O resto do main continua igual) ...
@@ -62,24 +62,6 @@ public class Programa {
 
         //fecha a leitura de dados
         scanner.close();
-    }
-
-    // ... (carregarDadosIniciais, exibirMenuPrincipal e cadastrarPessoa continuam iguais) ...
-    private static void carregarDadosIniciais() {
-        System.out.println("Inicializando sistema e carregando dados...");
-        banco.getPessoas().inserir(new Pessoa("Professor Girafales"));
-        banco.getPessoas().inserir(new Pessoa("Dona Florinda"));
-        banco.getPessoas().inserir(new Pessoa("Seu Madruga"));
-        banco.getPessoas().inserir(new Pessoa("Professor Matheus"));
-
-        banco.getSalas().inserir(new Sala("CCOMP", 50, true, true, false, true));
-        banco.getSalas().inserir(new Sala("CCOMP", 30, true, false, false, true));
-        banco.getSalas().inserir(new Sala("CCOMP", 100, true, true, true, true));
-        banco.getSalas().inserir(new Sala("CCOMP", 10, true, false, false, false));
-        banco.getSalas().inserir(new Sala("ZOOTEC", 25, false, false, false, false));
-        banco.getSalas().inserir(new Sala("ARQUIT", 40, true, true, false, true));
-
-
     }
 
     //apenas imprime o menu principal
