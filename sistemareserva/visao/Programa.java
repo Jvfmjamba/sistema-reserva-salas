@@ -20,7 +20,7 @@ public class Programa {
         carregarDadosIniciais();
         System.out.println("\n=== SISTEMA DE RESERVA DE SALAS ===");
         System.out.println("Bem-vindo ao sistema de gerenciamento de reservas!\n");
-        // ... (O resto do main continua igual) ...
+        // 
         int opcao;
         do {
             exibirMenuPrincipal();
@@ -28,28 +28,13 @@ public class Programa {
 
             switch (opcao) {
                 case 1:
-                    cadastrarPessoa();
+                    menuGerenciarPessoas(); 
                     break;
                 case 2:
-                    criarReserva();
+                    menuGerenciarSalas(); 
                     break;
                 case 3:
-                    listarSalas();
-                    break;
-                case 4:
-                    buscarReservasPorPessoa();
-                    break;
-                case 5:
-                    cancelarReserva();
-                    break;
-                case 6:
-                    buscarSalasDisponiveis();
-                    break;
-                case 7:
-                    listarPessoas();
-                    break;
-                case 8:
-                    criarSala();
+                    menuGerenciarReservas();
                     break;
                 case 0:
                     System.out.println("Saindo do sistema...");
@@ -64,7 +49,6 @@ public class Programa {
         scanner.close();
     }
 
-    // ... (carregarDadosIniciais, exibirMenuPrincipal e cadastrarPessoa continuam iguais) ...
     private static void carregarDadosIniciais() {
         System.out.println("Inicializando sistema e carregando dados...");
         banco.getPessoas().inserir(new Pessoa("Professor Girafales"));
@@ -82,20 +66,123 @@ public class Programa {
 
     }
 
-    //apenas imprime o menu principal
+    // imprime o menu principal
+
+    //alexandre aqui atualizei o menu principal, a partir daqui vai pro sub menu específico
     private static void exibirMenuPrincipal() {
         System.out.println("===== MENU PRINCIPAL =====");
-        System.out.println("1 - Cadastrar Nova Pessoa");
-        System.out.println("2 - Criar Reserva");
-        System.out.println("3 - Listar Todas as Salas");
-        System.out.println("4 - Buscar Minhas Reservas");
-        System.out.println("5 - Cancelar Reserva");
-        System.out.println("6 - Buscar Salas Disponíveis por Período");
-        System.out.println("7 - Listar Todas as Pessoas");
-        System.out.println("8 - Criar Nova Sala");
+        System.out.println("1 - Gerenciar Pessoas");
+        System.out.println("2 - Gerenciar Salas");
+        System.out.println("3 - Gerenciar Reservas");
         System.out.println("0 - Sair");
         System.out.println("===========================");
     }
+
+    //alexandre aqui atualizei o menu principal, a partir daqui vai pro sub menu específico
+
+
+
+
+    //alexandre sub menus especificos 
+
+
+    private static void menuGerenciarPessoas(){
+        int opcao;
+        do{
+            System.out.println("\n--- GERENCIAR PESSOAS ---");
+            System.out.println("1 - Inserir Pessoa (Cadastrar)");
+            System.out.println("2 - Alterar Pessoa");
+            System.out.println("3 - Excluir Pessoa");
+            System.out.println("4 - Buscar Pessoa por ID");
+            System.out.println("5 - Listar Todas as Pessoas");
+            System.out.println("0 - Voltar ao Menu Principal");
+            
+            opcao = lerInteiro("Escolha uma opção: ");
+            switch(opcao) {
+                case 1: cadastrarPessoa();
+                    break;
+                case 2: alterarPessoa();
+                    break;
+                case 3: excluirPessoa();
+                    break; 
+                case 4: buscarPessoaPorId();
+                    break; 
+                case 5: listarPessoas();
+                    break;
+                case 0: System.out.println("Voltando...");
+                    break;
+                default: System.out.println("Opção inválida!");
+            }
+        }while (opcao != 0);
+    }
+
+
+    private static void menuGerenciarSalas(){
+        int opcao;
+        do {
+            System.out.println("\n--- GERENCIAR SALAS ---");
+            System.out.println("1 - Inserir Sala (Cadastrar)");
+            System.out.println("2 - Alterar Sala");
+            System.out.println("3 - Excluir Sala");
+            System.out.println("4 - Buscar Sala por ID");
+            System.out.println("5 - Listar Todas as Salas");
+            System.out.println("0 - Voltar ao Menu Principal");
+            
+            opcao = lerInteiro("Escolha uma opção: ");
+            switch(opcao) {
+                case 1: criarSala(); 
+                    break;
+                case 2: alterarSala(); 
+                    break; 
+                case 3: excluirSala(); 
+                    break; 
+                case 4: buscarSalaPorId(); 
+                    break; 
+                case 5: listarSalas(); 
+                    break;
+                case 0: System.out.println("Voltando..."); 
+                    break;
+                default: System.out.println("Opção inválida!");
+            }
+        } while (opcao != 0);
+    }
+
+
+    private static void menuGerenciarReservas(){
+        int opcao;
+        do {
+            System.out.println("\n--- GERENCIAR RESERVAS ---");
+            System.out.println("1 - Inserir Reserva (Criar)");
+            System.out.println("2 - Alterar Reserva (Adicionar/Remover Itens)");
+            System.out.println("3 - Excluir Reserva ");
+            System.out.println("4 - Buscar Reserva por ID");
+            System.out.println("5 - Listar Todas as Reservas ");
+            System.out.println("6 - Buscar Minhas Reservas");
+            System.out.println("0 - Voltar ao Menu Principal");
+            
+            opcao = lerInteiro("Escolha uma opção: ");
+            switch(opcao) {
+                case 1: criarReserva(); 
+                    break;
+                case 2: alterarReserva(); 
+                    break; 
+                case 3: cancelarReserva(); 
+                    break;
+                case 4: buscarReservaPorId(); 
+                    break;
+                case 5: listarTodasReservas(); 
+                    break; 
+                case 6: buscarReservasPorPessoa(); 
+                    break;
+                case 0: System.out.println("Voltando..."); 
+                    break;
+                default: System.out.println("Opção inválida!");
+            }
+        } while (opcao != 0);
+    }
+
+    //alexandre sub menus especificos 
+
 
     //cadastra uma pessoa nova com base no persistencia.bancodedados
     private static void cadastrarPessoa() {
@@ -116,11 +203,228 @@ public class Programa {
 
     //alexandre aqui vou ter que mudar toda a logica de criar reserva, por causa da mudança que o matheus pediu
 
-    //*******************************************
-    // INÍCIO DA ALTERAÇÃO - MÉTODO 'criarReserva'
-    // Este método foi reescrito para se adaptar ao novo modelo
-    // onde as datas ficam em ItemReserva, e não em Reserva.
-    //*******************************************
+    //************************************************************* 
+
+    //alexandre metodos novos que nao tinham antes, necessarios para novas funcoes e menus
+
+    private static void excluirPessoa(){
+        System.out.println("\n--- EXCLUIR PESSOA ---");
+        listarPessoas(); // Mostra as pessoas para o usuário saber o ID
+        int id = lerInteiro("Digite o ID da pessoa para excluir: ");
+        
+        //alexandre observação: talvez seja interessante a gente verificar se a pessoa tem reservas antes de cancelar
+        if (banco.getPessoas().excluir(id)){
+            System.out.println("Pessoa excluída com sucesso!");
+        }else{
+            System.out.println("Erro: Pessoa não encontrada.");
+        }
+    }
+
+    private static void alterarPessoa() {
+        System.out.println("\n--- ALTERAR PESSOA ---");
+        listarPessoas(); 
+        int id = lerInteiro("Digite o ID da pessoa para alterar: ");
+        Pessoa pessoa = banco.getPessoas().buscaId(id);
+        if (pessoa == null) {
+            System.out.println("Erro: Pessoa não encontrada.");
+            return;
+        }
+        System.out.print("Digite o novo nome para '" + pessoa.getNome() + "': ");
+        String novoNome = scanner.nextLine().trim();
+        if (novoNome.isEmpty()) {
+            System.out.println("Nome não pode ser vazio. Alteração cancelada.");
+            return;
+        }
+        pessoa.setNome(novoNome);
+        if (banco.getPessoas().alterar(pessoa)) { 
+            System.out.println("Pessoa alterada com sucesso!");
+        } else {
+            System.out.println("Erro ao alterar pessoa.");
+        }
+    }
+
+    private static void buscarPessoaPorId(){
+        System.out.println("\n--- BUSCAR PESSOA POR ID ---");
+        int id = lerInteiro("Digite o ID da pessoa: ");
+        Pessoa pessoa = banco.getPessoas().buscaId(id);
+        if(pessoa == null){
+            System.out.println("Erro: Pessoa não encontrada.");
+        }else{
+            System.out.println("Encontrado: " + pessoa.toString());
+        }
+    }
+
+    //************************************************************* 
+
+    private static void alterarSala(){
+        System.out.println("\n--- ALTERAR SALA ---");
+        listarSalas();
+        int id = lerInteiro("Digite o ID da sala para alterar: ");
+        Sala sala = banco.getSalas().buscaId(id);
+        if (sala == null) {
+            System.out.println("Erro: Sala não encontrada.");
+            return;
+        }
+        System.out.println("Alterando Sala: " + sala.toString());
+        System.out.println("Deixe em branco ou digite 0 para manter a informação atual.");
+
+        System.out.print("Novo prédio (" + sala.getPredio() + "): ");
+        String predio = scanner.nextLine().trim();
+        if (!predio.isEmpty()) {
+            sala.setPredio(predio);
+        }
+
+        int capacidade = lerInteiro("Nova capacidade (" + sala.getCapacidade() + "): ");
+        if (capacidade > 0) {
+            sala.setCapacidade(capacidade);
+        }
+        
+        //talvez seja interessante colocar mais uma logica pra alterar os valores booleanos(dos itens nas salas) depois, é algo que o matheus pode encher o saco
+
+        if (banco.getSalas().alterar(sala)) {
+            System.out.println("Sala alterada com sucesso!");
+        } else {
+            System.out.println("Erro ao alterar sala.");
+        }
+    }
+    
+
+    private static void excluirSala(){
+        System.out.println("\n--- EXCLUIR SALA ---");
+        listarSalas();
+        int id = lerInteiro("Digite o ID da sala para excluir: ");
+        // alexandre talvez a gente devsse checar se a sala tem reservas antes de excluir, mesmo caso da pessoa
+        if(banco.getSalas().excluir(id)){
+            System.out.println("Sala excluída com sucesso!");
+        }else{
+            System.out.println("Erro: Sala não encontrada.");
+        }
+    }
+
+
+    private static void buscarSalaPorId(){
+        System.out.println("\n--- BUSCAR SALA POR ID ---");
+        int id = lerInteiro("Digite o ID da sala: ");
+        Sala sala = banco.getSalas().buscaId(id);
+        if (sala == null) {
+            System.out.println("Erro: Sala não encontrada.");
+        } else {
+            System.out.println("Encontrado: " + sala.toString());
+        }
+    }
+
+
+    private static void alterarReserva(){
+        System.out.println("\n--- ALTERAR RESERVA ---");
+        int idResponsavel = lerInteiro("Primeiro, identifique-se. Qual o seu ID? ");
+        Pessoa pessoa = banco.getPessoas().buscaId(idResponsavel);
+        if (pessoa == null) {
+            System.out.println("Erro: Pessoa não encontrada.");
+            return;
+        }
+
+        List<Reserva> reservasDaPessoa = pessoa.getMinhasReservas();
+        if (reservasDaPessoa.isEmpty()) {
+            System.out.println("Você não possui nenhuma reserva para alterar.");
+            return;
+        }
+
+        System.out.println("\n--- Suas Reservas Atuais ---");
+        for (Reserva r : reservasDaPessoa) {
+            System.out.println("Reserva ID: " + r.getId() + " | Itens: " + r.getItensDaReserva().size());
+        }
+        
+        int idReserva = lerInteiro("Digite o ID da reserva que deseja alterar: ");
+        Reserva reservaParaAlterar = banco.getReservas().buscaId(idReserva);
+        
+        if (reservaParaAlterar == null || reservaParaAlterar.getResponsavel().getId() != idResponsavel) {
+            System.out.println("Erro: Reserva não encontrada ou não pertence a você.");
+            return;
+        }
+
+        System.out.println("Alterando Reserva ID: " + reservaParaAlterar.getId());
+        System.out.println(reservaParaAlterar.toString());
+        
+        int opcao;
+        do {
+            System.out.println("\n1 - Adicionar Sala");
+            System.out.println("2 - Remover Sala");
+            System.out.println("0 - Concluir Alteração");
+            opcao = lerInteiro("Escolha uma opção: ");
+            
+            if (opcao == 1) {
+                System.out.println("ADICIONANDO NOVA SALA...");
+                listarSalas();
+                int idSala = lerInteiro("Digite o ID da sala para adicionar: ");
+                Sala salaEscolhida = banco.getSalas().buscaId(idSala);
+                if (salaEscolhida == null) {
+                    System.out.println("Erro: Sala não encontrada.");
+                    continue;
+                }
+                LocalDateTime inicio = lerDataHora("  Data e hora de início: ");
+                LocalDateTime fim = lerDataHora("  Data e hora de fim: ");
+                if (!salaEstaOcupada(salaEscolhida, inicio, fim)) {
+                    ItemReserva item = new ItemReserva(salaEscolhida, inicio, fim);
+                    reservaParaAlterar.adicionarItem(item);
+                    System.out.println("Sala adicionada!");
+                } else {
+                    System.out.println("Erro: Sala ocupada nesse período.");
+                }
+            }else if(opcao == 2){
+                System.out.println("REMOVENDO SALA...");
+                List<ItemReserva> itens = reservaParaAlterar.getItensDaReserva();
+                if (itens.isEmpty()) {
+                    System.out.println("Reserva não possui itens para remover.");
+                    continue;
+                }
+                
+                for (int i = 0; i < itens.size(); i++) {
+                    System.out.println((i+1) + " - " + itens.get(i).toString());
+                }
+                int indiceRemover = lerInteiro("Digite o número do item a remover (ex: 1): ");
+                if (indiceRemover > 0 && indiceRemover <= itens.size()) {
+                    ItemReserva itemRemovido = itens.remove(indiceRemover - 1);
+                    System.out.println("Item removido: Sala ID " + itemRemovido.getSala().getId());
+                } else {
+                    System.out.println("Índice inválido.");
+                }
+            }
+        } while (opcao != 0);
+
+        banco.getReservas().alterar(reservaParaAlterar);
+        System.out.println("Reserva alterada com sucesso!");
+        System.out.println(reservaParaAlterar.toString());
+    }
+
+    private static void buscarReservaPorId(){
+        System.out.println("\n--- BUSCAR RESERVA POR ID ---");
+        int id = lerInteiro("Digite o ID da reserva: ");
+        Reserva reserva = banco.getReservas().buscaId(id);
+        if (reserva == null) {
+            System.out.println("Erro: Reserva não encontrada.");
+        } else {
+            System.out.println("Encontrado: \n" + reserva.toString());
+        }
+    }
+    
+
+    private static void listarTodasReservas(){
+        System.out.println("\n--- LISTAR TODAS AS RESERVAS (ADMIN) ---");
+        // Usamos o toString() do Persistente, como o professor pediu.
+        System.out.println(banco.getReservas().toString());
+    }
+
+
+
+    //*****************************************************************
+
+
+
+
+    //alexandre metodos novos que nao tinham antes, necessarios para novas funcoes e menus
+
+
+
     private static void criarReserva() {
         System.out.println("\n--- CRIAR RESERVA ---");
 
@@ -309,8 +613,7 @@ public class Programa {
 
 
         if(banco.getReservas().excluir(idReserva)){
-            // IMPORTANTE: Remove a reserva da lista da pessoa também
-            // (Você precisa criar este método 'removerReserva' em Pessoa.java)
+            // aqui ela remove a reserva da lista da pessoa também
             pessoa.removerReserva(reservaParaCancelar);
             
             System.out.println("Reserva cancelada com sucesso!");
@@ -321,7 +624,6 @@ public class Programa {
 
     //alexandre aqui to mudando a logica da funcao cancelarreserva tmb
 
-    // ... (buscarSalasDisponiveis e salaEstaOcupada continuam iguais, apenas usando buscaId implicitamente via outra lógica)
     //opcao8 menu
     private static void buscarSalasDisponiveis() {
         System.out.println("\n--- BUSCAR SALAS DISPONIVEIS POR PERIODO ---");
@@ -354,11 +656,9 @@ public class Programa {
         }
     }
 
-    // Nova função para criar sala
     private static void criarSala() {
         System.out.println("\n--- CRIAR NOVA SALA ---");
 
-        // Ler prédio
         System.out.print("Nome do prédio (ex: CCOMP, ZOOTEC, ARQUIT): ");
         String predio = scanner.nextLine().trim();
         if (predio.isEmpty()) {
@@ -366,21 +666,18 @@ public class Programa {
             return;
         }
 
-        // Ler capacidade
         int capacidade = lerInteiro("Capacidade de pessoas: ");
         if (capacidade <= 0) {
             System.out.println("Erro: Capacidade deve ser maior que zero!");
             return;
         }
 
-        // Ler recursos disponíveis
         System.out.println("\n--- RECURSOS DA SALA ---");
         boolean temQuadro = lerSimNao("A sala tem quadro? (s/n): ");
         boolean temProjetor = lerSimNao("A sala tem projetor? (s/n): ");
         boolean temComputador = lerSimNao("A sala tem computador? (s/n): ");
         boolean temArCondicionado = lerSimNao("A sala tem ar-condicionado? (s/n): ");
 
-        // Confirmar criação
         System.out.println("\n--- RESUMO DA SALA ---");
         System.out.println("Prédio: " + predio);
         System.out.println("Capacidade: " + capacidade + " pessoas");
@@ -441,7 +738,6 @@ public class Programa {
     }
     //*******************************************
 
-    // (lerInteiro e lerDataHora continuam iguais)
     // constantemente fica recebendo que opcao o usuario quer acessar
     private static int lerInteiro(String mensagem) {
         while (true) {
