@@ -6,24 +6,24 @@ import java.util.ArrayList;
 
 public class Reserva extends Entidade{
     private Pessoa responsavel;
-    private LocalDateTime dataHoraInicio;
-    private LocalDateTime dataHoraFim;
+    //private LocalDateTime dataHoraInicio;
+    //private LocalDateTime dataHoraFim;
 
     private List<ItemReserva> itensDaReserva;
 
+    //alexandre atualizei os construtores
+
     public Reserva(){
-        dataHoraInicio = null;
-        dataHoraFim = null;
-        this.itensDaReserva = new ArrayList<>();
+        this.responsavel =null;
+        this.itensDaReserva =new ArrayList<>();
     }
 
-    public Reserva(Pessoa responsavel, LocalDateTime dataHoraInicio, LocalDateTime dataHoraFim){
-        this.responsavel = responsavel;
-        this.dataHoraInicio = dataHoraInicio;
-        this.dataHoraFim = dataHoraFim;
-        //array de lista de salas a serem reservadas
-        this.itensDaReserva = new ArrayList<>();
+    public Reserva(Pessoa responsavel){
+        this.responsavel =responsavel;
+        this.itensDaReserva =new ArrayList<>();
     }
+
+    //alexandre atualizei os construtores
 
     public Pessoa getResponsavel() {
         return responsavel;
@@ -33,6 +33,8 @@ public class Reserva extends Entidade{
         this.responsavel = responsavel;
     }
 
+    /*
+    
     public LocalDateTime getDataHoraInicio() {
         return dataHoraInicio;
     }
@@ -49,6 +51,8 @@ public class Reserva extends Entidade{
         this.dataHoraFim = dataHoraFim;
     }
 
+    */
+
     public List<ItemReserva> getItensDaReserva() {
         return itensDaReserva;
     }
@@ -61,4 +65,25 @@ public class Reserva extends Entidade{
     public void removerItem(ItemReserva item) {
         this.itensDaReserva.remove(item);
     }
+
+    //alexandre adicionei o toString que tava faltando
+
+    @Override
+    public String toString(){
+        StringBuilder builder = new StringBuilder();
+        builder.append("Reserva ID: ").append(getId());
+        builder.append(" | Responsável: ").append(responsavel.getNome()).append("\n");
+        builder.append("Itens da Reserva:\n");
+        
+        for (ItemReserva item : itensDaReserva) {
+            builder.append("  - ").append(item.toString()).append("\n");
+        }
+        return builder.toString();
+    }
+
+    // pedi o gemini pra fazer esse toString ai pq nao sabia nao, mas agr parece q ta funcioando
+
+    //alexandre adicionei o toString que tava faltando
+
+
 }
