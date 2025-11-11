@@ -35,4 +35,20 @@ public class Persistente<T extends Entidade> {
         // Retorna uma CÓPIA da lista, para proteger a lista original de modificações externas.
         return new ArrayList<>(this.lista);
     }
+
+    // alexandre adicionando toString no Persistente.java
+    @Override
+    public String toString(){
+        if(lista.isEmpty()){
+            return "nenhum item cadastrado";
+        }
+        StringBuilder builder =new StringBuilder();
+        for(T item : lista){
+            builder.append(item.toString()).append("\n");
+        }
+
+        return builder.toString();
+}
+
+    // alexandre adicionando toString no Persistente.java
 }
