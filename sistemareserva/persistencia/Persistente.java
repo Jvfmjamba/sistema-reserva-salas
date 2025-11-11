@@ -48,7 +48,24 @@ public class Persistente<T extends Entidade> {
         }
 
         return builder.toString();
-}
+    }
 
     // alexandre adicionando toString no Persistente.java
+
+    //*********************************************************************************************** 
+
+    //alexandre adicionando o método Alterar, nas especificacoes ele fala que tem que ter métodos pra inserção, alteração e exclusão, a gente só tem os que insere e exclui
+
+    public boolean alterar(T objetoModificado){
+    for(int i=0; i<lista.size();i++){
+        if(lista.get(i).getId() ==objetoModificado.getId()){
+            lista.set(i, objetoModificado);
+            return true;
+        }
+    }
+    return false;
+    }
+
+    //alexandre adicionando o método Alterar, nas especificacoes ele fala que tem que ter métodos pra inserção, alteração e exclusão, a gente só tem os que insere e exclui
+
 }
