@@ -1,5 +1,8 @@
 package sistemareserva.modelo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Pessoa extends Entidade {
     //Entidade matricula = new Entidade();
     protected String nome;
@@ -23,4 +26,20 @@ public class Pessoa extends Entidade {
     public String toString() {
         return "Pessoa - Matricula = " + id + ", Nome= " + nome;
     }
+
+    // alexandre tentando consertar os erros que o matheus falou
+
+    private List<Reserva> minhasReservas =new ArrayList<>();
+
+    public void adicionarReserva(Reserva r){
+        this.minhasReservas.add(r);
+    }
+
+    public List<Reserva> getMinhasReservas(){
+        return minhasReservas;
+    }
+
+    // alexandre tentando consertar os erros que o matheus falou
 }
+
+
