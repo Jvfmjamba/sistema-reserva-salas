@@ -45,6 +45,12 @@ public class Programa {
                 case 6:
                     buscarSalasDisponiveis();
                     break;
+                case 7:
+                    listarPessoas();
+                    break;
+                case 8:
+                    criarSala();
+                    break;
                 case 0:
                     System.out.println("Saindo do sistema...");
                     break;
@@ -85,6 +91,8 @@ public class Programa {
         System.out.println("4 - Buscar Minhas Reservas");
         System.out.println("5 - Cancelar Reserva");
         System.out.println("6 - Buscar Salas Disponíveis por Período");
+        System.out.println("7 - Listar Todas as Pessoas");
+        System.out.println("8 - Criar Nova Sala");
         System.out.println("0 - Sair");
         System.out.println("===========================");
     }
@@ -226,16 +234,19 @@ public class Programa {
 
     //exibe as pessoas ja criadas
     private static void listarPessoas() {
-        System.out.println("\n--- LISTA DE PESSOAS ---");
+        System.out.println("\n--- LISTA DE TODAS AS PESSOAS CADASTRADAS ---");
         //acessa o banco de dados e percorre a lista de pessoas criadas
         List<Pessoa> pessoas = banco.getPessoas().listarTodos();
         //isEmpty é outra forma (nativa do java) de saber se um array esta vazio
         if (pessoas.isEmpty()) {
             System.out.println("Nenhuma pessoa cadastrada.");
         } else {
+            System.out.println("Total de pessoas cadastradas: " + pessoas.size());
+            System.out.println("----------------------------------------------");
             for (Pessoa pessoa : pessoas) {
-                System.out.println(pessoa);
+                System.out.println("ID: " + pessoa.getId() + " | Nome: " + pessoa.getNome());
             }
+            System.out.println("----------------------------------------------");
         }
     }
 
@@ -376,6 +387,52 @@ public class Programa {
         //se o metodo encontroudisponivel() retornar falso informa que nao existem salas disponiveis
         if (!encontrouDisponivel) {
             System.out.println("Nenhuma sala disponível no período selecionado.");
+        }
+    }
+
+    // Nova função para criar sala
+    private static void criarSala() {
+        System.out.println("\n--- CRIAR NOVA SALA ---");
+
+        // Ler prédio
+        System.out.print("Nome do prédio (ex: CCOMP, ZOOTEC, ARQUIT): ");
+        String predio = scanner.nextLine().trim();
+        if (predio.isEmpty()) {
+            System.out.println("Erro: Nome do prédio não pode estar vazio!");
+            return;
+        }
+
+        // Ler capacidade
+        int capacidade = lerInteiro("Capacidade de pessoas: ");
+        if (capacidade <= 0) {
+            System.out.println("Erro: Capacidade deve ser maior que zero!");
+            return;
+        }
+
+        // Ler recursos disponíveis
+        System.out.println("\n--- RECURSOS DA SALA ---");
+        boolean temQuadro = lerSimNao("A sala tem quadro? (s/n): ");
+        boolean temProjetor = lerSimNao("A sala tem projetor? (s/n): ");
+        boolean temComputador = lerSimNao("A sala tem computador? (s/n): ");
+        boolean temArCondicionado = lerSimNao("A sala tem ar-condicionado? (s/n): ");
+
+        // Confirmar criação
+        System.out.println("\n--- RESUMO DA SALA ---");
+        System.out.println("Prédio: " + predio);
+        System.out.println("Capacidade: " + capacidade + " pessoas");
+        System.out.println("Quadro: " + (temQuadro ? "Sim" : "Não"));
+        System.out.println("Projetor: " + (temProjetor ? "Sim" : "Não"));
+        System.out.println("Computador: " + (temComputador ? "Sim" : "Não"));
+        System.out.println("Ar-Condicionado: " + (temArCondicionado ? "Sim" : "Não"));
+
+        boolean confirmar = lerSimNao("\nConfirmar criação desta sala? (s/n): ");
+
+        if (confirmar) {
+            Sala novaSala = new Sala(predio, capacidade, temQuadro, temProjetor, temComputador, temArCondicionado);
+            banco.getSalas().inserir(novaSala);
+            System.out.println("Sala criada com sucesso! ID: " + novaSala.getId());
+        } else {
+            System.out.println("Criação da sala cancelada.");
         }
     }
 
