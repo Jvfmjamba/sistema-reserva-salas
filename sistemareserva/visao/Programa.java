@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors; // precisa desse import pro novo filtro de atributos
 
+//fvcbdsbcv djxhb 
+
 import sistemareserva.modelo.*;
 import sistemareserva.persistencia.*;
 
