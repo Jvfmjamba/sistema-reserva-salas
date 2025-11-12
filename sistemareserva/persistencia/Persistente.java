@@ -66,6 +66,6 @@ public class Persistente<T extends Entidade> {
     return false;
     }
 
-    //alexandre adicionando o método Alterar, nas especificacoes ele fala que tem que ter métodos pra inserção, alteração e exclusão, a gente só tem os que insere e exclui
+    //alexandre adicionando o método Alterar, nas especificacoes ele fala que tem que ter métodos pra inserção, alte ração e exclusão, a gente só tem os que insere e exclui
 
 }
