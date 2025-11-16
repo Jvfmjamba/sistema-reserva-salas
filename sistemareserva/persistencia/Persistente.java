@@ -6,7 +6,7 @@ public class Persistente<T extends Entidade> {
     //public List<T> lista; mudei "List" para private:
     private List<T> lista;
     //atributo estatico do proximo id:
-    private static int proxId =10000;
+    private static int proxId =10;
 
     //construtor
     public Persistente(){      //construtor

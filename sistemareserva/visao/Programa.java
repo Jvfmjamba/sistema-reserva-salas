@@ -22,7 +22,7 @@ public class Programa {
         carregarDadosIniciais();
         System.out.println("\n=== SISTEMA DE RESERVA DE SALAS ===");
         System.out.println("Bem-vindo ao sistema de gerenciamento de reservas!\n");
-        // 
+        // 1
         int opcao;
         do {
             exibirMenuPrincipal();
