@@ -60,5 +60,52 @@ public class SistemaReservaService {
         return banco.getPessoas().alterar(pessoa);
     }
 
-//adicionar aqui os metods de reserva e sala
+    //adicionar aqui os metods de reserva e sala
+
+    //alexandre aqui adiocionei os metos que tavam precisando pra gui funcionar
+    
+    //metodos novos para funcionar a nova GUI, agr com reserva e salas funcionando
+     public List<Sala> listarSalas(){
+        // alexandre metodo necessario para a tabela de salas da GUI
+        return banco.getSalas().listarTodos();
+    }
+
+    public boolean cadastrarSala(String predio, int capacidade, boolean quadro, boolean projetor, boolean pc, boolean ar) {
+        // alexandre metodo para receber os dados do formulario da GUI e criar a Sala
+        if (predio == null || predio.trim().isEmpty() || capacidade <= 0) {
+            return false;
+        }
+        Sala novaSala = new Sala(predio, capacidade, quadro, projetor, pc, ar);
+        banco.getSalas().inserir(novaSala);
+        return true;
+    }
+
+    public boolean excluirSala(int id) {
+        // alexandre metodo de excluir sala pelo id vindo do botao da GUI
+        return banco.getSalas().excluir(id);
+    }
+
+    public List<Reserva> listarReservas() {
+        // alexandre metodo  para a tabela de reservas
+        return banco.getReservas().listarTodos();
+    }
+
+    public boolean realizarReserva(int idPessoa, int idSala, LocalDateTime inicio, LocalDateTime fim) {
+        // alexansre busca a pessoa
+        Pessoa responsavel = banco.getPessoas().buscaId(idPessoa);
+        if(responsavel == null) return false;
+        // busca a sala
+        Sala sala = banco.getSalas().buscaId(idSala);
+        if (sala == null) return false;
+        // verifica se o iniciio ta antes o fim, se nao crasha
+        if (inicio.isAfter(fim) || inicio.isEqual(fim)) return false;
+        Reserva novaReserva = new Reserva(responsavel);
+        ItemReserva item = new ItemReserva(sala, inicio, fim);
+        novaReserva.adicionarItem(item);
+        // salvando no banco de dados
+        banco.getReservas().inserir(novaReserva);
+        responsavel.adicionarReserva(novaReserva);
+
+        return true;
+    }
 }
