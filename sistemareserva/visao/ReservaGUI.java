@@ -181,6 +181,11 @@ public class ReservaGUI extends JFrame {
     }
 
     // alexandre painel de gerenciar as reservas, copiei do de pessoas e alterei
+
+    //GALTA ALGUNS METODOS AINDA, O DE ALTERAR, FALTA IMPLEMENTAR O DE CANCELAR, 
+    //E TEM QUE AJUSTAR TAMBEM A PARA DE DATA E HORARIOS PRA FICAR MAIS FACIL DE DIGITAR, AZ VEZES O CHAT 
+    //DA UMA IDEIA BOA DE FICAR MAIS FACIL PRO USUARIO, TIPO UM CAPO PRO DIA/MES/ANO E OUTRO PRA HORARIO, MAS ISSO É DETALHE TMB FDS
+    //E FALTA TMB COLOCAR OS RECURSOS NA RESERVA, DE QUANTIDADE DE PESSOAS, E NECCESECIDADE DE RECURCSOS
     private JPanel criarPainelGerenciarReservas(){
         JPanel painel = new JPanel(new BorderLayout(10, 10));
         painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -189,7 +194,7 @@ public class ReservaGUI extends JFrame {
         JButton btnNovaReserva = new JButton("Nova Reserva");
         JButton btnListar = new JButton("Atualizar Lista");
         // botao de excluir reserva desativado por enquanto
-        JButton btnExcluir = new JButton("Cancelar (Indisp.)"); 
+        JButton btnExcluir = new JButton("Cancelar (falta implemnetar isso aqui)"); 
         JButton btnVoltar = new JButton("Voltar");
 
         btnNovaReserva.addActionListener(e -> executarAcaoNovaReserva());
