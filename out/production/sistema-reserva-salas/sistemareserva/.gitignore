@@ -1,0 +1,26 @@
+# === IntelliJ IDEA ===
+.idea/
+*.iml
+out/
+
+# === Arquivos de compilação ===
+*.class
+*.jar
+*.war
+*.ear
+
+# === Sistema operacional ===
+# (Arquivos temporários do Windows ou macOS)
+.DS_Store
+Thumbs.db
+
+# === Logs e temporários ===
+*.log
+*.tmp
+
+# === Arquivos gerados pelo build ===
+build/
+target/
+
+# === Configurações de ambiente ===
+*.env
