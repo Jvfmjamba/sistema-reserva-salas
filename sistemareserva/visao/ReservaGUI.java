@@ -1,6 +1,7 @@
 package sistemareserva.visao;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel; //manipula dados da tabela
 import java.awt.*;
 import java.util.List;
 import sistemareserva.modelo.Pessoa;
@@ -8,184 +9,207 @@ import sistemareserva.modelo.Pessoa;
 public class ReservaGUI extends JFrame {
 
     private SistemaReservaService service;
-    private JTextArea displayArea;
-    private JPanel mainPanel;
+    
+    private JTable tabelaPessoas; 
+    private DefaultTableModel tableModel; //alexandre mudei o jtextarea
 
-    // Elementos do Menu Principal
-    private JButton btnGerenciarPessoas;
-    private JButton btnGerenciarSalas;
-    private JButton btnGerenciarReservas;
+    private CardLayout cardLayout; 
+    private JPanel mainPanel; 
 
     public ReservaGUI() {
-        service = new SistemaReservaService(); // Inicializa o serviço e carrega os dados
+        service = new SistemaReservaService(); 
 
         setTitle("Sistema de Reserva de Salas - SWING");
         setSize(900, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // Centraliza a janela
-
+        setLocationRelativeTo(null); 
         configurarLayoutPrincipal();
-        exibirMensagemInicial();
-
         setVisible(true);
     }
 
-    /** Configura o layout principal (Menu no Topo e Conteúdo no Centro). */
     private void configurarLayoutPrincipal() {
-        mainPanel = new JPanel(new BorderLayout(10, 10));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        // 1. Área de Exibição
-        displayArea = new JTextArea();
-        displayArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        displayArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(displayArea);
-
-        // 2. Painel de Botões (Menu Principal)
-        JPanel menuPanel = new JPanel(new GridLayout(1, 3, 10, 0));
-
-        btnGerenciarPessoas = new JButton("1 - Gerenciar Pessoas");
-        btnGerenciarSalas = new JButton("2 - Gerenciar Salas");
-        btnGerenciarReservas = new JButton("3 - Gerenciar Reservas");
-
-        // Adiciona as ações
-        btnGerenciarPessoas.addActionListener(e -> exibirMenuPessoas());
-        btnGerenciarSalas.addActionListener(e -> exibirMenuSalas());
-        btnGerenciarReservas.addActionListener(e -> exibirMenuReservas());
-
-        menuPanel.add(btnGerenciarPessoas);
-        menuPanel.add(btnGerenciarSalas);
-        menuPanel.add(btnGerenciarReservas);
-
-        // Adiciona os painéis à janela
-        mainPanel.add(menuPanel, BorderLayout.NORTH);
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        //alexandre inicia cardlayoout, consegue mostrar um painel por vez
+        cardLayout = new CardLayout();
+        mainPanel = new JPanel(cardLayout);
+        
+        //alexandre adicionei os paineis iniciais na tela, separados
+        JPanel painelMenu = criarPainelMenuPrincipal();
+        JPanel painelPessoas = criarPainelGerenciarPessoas();
+        
+        mainPanel.add(painelMenu, "MENU");
+        mainPanel.add(painelPessoas, "PESSOAS");
 
         add(mainPanel);
+        
+        cardLayout.show(mainPanel, "MENU"); //qual tela começa aparecendo
     }
 
-    private void exibirMensagemInicial() {
-        displayArea.setText("=== SISTEMA DE RESERVA DE SALAS ===\n");
-        displayArea.append("Bem-vindo ao sistema de gerenciamento de reservas!\n");
-        displayArea.append("Use os botões acima para navegar nos menus.\n\n");
+    private JPanel criarPainelMenuPrincipal() {
+        JPanel painel = new JPanel(new BorderLayout());
+        
+        JLabel titulo = new JLabel("=== SISTEMA DE RESERVA DE SALAS ===", SwingConstants.CENTER);
+        titulo.setFont(new Font("Arial", Font.BOLD, 20));
+        painel.add(titulo, BorderLayout.NORTH);
+
+        JPanel menuBotoes = new JPanel(new GridLayout(1, 3, 10, 10));
+        menuBotoes.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50)); // Margem para ficar bonito
+
+        JButton btnPessoas = new JButton("1 - Gerenciar Pessoas");
+        JButton btnSalas = new JButton("2 - Gerenciar Salas");
+        JButton btnReservas = new JButton("3 - Gerenciar Reservas");
+
+        btnPessoas.addActionListener(e -> {
+            cardLayout.show(mainPanel, "PESSOAS");
+            listarTodasPessoas(); // atualiza tabela
+        });
+        
+        btnSalas.addActionListener(e -> exibirMenuSalas());
+        btnReservas.addActionListener(e -> exibirMenuReservas());
+
+        menuBotoes.add(btnPessoas);
+        menuBotoes.add(btnSalas);
+        menuBotoes.add(btnReservas);
+
+        painel.add(menuBotoes, BorderLayout.CENTER);
+        return painel;
     }
 
-    // Metodos para gerenciar as pessoas
+    // alexandre metodo novo para gerenciar as pessoas
+    private JPanel criarPainelGerenciarPessoas() {
+        JPanel painel = new JPanel(new BorderLayout(10, 10));
+        painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-    private void exibirMenuPessoas() {
-        //Remove os componentes antigos e configura o novo layout
-        mainPanel.removeAll();
+        //bootoes do topo
+        JPanel botoesPanel = new JPanel(new GridLayout(1, 6, 5, 0));
+        JButton btnCadastrar = new JButton("Cadastrar");
+        JButton btnAlterar = new JButton("Alterar");
+        JButton btnExcluir = new JButton("Excluir");
+        JButton btnBuscar = new JButton("Buscar ID");
+        JButton btnAtualizar = new JButton("Atualizar Lista");
+        JButton btnVoltar = new JButton("Voltar");
 
-        JPanel panelPessoas = new JPanel(new GridLayout(2, 3, 10, 10));
-
-        //Criação dos botões para as opções do sub-menu
-        JButton btnCadastrar = new JButton("1 - Cadastrar Pessoa");
-        JButton btnAlterar = new JButton("2 - Alterar Pessoa");
-        JButton btnExcluir = new JButton("3 - Excluir Pessoa");
-        JButton btnBuscar = new JButton("4 - Buscar por ID");
-        JButton btnListar = new JButton("5 - Listar Todas");
-        JButton btnVoltar = new JButton("0 - Voltar");
-
-        //Adiciona as ações funcionais
         btnCadastrar.addActionListener(e -> executarAcaoCadastrarPessoa());
         btnAlterar.addActionListener(e -> executarAcaoAlterarPessoa());
         btnExcluir.addActionListener(e -> executarAcaoExcluirPessoa());
         btnBuscar.addActionListener(e -> executarAcaoBuscarPessoa());
-        btnListar.addActionListener(e -> listarTodasPessoas());
+        btnAtualizar.addActionListener(e -> listarTodasPessoas());
+        
+        btnVoltar.addActionListener(e -> cardLayout.show(mainPanel, "MENU"));
 
-        btnVoltar.addActionListener(e -> {
-            mainPanel.removeAll();
-            configurarLayoutPrincipal(); // Volta para o layout inicial
-            exibirMensagemInicial();
-            mainPanel.revalidate();
-            mainPanel.repaint();
-        });
+        botoesPanel.add(btnCadastrar);
+        botoesPanel.add(btnAlterar);
+        botoesPanel.add(btnExcluir);
+        botoesPanel.add(btnBuscar);
+        botoesPanel.add(btnAtualizar);
+        botoesPanel.add(btnVoltar);
 
-        panelPessoas.add(btnCadastrar);
-        panelPessoas.add(btnAlterar);
-        panelPessoas.add(btnExcluir);
-        panelPessoas.add(btnBuscar);
-        panelPessoas.add(btnListar);
-        panelPessoas.add(btnVoltar);
+        String[] colunas = {"ID", "Nome"}; // cabeçalho da tabela
+        // o 0 indica que começa sem linhas
+        tableModel = new DefaultTableModel(colunas, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; //dica de boa pratica do chat pra evitar bananagem
+            }
+        }; 
+        tabelaPessoas = new JTable(tableModel);
+        JScrollPane scrollPane = new JScrollPane(tabelaPessoas);
 
-        // Adiciona os painéis e atualiza a exibição
-        mainPanel.add(panelPessoas, BorderLayout.NORTH);
-        mainPanel.add(new JScrollPane(displayArea), BorderLayout.CENTER);
-        mainPanel.revalidate();
-        mainPanel.repaint();
+        painel.add(botoesPanel, BorderLayout.NORTH);
+        painel.add(scrollPane, BorderLayout.CENTER);
 
-        // Exibe a lista ao entrar no menu
-        listarTodasPessoas();
+        return painel;
     }
 
+
     private void listarTodasPessoas() {
-        displayArea.setText("--- LISTA DE TODAS AS PESSOAS CADASTRADAS ---\n");
+
+        tableModel.setRowCount(0); 
         List<Pessoa> pessoas = service.listarPessoas();
 
         if (pessoas.isEmpty()) {
-            displayArea.append("Nenhuma pessoa cadastrada.\n");
+            JOptionPane.showMessageDialog(this, "Nenhuma pessoa cadastrada.");
         } else {
-            displayArea.append("Total de pessoas cadastradas: " + pessoas.size() + "\n");
-            displayArea.append("----------------------------------------------\n");
-            for (Pessoa pessoa : pessoas) {
-                displayArea.append("ID: " + pessoa.getId() + " | Nome: " + pessoa.getNome() + "\n");
+            for (Pessoa p : pessoas) {
+                
+                Object[] linha = {p.getId(), p.getNome()};
+                tableModel.addRow(linha);
             }
-            displayArea.append("----------------------------------------------\n");
         }
     }
 
     private void executarAcaoCadastrarPessoa() {
-        String nome = JOptionPane.showInputDialog(this, "Digite o NOME da pessoa para cadastrar:", "Cadastrar Pessoa", JOptionPane.QUESTION_MESSAGE);
+        String nome = JOptionPane.showInputDialog(this, "Digite o NOME da pessoa:", "Cadastrar", JOptionPane.QUESTION_MESSAGE);
 
-        if (nome != null) {
+        if (nome != null && !nome.trim().isEmpty()) {
             if (service.cadastrarPessoa(nome)) {
-                JOptionPane.showMessageDialog(this, "Pessoa '" + nome + "' cadastrada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Sucesso!");
+                listarTodasPessoas(); 
             } else {
-                JOptionPane.showMessageDialog(this, "Erro: Nome não pode estar vazio.", "Erro de Cadastro", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Erro ao cadastrar.", "Erro", JOptionPane.ERROR_MESSAGE);
             }
-            listarTodasPessoas(); // Atualiza a lista
         }
     }
 
     private void executarAcaoExcluirPessoa() {
-        String idString = JOptionPane.showInputDialog(this, "Digite o ID da pessoa para EXCLUIR:");
+        //alexandre aqui vc pode agr clicar em cima do nome da pessoa e excluir, sem precisar digitar o id
+        String idString = null;
+        int linhaSelecionada = tabelaPessoas.getSelectedRow();
+        
+        if (linhaSelecionada != -1) {
+            int idSelecionado = (int) tabelaPessoas.getValueAt(linhaSelecionada, 0);
+            int confirm = JOptionPane.showConfirmDialog(this, "Deseja excluir o ID " + idSelecionado + "?");
+            if (confirm == JOptionPane.YES_OPTION) {
+                service.excluirPessoa(idSelecionado);
+                listarTodasPessoas();
+                return; 
+            }
+        }
 
+        // se nao tiver selecionado ngm, ai deixa a caixinha que o marcus colocou mesmo, de colocar o id manualmente
+        idString = JOptionPane.showInputDialog(this, "Digite o ID para EXCLUIR:");
         if (idString != null) {
             try {
                 int id = Integer.parseInt(idString);
                 if (service.excluirPessoa(id)) {
-                    JOptionPane.showMessageDialog(this, "Pessoa ID " + id + " excluída com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Excluído com sucesso!");
                 } else {
-                    JOptionPane.showMessageDialog(this, "Erro: Pessoa ID " + id + " não encontrada (ou possui reservas pendentes).", "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Erro: ID não encontrado ou com pendências.");
                 }
                 listarTodasPessoas();
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Erro: O ID deve ser um número inteiro.", "Erro de Formato", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "ID inválido.");
             }
         }
     }
 
     private void executarAcaoBuscarPessoa() {
-        String idString = JOptionPane.showInputDialog(this, "Digite o ID da pessoa para BUSCAR:");
-
+        String idString = JOptionPane.showInputDialog(this, "ID para BUSCAR:");
         if (idString != null) {
             try {
                 int id = Integer.parseInt(idString);
                 Pessoa pessoa = service.buscarPessoaPorId(id);
-
                 if (pessoa != null) {
-                    JOptionPane.showMessageDialog(this, "Pessoa Encontrada:\nID: " + pessoa.getId() + "\nNome: " + pessoa.getNome(), "Busca Concluída", JOptionPane.INFORMATION_MESSAGE);
+                    tableModel.setRowCount(0);
+                    tableModel.addRow(new Object[]{pessoa.getId(), pessoa.getNome()});
                 } else {
-                    JOptionPane.showMessageDialog(this, "Erro: Pessoa ID " + id + " não encontrada.", "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Pessoa não encontrada.");
+                    listarTodasPessoas();
                 }
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Erro: O ID deve ser um número inteiro.", "Erro de Formato", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "ID inválido.");
             }
         }
     }
 
     private void executarAcaoAlterarPessoa() {
-        String idString = JOptionPane.showInputDialog(this, "Digite o ID da pessoa para ALTERAR:");
+        String idString = null;
+        int linhaSelecionada = tabelaPessoas.getSelectedRow();
+        
+        if (linhaSelecionada != -1) {
+            idString = String.valueOf(tabelaPessoas.getValueAt(linhaSelecionada, 0));
+        } else {
+            idString = JOptionPane.showInputDialog(this, "ID para ALTERAR:");
+        }
 
         if (idString != null) {
             try {
@@ -193,38 +217,34 @@ public class ReservaGUI extends JFrame {
                 Pessoa pessoa = service.buscarPessoaPorId(id);
 
                 if (pessoa != null) {
-                    String novoNome = JOptionPane.showInputDialog(this, "Digite o NOVO nome para '" + pessoa.getNome() + "':", "Alterar Pessoa", JOptionPane.QUESTION_MESSAGE);
-
+                    String novoNome = JOptionPane.showInputDialog(this, "Novo nome para '" + pessoa.getNome() + "':", pessoa.getNome());
                     if (novoNome != null && service.alterarPessoa(id, novoNome)) {
-                        JOptionPane.showMessageDialog(this, "Pessoa alterada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Alterado com sucesso!");
                         listarTodasPessoas();
-                    } else if (novoNome != null) {
-                        JOptionPane.showMessageDialog(this, "Erro: Nome não pode estar vazio.", "Erro de Alteração", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
-                    JOptionPane.showMessageDialog(this, "Erro: Pessoa ID " + id + " não encontrada.", "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "ID não encontrado.");
                 }
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Erro: O ID deve ser um número inteiro.", "Erro de Formato", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "ID inválido.");
             }
         }
     }
 
-// Fazer os metodos da sala e reservas
-
     private void exibirMenuSalas() {
-        displayArea.setText("--- GERENCIAR SALAS ---\n\n");
-        displayArea.append("Ações de Sala em implementação. Use o menu Pessoas para ver as funcionalidades.");
-
+        JOptionPane.showMessageDialog(this, "Funcionalidade de SALAS em construção.");
     }
 
     private void exibirMenuReservas() {
-        displayArea.setText("--- GERENCIAR RESERVAS ---\n\n");
-        displayArea.append("Ações de Reserva em implementação. Use o menu Pessoas para ver as funcionalidades.");
+        JOptionPane.showMessageDialog(this, "Funcionalidade de RESERVAS em construção.");
     }
 
-
     public static void main(String[] args) {
+        // dica do chat, adicionar o LookAndFeel pra deixar a janela mais bonita 
+        try { 
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ignored) {}
+        
         SwingUtilities.invokeLater(() -> {
             new ReservaGUI();
         });
