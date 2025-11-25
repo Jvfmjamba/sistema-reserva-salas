@@ -85,9 +85,34 @@ public class SistemaReservaService {
         return banco.getSalas().excluir(id);
     }
 
+    // metodos novos adiocnados para funcionar a busca de sala, alterar e cancelar sala, alterar e cancelar reserva
+
+    public Sala buscaSalaPorId(int id) {
+        return banco.getSalas().buscaId(id);
+    }
+
+    public boolean alterarSala(int id, String predio, int capacidade, boolean quadro, boolean projetor, boolean pc, boolean ar) {
+        Sala sala = banco.getSalas().buscaId(id);
+        if (sala == null) return false;
+        
+        sala.setPredio(predio);
+        sala.setCapacidade(capacidade);
+        // atualiza os recursos
+        sala.quadro = quadro;
+        sala.projetor = projetor;
+        sala.computador = pc;
+        sala.arCondicionado = ar;
+        
+        return banco.getSalas().alterar(sala);
+    }
+
     public List<Reserva> listarReservas() {
         // alexandre metodo  para a tabela de reservas
         return banco.getReservas().listarTodos();
+    }
+
+    public Reserva buscaReservaPorId(int id) {
+        return banco.getReservas().buscaId(id);
     }
 
     public boolean realizarReserva(int idPessoa, int idSala, LocalDateTime inicio, LocalDateTime fim) {
@@ -107,5 +132,43 @@ public class SistemaReservaService {
         responsavel.adicionarReserva(novaReserva);
 
         return true;
+    }
+
+    public boolean cancelarReserva(int id) {
+        Reserva reserva = banco.getReservas().buscaId(id);
+        if (reserva == null) return false;
+        
+        if (reserva.getResponsavel() != null) {
+            reserva.getResponsavel().removerReserva(reserva);
+        }
+        
+        return banco.getReservas().excluir(id);
+    }
+
+    public boolean alterarReserva(int idReserva, int idPessoa, int idSala, LocalDateTime inicio, LocalDateTime fim) {
+        Reserva reserva = banco.getReservas().buscaId(idReserva);
+        if (reserva == null) return false;
+
+        Pessoa novaPessoa = banco.getPessoas().buscaId(idPessoa);
+        Sala novaSala = banco.getSalas().buscaId(idSala);
+
+        if (novaPessoa == null || novaSala == null) return false;
+        if (inicio.isAfter(fim) || inicio.isEqual(fim)) return false;
+
+        if (reserva.getResponsavel().getId() != idPessoa) {
+            reserva.getResponsavel().removerReserva(reserva); // remove do antigo
+            reserva.setResponsavel(novaPessoa);
+            novaPessoa.adicionarReserva(reserva); // adiciona no novo
+        }
+
+        if (!reserva.getItensDaReserva().isEmpty()) {
+            ItemReserva itemAntigo = reserva.getItensDaReserva().get(0);
+            reserva.removerItem(itemAntigo);
+        }
+        
+        ItemReserva novoItem = new ItemReserva(novaSala, inicio, fim);
+        reserva.adicionarItem(novoItem);
+
+        return banco.getReservas().alterar(reserva);
     }
 }

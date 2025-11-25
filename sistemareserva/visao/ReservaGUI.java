@@ -155,18 +155,22 @@ public class ReservaGUI extends JFrame {
         JPanel painel = new JPanel(new BorderLayout(10, 10));
         painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         //alexandre botoes
-        JPanel botoesPanel = new JPanel(new GridLayout(1, 4, 5, 0));
+        JPanel botoesPanel = new JPanel(new GridLayout(1, 5, 5, 0));
         JButton btnCadastrar = new JButton("Nova Sala");
+        JButton btnAlterar = new JButton("Alterar Sala"); // botao adicionado de alyera sala
         JButton btnExcluir = new JButton("Excluir Sala");
         JButton btnListar = new JButton("Atualizar Lista");
         JButton btnVoltar = new JButton("Voltar");
 
         btnCadastrar.addActionListener(e -> executarAcaoCadastrarSala());
+        btnAlterar.addActionListener(e -> executarAcaoAlterarSala()); 
         btnExcluir.addActionListener(e -> executarAcaoExcluirSala());
         btnListar.addActionListener(e -> listarTodasSalas());
         btnVoltar.addActionListener(e -> cardLayout.show(mainPanel, "MENU"));
 
+        //adicionando os botoes no painel
         botoesPanel.add(btnCadastrar);
+        botoesPanel.add(btnAlterar); 
         botoesPanel.add(btnExcluir);
         botoesPanel.add(btnListar);
         botoesPanel.add(btnVoltar);
@@ -182,7 +186,7 @@ public class ReservaGUI extends JFrame {
 
     // alexandre painel de gerenciar as reservas, copiei do de pessoas e alterei
 
-    //GALTA ALGUNS METODOS AINDA, O DE ALTERAR, FALTA IMPLEMENTAR O DE CANCELAR, 
+    //FALTA ALGUNS METODOS AINDA, O DE ALTERAR, FALTA IMPLEMENTAR O DE CANCELAR, 
     //E TEM QUE AJUSTAR TAMBEM A PARA DE DATA E HORARIOS PRA FICAR MAIS FACIL DE DIGITAR, AZ VEZES O CHAT 
     //DA UMA IDEIA BOA DE FICAR MAIS FACIL PRO USUARIO, TIPO UM CAPO PRO DIA/MES/ANO E OUTRO PRA HORARIO, MAS ISSO É DETALHE TMB FDS
     //E FALTA TMB COLOCAR OS RECURSOS NA RESERVA, DE QUANTIDADE DE PESSOAS, E NECCESECIDADE DE RECURCSOS
@@ -190,17 +194,23 @@ public class ReservaGUI extends JFrame {
         JPanel painel = new JPanel(new BorderLayout(10, 10));
         painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JPanel botoesPanel = new JPanel(new GridLayout(1, 4, 5, 0));
+        // Aumentei o grid para 5 colunas
+        JPanel botoesPanel = new JPanel(new GridLayout(1, 5, 5, 0));
         JButton btnNovaReserva = new JButton("Nova Reserva");
+        JButton btnAlterar = new JButton("Alterar Reserva"); // Botao adicionado
         JButton btnListar = new JButton("Atualizar Lista");
-        // botao de excluir reserva desativado por enquanto
-        JButton btnExcluir = new JButton("Cancelar (falta implemnetar isso aqui)"); 
+        // botao de excluir reserva desativado por enquanto - correcao -> agora ta ativado e funcioanndo
+        JButton btnExcluir = new JButton("Cancelar Reserva"); 
         JButton btnVoltar = new JButton("Voltar");
 
         btnNovaReserva.addActionListener(e -> executarAcaoNovaReserva());
+        btnAlterar.addActionListener(e -> executarAcaoAlterarReserva()); 
         btnListar.addActionListener(e -> listarTodasReservas());
+        btnExcluir.addActionListener(e -> executarAcaoCancelarReserva()); 
         btnVoltar.addActionListener(e -> cardLayout.show(mainPanel, "MENU"));
+        
         botoesPanel.add(btnNovaReserva);
+        botoesPanel.add(btnAlterar); 
         botoesPanel.add(btnListar);
         botoesPanel.add(btnExcluir);
         botoesPanel.add(btnVoltar);
@@ -376,6 +386,62 @@ public class ReservaGUI extends JFrame {
             }
         }
     }
+    // novo metodo adiocnado para alterar sala, antes nao tinha
+    private void executarAcaoAlterarSala() {
+        String idString = null;
+        int linhaSelecionada = tabelaSalas.getSelectedRow();
+        
+        if (linhaSelecionada != -1) {
+            idString = String.valueOf(tabelaSalas.getValueAt(linhaSelecionada, 0));
+        } else {
+            idString = JOptionPane.showInputDialog(this, "Digite o ID da Sala para ALTERAR:");
+        }
+
+        if (idString != null) {
+            try {
+                int id = Integer.parseInt(idString);
+                Sala salaAtual = service.buscaSalaPorId(id);
+
+                if (salaAtual != null) {
+                    JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
+                    JTextField txtPredio = new JTextField(salaAtual.getPredio());
+                    JTextField txtCapacidade = new JTextField(String.valueOf(salaAtual.getCapacidade()));
+                    JCheckBox chkQuadro = new JCheckBox("Quadro", salaAtual.temQuadro());
+                    JCheckBox chkProjetor = new JCheckBox("Projetor", salaAtual.temProjetor());
+                    JCheckBox chkPC = new JCheckBox("Computador", salaAtual.temComputador());
+                    JCheckBox chkAr = new JCheckBox("Ar-Condicionado", salaAtual.temArCondicionado());
+
+                    panel.add(new JLabel("Prédio/Bloco:"));
+                    panel.add(txtPredio);
+                    panel.add(new JLabel("Capacidade:"));
+                    panel.add(txtCapacidade);
+                    panel.add(chkQuadro);
+                    panel.add(chkProjetor);
+                    panel.add(chkPC);
+                    panel.add(chkAr);
+
+                    int result = JOptionPane.showConfirmDialog(this, panel, "Alterar Sala ID " + id, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+                    if(result == JOptionPane.OK_OPTION){
+                        String predio = txtPredio.getText();
+                        int capacidade = Integer.parseInt(txtCapacidade.getText());
+                        boolean sucesso = service.alterarSala(id, predio, capacidade, chkQuadro.isSelected(), chkProjetor.isSelected(), chkPC.isSelected(), chkAr.isSelected());
+                        
+                        if(sucesso){
+                            JOptionPane.showMessageDialog(this, "Sala alterada com sucesso!");
+                            listarTodasSalas();
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Erro ao alterar sala.");
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Sala não encontrada.");
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "ID ou Capacidade inválidos.");
+            }
+        }
+    }
 
     private void executarAcaoExcluirSala(){
         int row = tabelaSalas.getSelectedRow();
@@ -454,6 +520,102 @@ public class ReservaGUI extends JFrame {
                 }
             }catch(Exception ex){
                 JOptionPane.showMessageDialog(this, "Erro de formato. Use dd/MM/yyyy HH:mm");
+            }
+        }
+    }
+
+    // ***************************************************************************************************************************************
+
+    // alexandre novos metodos adicionados hoje para alterar reserva e cancelar resevra 
+    // ´peguei os metodos do frança e joguei aqui:
+
+    private void executarAcaoAlterarReserva() {
+        String idString = JOptionPane.showInputDialog(this, "Digite o ID da Reserva para ALTERAR:");
+        
+        if (idString != null) {
+            try {
+                int idReserva = Integer.parseInt(idString);
+                Reserva reservaAtual = service.buscaReservaPorId(idReserva); 
+
+                if (reservaAtual != null) {
+                    // preenche o painel 
+                    JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
+                    
+                    // pega dados do primeiro item da reserva 
+                    ItemReserva itemAtual = reservaAtual.getItensDaReserva().isEmpty() ? null : reservaAtual.getItensDaReserva().get(0);
+                    
+                    JTextField txtIdPessoa = new JTextField(String.valueOf(reservaAtual.getResponsavel().getId()));
+                    JTextField txtIdSala = new JTextField(itemAtual != null ? String.valueOf(itemAtual.getSala().getId()) : "");
+                    
+                    String dataIniStr = itemAtual != null ? itemAtual.getDataHoraInicio().format(formatter) : "dd/MM/yyyy HH:mm";
+                    String dataFimStr = itemAtual != null ? itemAtual.getDataHoraFim().format(formatter) : "dd/MM/yyyy HH:mm";
+                    
+                    JTextField txtDataInicio = new JTextField(dataIniStr);
+                    JTextField txtDataFim = new JTextField(dataFimStr);
+
+                    panel.add(new JLabel("Novo ID Responsável:"));
+                    panel.add(txtIdPessoa);
+                    panel.add(new JLabel("Novo ID Sala:"));
+                    panel.add(txtIdSala);
+                    panel.add(new JLabel("Nova Data Início:"));
+                    panel.add(txtDataInicio);
+                    panel.add(new JLabel("Nova Data Fim:"));
+                    panel.add(txtDataFim);
+
+                    int result = JOptionPane.showConfirmDialog(this, panel, "Alterar Reserva ID " + idReserva, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+                    if(result == JOptionPane.OK_OPTION){
+                        int idPessoa = Integer.parseInt(txtIdPessoa.getText());
+                        int idSala = Integer.parseInt(txtIdSala.getText());
+                        LocalDateTime inicio = LocalDateTime.parse(txtDataInicio.getText(), formatter);
+                        LocalDateTime fim = LocalDateTime.parse(txtDataFim.getText(), formatter);
+                        
+                        // Chama o metodo de alterar do service
+                        boolean sucesso = service.alterarReserva(idReserva, idPessoa, idSala, inicio, fim);
+                        if (sucesso){
+                            JOptionPane.showMessageDialog(this, "Reserva alterada!");
+                            listarTodasReservas();
+                        }else{
+                            JOptionPane.showMessageDialog(this, "Erro na alteração.");
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Reserva não encontrada.");
+                }
+            } catch(Exception ex){
+                JOptionPane.showMessageDialog(this, "Dados inválidos ou erro de formato.");
+            }
+        }
+    }
+
+    // implementanod de fsto agora o metodo de cancelar reserva, antes tava so de enfeite agr ta funcionando
+    private void executarAcaoCancelarReserva() {
+        String idString = null;
+        int linhaSelecionada = tabelaReservas.getSelectedRow();
+        
+        // tenta pegar o ID da linha selecionada
+        if (linhaSelecionada != -1) {
+            idString = String.valueOf(tabelaReservas.getValueAt(linhaSelecionada, 0));
+        }else{
+            idString = JOptionPane.showInputDialog(this, "Digite o ID da Reserva para CANCELAR:");
+        }
+
+        if (idString != null) {
+            try {
+                int idReserva = Integer.parseInt(idString);
+                int confirm = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja cancelar a reserva " + idReserva + "?");
+                
+                if (confirm == JOptionPane.YES_OPTION) {
+                    boolean sucesso = service.cancelarReserva(idReserva);
+                    if (sucesso) {
+                        JOptionPane.showMessageDialog(this, "Reserva cancelada com sucesso!");
+                        listarTodasReservas();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Erro ao cancelar (ID não encontrado?).");
+                    }
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "ID inválido.");
             }
         }
     }
