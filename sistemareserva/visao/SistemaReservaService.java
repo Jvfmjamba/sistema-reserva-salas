@@ -15,7 +15,6 @@ public class SistemaReservaService {
     }
 
     private void carregarDadosIniciais() {
-        // System.out.println("Inicializando sistema e carregando dados..."); // Removido o print
         banco.getPessoas().inserir(new Pessoa("Professor Girafales"));
         banco.getPessoas().inserir(new Pessoa("Dona Florinda"));
         banco.getPessoas().inserir(new Pessoa("Seu Madruga"));
