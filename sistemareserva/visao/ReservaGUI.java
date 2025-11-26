@@ -1,5 +1,6 @@
 package sistemareserva.visao;
 
+import java.util.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel; //manipula dados da tabela
 import javax.swing.text.MaskFormatter;
@@ -491,10 +492,12 @@ public class ReservaGUI extends JFrame {
     }
 
     private void executarAcaoNovaReserva(){
+        List<ItemReserva> reservasTemp = new ArrayList<>(); //(Julia) múltiplas salas em uma reserva
+
         JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
         JTextField txtIdPessoa = new JTextField();
-        //JTextField txtIdSala = new JTextField();
-//mudança Julia: combo box de salas
+
+//(Julia) combo box de salas
         java.util.List<Sala> salas = service.listarSalas();
         JComboBox<Sala> comboSala = new JComboBox<>();
 
@@ -502,7 +505,7 @@ public class ReservaGUI extends JFrame {
             comboSala.addItem(s);   //preenche a lista 
         }
 
-    //mudança Julia: pra não ficar apagando os parâmetros de data e hora
+    //(Julia) pra não ficar apagando os parâmetros de data e hora
     MaskFormatter formatoDataHora = null;
     JFormattedTextField txtDataInicio;
     JFormattedTextField txtDataFim;
@@ -518,6 +521,13 @@ public class ReservaGUI extends JFrame {
     txtDataFim = new JFormattedTextField(formatoDataHora);
 
     //--------------------------------------------------------
+    JButton btnAdicionar = new JButton("Adicionar sala");   
+    String[] colunas = {"Sala", "Início", "Fim"};   //define o nome das colunas da tabela
+    DefaultTableModel modeloTemp = new DefaultTableModel(colunas, 0);   //inicialmente nenhuma linha
+    JTable tabelaTemp = new JTable(modeloTemp); //tabela "dinamica"
+    JScrollPane scrollTemp = new JScrollPane(tabelaTemp); //add barra de rolagem caso a tabela fique muito grande
+
+
 
         panel.add(new JLabel("ID Responsável:"));
         panel.add(txtIdPessoa);
@@ -529,6 +539,11 @@ public class ReservaGUI extends JFrame {
         panel.add(new JLabel("Fim:"));
         panel.add(txtDataFim);
 
+        panel.add(btnAdicionar);
+        panel.add(new JLabel("Salas adicionadas:"));
+        panel.add(scrollTemp);
+
+
         int result= JOptionPane.showConfirmDialog(this, panel, "Nova Reserva", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
         if(result == JOptionPane.OK_OPTION){
@@ -536,24 +551,54 @@ public class ReservaGUI extends JFrame {
 
                 int idPessoa = Integer.parseInt(txtIdPessoa.getText());
 
-                Sala salaSelecionada = (Sala) comboSala.getSelectedItem();
-                if(salaSelecionada == null){
-                    JOptionPane.showMessageDialog(this, "Selecione uma sala");
-                    return;
+
+            //(Julia) add mais de uma sala em uma única reserva
+                btnAdicionar.addActionListener(e->{
+                    Sala salaSelecionada = (Sala) comboSala.getSelectedItem();
+                    if(salaSelecionada == null){
+                        JOptionPane.showMessageDialog(this, "Selecione uma sala");
+                        return;
+                    }
+                    //int idSala = salaSelecionada.getId();
+                    try{
+                        LocalDateTime inicio = LocalDateTime.parse(txtDataInicio.getText(), formatter);
+                        LocalDateTime fim = LocalDateTime.parse(txtDataFim.getText(), formatter); 
+
+                        if(!inicio.isBefore(fim)){
+                            JOptionPane.showConfirmDialog(panel, "Horário inválido!");
+                        }
+
+                        ItemReserva item = new ItemReserva(salaSelecionada, inicio, fim);
+                        reservasTemp.add(item);
+
+                        modeloTemp.addRow(new Object[]{ //add a nova sala à tabela com todas as infos
+                            salaSelecionada.toString(),
+                            inicio.format(formatter),
+                            fim.format(formatter)
+                        });
+
+                        //reseta os valores pras próximas reservas
+                        txtDataInicio.setValue(null);
+                        txtDataFim.setValue(null);
+                    }catch(Exception ex){
+                        JOptionPane.showMessageDialog(panel, "Formato inválido de data/hora");
+                    }
+                });
+                boolean sucessoFinal = true;
+                for(ItemReserva item : reservasTemp){
+                    boolean sucesso = service.realizarReserva(idPessoa, item.getSala().getId(), item.getDataHoraInicio(), item.getDataHoraFim());
+
+                    if(!sucesso){
+                        sucessoFinal = false;
+                    }
                 }
-                int idSala = salaSelecionada.getId();
 
-                LocalDateTime inicio = LocalDateTime.parse(txtDataInicio.getText(), formatter);
-                LocalDateTime fim = LocalDateTime.parse(txtDataFim.getText(), formatter);
-
-
-                boolean sucesso = service.realizarReserva(idPessoa, idSala, inicio, fim);
-                if (sucesso){
-                    JOptionPane.showMessageDialog(this, "Reserva realizada!");
-                    listarTodasReservas();
-                }else{
-                    JOptionPane.showMessageDialog(this, "Erro: confira os IDs e disponibilidade.");
-                }
+                    if (sucessoFinal){
+                        JOptionPane.showMessageDialog(this, "Reserva realizada!");
+                        listarTodasReservas();
+                    }else{
+                        JOptionPane.showMessageDialog(this, "Erro: confira os IDs e disponibilidade.");
+                    }
             }catch(Exception ex){
                 JOptionPane.showMessageDialog(this, "Erro de formato. Use dd/MM/yyyy HH:mm");
             }
@@ -586,7 +631,7 @@ public class ReservaGUI extends JFrame {
                     String dataIniStr = itemAtual != null ? itemAtual.getDataHoraInicio().format(formatter) : "dd/MM/yyyy HH:mm";
                     String dataFimStr = itemAtual != null ? itemAtual.getDataHoraFim().format(formatter) : "dd/MM/yyyy HH:mm";
 
-                    //mudança Julia: pra não ficar apagando os parâmetros de data e hora
+                    //(Julia) pra não ficar apagando os parâmetros de data e hora
                     MaskFormatter formatoDataHora = null;
                     JFormattedTextField txtDataInicio;
                     JFormattedTextField txtDataFim;
