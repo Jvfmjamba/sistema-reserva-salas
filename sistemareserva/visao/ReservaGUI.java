@@ -2,7 +2,10 @@ package sistemareserva.visao;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel; //manipula dados da tabela
+import javax.swing.text.MaskFormatter;
+
 import java.awt.*;
+import java.text.ParseException;
 import java.util.List;
 //imports necessarios para datas e horas:
 import java.time.format.DateTimeFormatter;
@@ -491,16 +494,35 @@ public class ReservaGUI extends JFrame {
         JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
         JTextField txtIdPessoa = new JTextField();
         JTextField txtIdSala = new JTextField();
-        JTextField txtDataInicio = new JTextField("dd/MM/yyyy HH:mm");
-        JTextField txtDataFim = new JTextField("dd/MM/yyyy HH:mm");
+        //JTextField txtDataInicio = new JTextField("dd/MM/yyyy HH:mm");
+        //JTextField txtDataFim = new JTextField("dd/MM/yyyy HH:mm");
+    
+    //mudança Julia: pra não ficar apagando os parâmetros de data e hora
+    MaskFormatter formatoDataHora = null;
+    JFormattedTextField txtDataInicio;
+    JFormattedTextField txtDataFim;
+
+    try{
+        formatoDataHora = new MaskFormatter("##/##/#### ##:##");
+        formatoDataHora.setPlaceholderCharacter('_');
+    }catch(ParseException e){
+        e.printStackTrace();
+    }
+
+    txtDataInicio = new JFormattedTextField(formatoDataHora);
+    txtDataFim = new JFormattedTextField(formatoDataHora);
+
+    //--------------------------------------------------------
+
 
         panel.add(new JLabel("ID Responsável:"));
         panel.add(txtIdPessoa);
         panel.add(new JLabel("ID Sala:"));
         panel.add(txtIdSala);
-        panel.add(new JLabel("Início (dd/MM/yyyy HH:mm):"));
+
+        panel.add(new JLabel("Início:"));
         panel.add(txtDataInicio);
-        panel.add(new JLabel("Fim (dd/MM/yyyy HH:mm):"));
+        panel.add(new JLabel("Fim:"));
         panel.add(txtDataFim);
 
         int result= JOptionPane.showConfirmDialog(this, panel, "Nova Reserva", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
@@ -549,14 +571,28 @@ public class ReservaGUI extends JFrame {
                     
                     String dataIniStr = itemAtual != null ? itemAtual.getDataHoraInicio().format(formatter) : "dd/MM/yyyy HH:mm";
                     String dataFimStr = itemAtual != null ? itemAtual.getDataHoraFim().format(formatter) : "dd/MM/yyyy HH:mm";
-                    
-                    JTextField txtDataInicio = new JTextField(dataIniStr);
-                    JTextField txtDataFim = new JTextField(dataFimStr);
+
+                    //mudança Julia: pra não ficar apagando os parâmetros de data e hora
+                    MaskFormatter formatoDataHora = null;
+                    JFormattedTextField txtDataInicio;
+                    JFormattedTextField txtDataFim;
+
+                    try{
+                        formatoDataHora = new MaskFormatter("##/##/#### ##:##");
+                        formatoDataHora.setPlaceholderCharacter('_');
+                    }catch(ParseException e){
+                        e.printStackTrace();
+                    }
+
+                    txtDataInicio = new JFormattedTextField(formatoDataHora);
+                    txtDataFim = new JFormattedTextField(formatoDataHora);
+                    //--------------------------------------------------------
 
                     panel.add(new JLabel("Novo ID Responsável:"));
                     panel.add(txtIdPessoa);
                     panel.add(new JLabel("Novo ID Sala:"));
                     panel.add(txtIdSala);
+
                     panel.add(new JLabel("Nova Data Início:"));
                     panel.add(txtDataInicio);
                     panel.add(new JLabel("Nova Data Fim:"));
