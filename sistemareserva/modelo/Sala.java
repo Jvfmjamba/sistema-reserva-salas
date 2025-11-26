@@ -58,6 +58,6 @@ public class Sala extends Entidade {
 
     @Override
     public String toString() {
-        return "Sala Número=" + id + ", Prédio=" + predio + ", Capacidade=" + capacidade + " pessoas";
+        return "Id sala: " + id + ", Prédio:" + predio + ", Capacidade: " + capacidade + " pessoas";
     }
 }

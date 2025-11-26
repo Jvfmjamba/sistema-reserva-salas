@@ -493,10 +493,15 @@ public class ReservaGUI extends JFrame {
     private void executarAcaoNovaReserva(){
         JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
         JTextField txtIdPessoa = new JTextField();
-        JTextField txtIdSala = new JTextField();
-        //JTextField txtDataInicio = new JTextField("dd/MM/yyyy HH:mm");
-        //JTextField txtDataFim = new JTextField("dd/MM/yyyy HH:mm");
-    
+        //JTextField txtIdSala = new JTextField();
+//mudança Julia: combo box de salas
+        java.util.List<Sala> salas = service.listarSalas();
+        JComboBox<Sala> comboSala = new JComboBox<>();
+
+        for(Sala s : salas){
+            comboSala.addItem(s);   //preenche a lista 
+        }
+
     //mudança Julia: pra não ficar apagando os parâmetros de data e hora
     MaskFormatter formatoDataHora = null;
     JFormattedTextField txtDataInicio;
@@ -514,11 +519,10 @@ public class ReservaGUI extends JFrame {
 
     //--------------------------------------------------------
 
-
         panel.add(new JLabel("ID Responsável:"));
         panel.add(txtIdPessoa);
-        panel.add(new JLabel("ID Sala:"));
-        panel.add(txtIdSala);
+        panel.add(new JLabel("Sala:"));
+        panel.add(comboSala);   //mudança pro combo box
 
         panel.add(new JLabel("Início:"));
         panel.add(txtDataInicio);
@@ -529,10 +533,20 @@ public class ReservaGUI extends JFrame {
 
         if(result == JOptionPane.OK_OPTION){
             try{
+
                 int idPessoa = Integer.parseInt(txtIdPessoa.getText());
-                int idSala = Integer.parseInt(txtIdSala.getText());
+
+                Sala salaSelecionada = (Sala) comboSala.getSelectedItem();
+                if(salaSelecionada == null){
+                    JOptionPane.showMessageDialog(this, "Selecione uma sala");
+                    return;
+                }
+                int idSala = salaSelecionada.getId();
+
                 LocalDateTime inicio = LocalDateTime.parse(txtDataInicio.getText(), formatter);
                 LocalDateTime fim = LocalDateTime.parse(txtDataFim.getText(), formatter);
+
+
                 boolean sucesso = service.realizarReserva(idPessoa, idSala, inicio, fim);
                 if (sucesso){
                     JOptionPane.showMessageDialog(this, "Reserva realizada!");
