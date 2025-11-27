@@ -219,10 +219,12 @@ public class ReservaGUI extends JFrame {
         botoesPanel.add(btnExcluir);
         botoesPanel.add(btnVoltar);
 
-        String[] colunas = {"ID Reserva", "Responsável", "Sala", "Horário"};
+        String[] colunas = {"ID Reserva", "Responsável"};//, "Sala", "Horário"};
+
         tableModelReservas = new DefaultTableModel(colunas, 0) {
             @Override public boolean isCellEditable(int row, int column) { return false; }
         };
+
         tabelaReservas = new JTable(tableModelReservas);
         painel.add(botoesPanel, BorderLayout.NORTH);
         painel.add(new JScrollPane(tabelaReservas), BorderLayout.CENTER);
@@ -300,7 +302,10 @@ public class ReservaGUI extends JFrame {
                 Pessoa pessoa = service.buscarPessoaPorId(id);
                 if (pessoa != null) {
                     tableModel.setRowCount(0);
-                    tableModel.addRow(new Object[]{pessoa.getId(), pessoa.getNome()});
+                    tableModel.addRow(
+                        new Object[]{
+                            pessoa.getId(), pessoa.getNome()
+                        });
                 } else {
                     JOptionPane.showMessageDialog(this, "Pessoa não encontrada.");
                     listarTodasPessoas();
@@ -494,10 +499,13 @@ public class ReservaGUI extends JFrame {
     private void executarAcaoNovaReserva(){
         List<ItemReserva> reservasTemp = new ArrayList<>(); //(Julia) múltiplas salas em uma reserva
 
-        JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
+        JPanel panel = new JPanel(new BorderLayout(10, 10));  //painel principal com dois subpaineis: Form e Tabela 
+        JPanel panelForm = new JPanel(new GridLayout(0, 2, 5, 5)); //divide a janela em duas colunas, cada linha com a mesma altura
+        JPanel panelTabela = new JPanel(new BorderLayout());   //tem um sub painel
+
         JTextField txtIdPessoa = new JTextField();
 
-//(Julia) combo box de salas
+        //(Julia) combo box de salas
         java.util.List<Sala> salas = service.listarSalas();
         JComboBox<Sala> comboSala = new JComboBox<>();
 
@@ -505,55 +513,37 @@ public class ReservaGUI extends JFrame {
             comboSala.addItem(s);   //preenche a lista 
         }
 
-    //(Julia) pra não ficar apagando os parâmetros de data e hora
-    MaskFormatter formatoDataHora = null;
-    JFormattedTextField txtDataInicio;
-    JFormattedTextField txtDataFim;
+        //(Julia) pra não ficar apagando os parâmetros de data e hora
+        MaskFormatter formatoDataHora = null;
+        JFormattedTextField txtDataInicio;
+        JFormattedTextField txtDataFim;
 
-    try{
-        formatoDataHora = new MaskFormatter("##/##/#### ##:##");
-        formatoDataHora.setPlaceholderCharacter('_');
-    }catch(ParseException e){
-        e.printStackTrace();
-    }
+        try{
+            formatoDataHora = new MaskFormatter("##/##/#### ##:##");
+            formatoDataHora.setPlaceholderCharacter('_');
+        }catch(ParseException e){
+            e.printStackTrace();
+        }
 
-    txtDataInicio = new JFormattedTextField(formatoDataHora);
-    txtDataFim = new JFormattedTextField(formatoDataHora);
+        txtDataInicio = new JFormattedTextField(formatoDataHora);
+        txtDataFim = new JFormattedTextField(formatoDataHora);
 
-    //--------------------------------------------------------
-    JButton btnAdicionar = new JButton("Adicionar sala");   
-    String[] colunas = {"Sala", "Início", "Fim"};   //define o nome das colunas da tabela
-    DefaultTableModel modeloTemp = new DefaultTableModel(colunas, 0);   //inicialmente nenhuma linha
-    JTable tabelaTemp = new JTable(modeloTemp); //tabela "dinamica"
-    JScrollPane scrollTemp = new JScrollPane(tabelaTemp); //add barra de rolagem caso a tabela fique muito grande
+        //--------------------------------------------------------
+        JButton btnAdicionar = new JButton("Adicionar sala");   
 
+        String[] colunas = {"Sala", "Início", "Fim"};   //define o nome das colunas da tabela
+        DefaultTableModel modeloTemp = new DefaultTableModel(colunas, 0);   //inicialmente nenhuma linha
+        JTable tabelaTemp = new JTable(modeloTemp); //tabela "dinamica"
+        tabelaTemp.setRowHeight(22);
 
-
-        panel.add(new JLabel("ID Responsável:"));
-        panel.add(txtIdPessoa);
-        panel.add(new JLabel("Sala:"));
-        panel.add(comboSala);   //mudança pro combo box
-
-        panel.add(new JLabel("Início:"));
-        panel.add(txtDataInicio);
-        panel.add(new JLabel("Fim:"));
-        panel.add(txtDataFim);
-
-        panel.add(btnAdicionar);
-        panel.add(new JLabel("Salas adicionadas:"));
-        panel.add(scrollTemp);
-
-
-        int result= JOptionPane.showConfirmDialog(this, panel, "Nova Reserva", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-
-        if(result == JOptionPane.OK_OPTION){
-            try{
-
-                int idPessoa = Integer.parseInt(txtIdPessoa.getText());
-
-
+        //add barra de rolagem caso a tabela fique muito grande
+        JScrollPane scrollTemp = new JScrollPane(tabelaTemp);
+        scrollTemp.setPreferredSize(new Dimension(280, 120));   //ajusta o scroll
+        scrollTemp.setMaximumSize(new Dimension(280, 200));
+        panelTabela.add(scrollTemp, BorderLayout.CENTER);
             //(Julia) add mais de uma sala em uma única reserva
                 btnAdicionar.addActionListener(e->{
+
                     Sala salaSelecionada = (Sala) comboSala.getSelectedItem();
                     if(salaSelecionada == null){
                         JOptionPane.showMessageDialog(this, "Selecione uma sala");
@@ -576,6 +566,12 @@ public class ReservaGUI extends JFrame {
                             inicio.format(formatter),
                             fim.format(formatter)
                         });
+                        int linhas = tabelaTemp.getRowCount();
+                        int altura = Math.min(120 + (linhas * 22), 220);
+
+                        scrollTemp.setPreferredSize(new Dimension(280, altura));
+                        scrollTemp.revalidate();
+
 
                         //reseta os valores pras próximas reservas
                         txtDataInicio.setValue(null);
@@ -584,15 +580,45 @@ public class ReservaGUI extends JFrame {
                         JOptionPane.showMessageDialog(panel, "Formato inválido de data/hora");
                     }
                 });
-                boolean sucessoFinal = true;
-                for(ItemReserva item : reservasTemp){
-                    boolean sucesso = service.realizarReserva(idPessoa, item.getSala().getId(), item.getDataHoraInicio(), item.getDataHoraFim());
+        //ajustei aqui pra ficar no lugar certo da tabela
+        panelForm.add(new JLabel("ID Responsável:"));
+        panelForm.add(txtIdPessoa);
+        panelForm.add(new JLabel("Sala:"));
+        panelForm.add(comboSala);   //mudança pro combo box
 
-                    if(!sucesso){
-                        sucessoFinal = false;
-                    }
-                }
+        panelForm.add(new JLabel("Início:"));
+        panelForm.add(txtDataInicio);
+        panelForm.add(new JLabel("Fim:"));
+        panelForm.add(txtDataFim);
 
+        panelForm.add(btnAdicionar);
+        panelForm.add(scrollTemp);
+
+        panel.add(panelForm, BorderLayout.WEST);
+        panel.add(panelTabela, BorderLayout.CENTER);
+
+
+        int result= JOptionPane.showConfirmDialog(this, panel, "Nova Reserva", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        
+
+        if(result == JOptionPane.OK_OPTION){
+            try{
+                int idPessoa = Integer.parseInt(txtIdPessoa.getText());
+
+            Reserva novaReserva = service.criarReserva(idPessoa);//cria reeserva principal
+
+            boolean sucessoFinal = true;
+            for(ItemReserva item : reservasTemp){   //(Julia) testando aqui
+            boolean ok = service.adicionarItemNaReserva(
+                novaReserva.getId(),
+                item.getSala().getId(),
+                item.getDataHoraInicio(),
+                item.getDataHoraFim()
+            );
+            if(!ok) sucessoFinal = false;
+        }
+            
                     if (sucessoFinal){
                         JOptionPane.showMessageDialog(this, "Reserva realizada!");
                         listarTodasReservas();

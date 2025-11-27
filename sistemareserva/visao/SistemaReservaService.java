@@ -133,6 +133,40 @@ public class SistemaReservaService {
         return true;
     }
 
+    public Reserva criarReserva(int idPessoa) {     //(Julia) pra conseguir colocar mais de uma sala na mesma reserva
+        Pessoa p = banco.buscarPessoa(idPessoa);
+        if (p == null) return null;
+
+        Reserva reserva = new Reserva();
+        reserva.setResponsavel(p);
+
+        banco.salvarReserva(reserva);
+        return reserva;
+    }
+
+    public boolean adicionarItemNaReserva(int idReserva, int idSala, LocalDateTime inicio, LocalDateTime fim) {
+        Reserva reserva = banco.buscarReserva(idReserva);
+        Sala sala = banco.buscarSala(idSala);
+
+        if (reserva == null || sala == null) return false;
+
+        for (Reserva r : banco.getReservas2()) { //verifica conflito
+            for (ItemReserva item : r.getItensDaReserva()) {
+                if (item.getSala().getId() == idSala) {
+                    if (!(fim.isBefore(item.getDataHoraInicio()) || inicio.isAfter(item.getDataHoraFim()))) {
+                        return false; // conflito
+                    }
+                }
+            }
+        }
+
+        ItemReserva novoItem = new ItemReserva(sala, inicio, fim);
+        reserva.adicionarItem(novoItem);
+        return true;
+    }
+
+
+
     public boolean cancelarReserva(int id) {
         Reserva reserva = banco.getReservas().buscaId(id);
         if (reserva == null) return false;

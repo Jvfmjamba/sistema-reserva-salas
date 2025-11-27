@@ -8,6 +8,23 @@ public class BancoDeDados {
     static Persistente<Sala> salas = new Persistente<>();
     Persistente<Reserva> reservas = new Persistente<>();
 
+    //(Julia) mais de uma sala na mesma reserva
+
+    public void salvarReserva(Reserva reserva) {    
+        reservas.inserir(reserva);  //talvez esse inserir de problema, mas n da pra usar add pq não é uma lista
+    }
+
+    public Reserva buscarReserva(int id) {
+        for (Reserva r : reservas.listarTodos()) {
+            if (r.getId() == id) return r;
+        }
+        return null;
+    }
+
+     public List<Reserva> getReservas2() {    //novo get reservas
+        return reservas.listarTodos();
+    } 
+//-------------------------------------------------------------------------
     //adicionando getters e setters para pessoa, sala e reserva
     public static Persistente<Pessoa> getPessoas() {
         return pessoas;
@@ -17,9 +34,7 @@ public class BancoDeDados {
         this.pessoas = pessoas;
     }
 
-    public Persistente<Reserva> getReservas() {
-        return reservas;
-    }
+    public Persistente<Reserva> getReservas() {return reservas;}
 
     public void setReservas(Persistente<Reserva> reservas) {
         this.reservas = reservas;
@@ -32,6 +47,7 @@ public class BancoDeDados {
     public void setSalas(Persistente<Sala> salas) {
         this.salas = salas;
     }
+
 
     // ... (carregarDadosIniciais, exibirMenuPrincipal e cadastrarPessoa continuam iguais) ...
     public static void carregarDadosIniciais() {
@@ -49,4 +65,19 @@ public class BancoDeDados {
         getSalas().inserir(new Sala("ARQUIT", 40, true, true, false, true));
 
     }
+
+    public Pessoa buscarPessoa(int id) {
+        for (Pessoa p : pessoas.listarTodos()) {
+            if (p.getId() == id) return p;
+        }
+        return null;
+    }
+
+    public Sala buscarSala(int id) {
+        for (Sala s : salas.listarTodos()) {
+            if (s.getId() == id) return s;
+        }
+        return null;
+    }
+
 }

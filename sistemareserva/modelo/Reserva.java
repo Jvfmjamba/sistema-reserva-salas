@@ -33,26 +33,6 @@ public class Reserva extends Entidade{
         this.responsavel = responsavel;
     }
 
-    /*
-    
-    public LocalDateTime getDataHoraInicio() {
-        return dataHoraInicio;
-    }
-
-    public void setDataHoraInicio(LocalDateTime dataHoraInicio) {
-        this.dataHoraInicio = dataHoraInicio;
-    }
-
-    public LocalDateTime getDataHoraFim() {
-        return dataHoraFim;
-    }
-
-    public void setDataHoraFim(LocalDateTime dataHoraFim) {
-        this.dataHoraFim = dataHoraFim;
-    }
-
-    */
-
     public List<ItemReserva> getItensDaReserva() {
         return itensDaReserva;
     }
