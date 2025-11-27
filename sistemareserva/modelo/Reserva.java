@@ -23,8 +23,6 @@ public class Reserva extends Entidade{
         this.itensDaReserva =new ArrayList<>();
     }
 
-    //alexandre atualizei os construtores
-
     public Pessoa getResponsavel() {
         return responsavel;
     }
@@ -46,8 +44,6 @@ public class Reserva extends Entidade{
         this.itensDaReserva.remove(item);
     }
 
-    //alexandre adicionei o toString que tava faltando
-
     @Override
     public String toString(){
         StringBuilder builder = new StringBuilder();
@@ -60,10 +56,5 @@ public class Reserva extends Entidade{
         }
         return builder.toString();
     }
-
-    // pedi o gemini pra fazer esse toString ai pq nao sabia nao, mas agr parece q ta funcioando
-
-    //alexandre adicionei o toString que tava faltando
-
 
 }
