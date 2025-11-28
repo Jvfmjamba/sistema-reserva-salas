@@ -13,22 +13,45 @@ public class Persistente<T extends Entidade> {
         this.lista = new ArrayList<>();
     }
 
+    //alexandre alterando funcoes existentes e criando novas para retornar boolena, e funcionar os testes de unidade
+
+    /*
     public void inserir(T novoObjeto) {
         novoObjeto.setId(proxId++);
         this.lista.add(novoObjeto);
+    }*/
+
+    public boolean inserir(T novoObjeto) {
+        // verifica se o objeto tem um id
+        if (novoObjeto.getId() != 0) {
+            // se sim, verifica se ele existe na lista
+            for (T obj : lista) {
+                if (obj.getId() == novoObjeto.getId()) {
+                    return false; //se o id ja existir, nao insere, caso do id duplicado
+                }
+            }
+            // se ele existe mas nao esta na lista, adicionamos o id dele
+            this.lista.add(novoObjeto);
+            return true;
+        }
+        // caso em que nao tem id, ai geramos um novo
+        novoObjeto.setId(proxId++);
+        this.lista.add(novoObjeto);
+        return true;
     }
 
     public boolean excluir(int id) {
         return lista.removeIf(objeto-> objeto.getId() ==id);
     }
 
-    public T buscaId(int id) {
+    public T buscaId(int id) throws IdInexistenteException{
         for(T objeto : lista) {
             if(objeto.getId() == id) {
                 return objeto;
             }
         }
-        return null;
+        //alexandre aqui lançando a excessao, caso ele percorra tudo e nao ache:
+        throw new IdInexistenteException("Entidade com ID " + id + " não encontrada.");
     }
 
     public List<T> listarTodos() {
@@ -40,7 +63,7 @@ public class Persistente<T extends Entidade> {
     @Override
     public String toString(){
         if(lista.isEmpty()){
-            return "nenhum item cadastrado";
+            return "Nenhum item cadastrado";
         }
         StringBuilder builder =new StringBuilder();
         for(T item : lista){
