@@ -2,5 +2,8 @@
     // esse comando sobrescreve o global, mas so nesse programa
     "code-runner.executorMap": {
         "java": "cd $workspaceRoot && javac -encoding UTF-8 -d out sistemareserva/modelo/*.java sistemareserva/persistencia/*.java sistemareserva/visao/*.java && [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; java -cp out sistemareserva.visao.ReservaGUI"
-    }
+    },
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar"
+    ]
 }

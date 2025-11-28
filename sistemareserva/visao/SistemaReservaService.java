@@ -33,8 +33,8 @@ public class SistemaReservaService {
             return false;
         }
         Pessoa pessoa = new Pessoa(nome.trim());
-        banco.getPessoas().inserir(pessoa);
-        return true; // Sucesso
+        //alexandre: agr retorna o resultado do inserir, com boolena true ou false
+        return banco.getPessoas().inserir(pessoa);
     }
 
     public List<Pessoa> listarPessoas() {
@@ -47,16 +47,26 @@ public class SistemaReservaService {
         return banco.getPessoas().excluir(id);
     }
     public Pessoa buscarPessoaPorId(int id) {
-        return banco.getPessoas().buscaId(id);
+        try{
+            // agr trata a excecao
+            return banco.getPessoas().buscaId(id);
+        }catch(IdInexistenteException e){
+            return null;
+        }
     }
 
-    public boolean alterarPessoa(int id, String novoNome) {
-        Pessoa pessoa = banco.getPessoas().buscaId(id);
-        if (pessoa == null || novoNome == null || novoNome.trim().isEmpty()) {
+    //aletrando de acordo com o novo persisnte 
+    public boolean alterarPessoa(int id, String novoNome){
+        try{
+            Pessoa pessoa = banco.getPessoas().buscaId(id);
+            if(pessoa == null || novoNome == null || novoNome.trim().isEmpty()){
+                return false;
+            }
+            pessoa.setNome(novoNome.trim());
+            return banco.getPessoas().alterar(pessoa);
+        }catch(IdInexistenteException e){
             return false;
         }
-        pessoa.setNome(novoNome.trim());
-        return banco.getPessoas().alterar(pessoa);
     }
 
     //adicionar aqui os metods de reserva e sala
@@ -75,8 +85,8 @@ public class SistemaReservaService {
             return false;
         }
         Sala novaSala = new Sala(predio, capacidade, quadro, projetor, pc, ar);
-        banco.getSalas().inserir(novaSala);
-        return true;
+        // alexandre mudança do return
+        return banco.getSalas().inserir(novaSala);
     }
 
     public boolean excluirSala(int id) {
@@ -86,24 +96,33 @@ public class SistemaReservaService {
 
     // metodos novos adiocnados para funcionar a busca de sala, alterar e cancelar sala, alterar e cancelar reserva
 
+    //alexandre mudanaça agr trata excecao
     public Sala buscaSalaPorId(int id) {
-        return banco.getSalas().buscaId(id);
+        try{
+            return banco.getSalas().buscaId(id);
+        }catch (IdInexistenteException e){
+            return null;
+        }
     }
 
     public boolean alterarSala(int id, String predio, int capacidade, boolean quadro, boolean projetor, boolean pc, boolean ar) {
-        Sala sala = banco.getSalas().buscaId(id);
-        if (sala == null) return false;
-        
-        sala.setPredio(predio);
-        sala.setCapacidade(capacidade);
-        // atualiza os recursos
-        sala.quadro = quadro;
-        sala.projetor = projetor;
-        sala.computador = pc;
-        sala.arCondicionado = ar;
-        
-        return banco.getSalas().alterar(sala);
+        try {
+            Sala sala = banco.getSalas().buscaId(id);
+            // atualiza os recrusos
+            sala.setPredio(predio);
+            sala.setCapacidade(capacidade);
+            sala.quadro = quadro;
+            sala.projetor = projetor;
+            sala.computador = pc;
+            sala.arCondicionado = ar;
+            
+            return banco.getSalas().alterar(sala);
+        }catch(IdInexistenteException e){
+            return false;
+        }
     }
+
+    //reservaaaaaaasssssssssss
 
     public List<Reserva> listarReservas() {
         // alexandre metodo  para a tabela de reservas
@@ -111,26 +130,32 @@ public class SistemaReservaService {
     }
 
     public Reserva buscaReservaPorId(int id) {
-        return banco.getReservas().buscaId(id);
+        try{
+            return banco.getReservas().buscaId(id);
+        }catch (IdInexistenteException e) {
+            return null;
+        }
     }
 
-    public boolean realizarReserva(int idPessoa, int idSala, LocalDateTime inicio, LocalDateTime fim) {
-        // alexansre busca a pessoa
-        Pessoa responsavel = banco.getPessoas().buscaId(idPessoa);
-        if(responsavel == null) return false;
-        // busca a sala
-        Sala sala = banco.getSalas().buscaId(idSala);
-        if (sala == null) return false;
-        // verifica se o iniciio ta antes o fim, se nao crasha
-        if (inicio.isAfter(fim) || inicio.isEqual(fim)) return false;
-        Reserva novaReserva = new Reserva(responsavel);
-        ItemReserva item = new ItemReserva(sala, inicio, fim);
-        novaReserva.adicionarItem(item);
-        // salvando no banco de dados
-        banco.getReservas().inserir(novaReserva);
-        responsavel.adicionarReserva(novaReserva);
 
-        return true;
+    //nova funcao de realizar reserva agr tratando excecao
+    public boolean realizarReserva(int idPessoa, int idSala, LocalDateTime inicio, LocalDateTime fim) {
+        try{
+            Pessoa responsavel = banco.getPessoas().buscaId(idPessoa);
+            Sala sala = banco.getSalas().buscaId(idSala);
+            if (inicio.isAfter(fim) || inicio.isEqual(fim)) return false;
+            Reserva novaReserva = new Reserva(responsavel);
+            ItemReserva item = new ItemReserva(sala, inicio, fim);
+            novaReserva.adicionarItem(item);
+            boolean inseriu = banco.getReservas().inserir(novaReserva);
+            if (inseriu) {
+                responsavel.adicionarReserva(novaReserva);
+                return true;
+            }
+            return false;
+        } catch (IdInexistenteException e) {
+            return false;
+        }
     }
 
     public Reserva criarReserva(int idPessoa) {     //(Julia) pra conseguir colocar mais de uma sala na mesma reserva
@@ -166,42 +191,47 @@ public class SistemaReservaService {
     }
 
 
-
-    public boolean cancelarReserva(int id) {
-        Reserva reserva = banco.getReservas().buscaId(id);
-        if (reserva == null) return false;
-        
-        if (reserva.getResponsavel() != null) {
-            reserva.getResponsavel().removerReserva(reserva);
+    //nova funcao de cancelar reserva tratando excecao
+    public boolean cancelarReserva(int id){
+        try{
+            Reserva reserva = banco.getReservas().buscaId(id);
+            if (reserva.getResponsavel() != null) {
+                reserva.getResponsavel().removerReserva(reserva);
+            }
+            return banco.getReservas().excluir(id);
+        }catch (IdInexistenteException e){
+            return false;
         }
-        
-        return banco.getReservas().excluir(id);
     }
 
+    //alexandre alterando a funcao de alterar reserva agr tratando excecao
     public boolean alterarReserva(int idReserva, int idPessoa, int idSala, LocalDateTime inicio, LocalDateTime fim) {
-        Reserva reserva = banco.getReservas().buscaId(idReserva);
-        if (reserva == null) return false;
+        try {
+            Reserva reserva = banco.getReservas().buscaId(idReserva);
+            Pessoa novaPessoa = banco.getPessoas().buscaId(idPessoa);
+            Sala novaSala = banco.getSalas().buscaId(idSala);
 
-        Pessoa novaPessoa = banco.getPessoas().buscaId(idPessoa);
-        Sala novaSala = banco.getSalas().buscaId(idSala);
+            if (inicio.isAfter(fim) || inicio.isEqual(fim)) return false;
 
-        if (novaPessoa == null || novaSala == null) return false;
-        if (inicio.isAfter(fim) || inicio.isEqual(fim)) return false;
+            // Se mudou o responsável
+            if (reserva.getResponsavel().getId() != idPessoa) {
+                reserva.getResponsavel().removerReserva(reserva);
+                reserva.setResponsavel(novaPessoa);
+                novaPessoa.adicionarReserva(reserva);
+            }
 
-        if (reserva.getResponsavel().getId() != idPessoa) {
-            reserva.getResponsavel().removerReserva(reserva); // remove do antigo
-            reserva.setResponsavel(novaPessoa);
-            novaPessoa.adicionarReserva(reserva); // adiciona no novo
+            if (!reserva.getItensDaReserva().isEmpty()) {
+                ItemReserva itemAntigo = reserva.getItensDaReserva().get(0);
+                reserva.removerItem(itemAntigo);
+            }
+            
+            ItemReserva novoItem = new ItemReserva(novaSala, inicio, fim);
+            reserva.adicionarItem(novoItem);
+
+            return banco.getReservas().alterar(reserva);
+
+        } catch (IdInexistenteException e) {
+            return false; // Algum ID não foi encontrado
         }
-
-        if (!reserva.getItensDaReserva().isEmpty()) {
-            ItemReserva itemAntigo = reserva.getItensDaReserva().get(0);
-            reserva.removerItem(itemAntigo);
-        }
-        
-        ItemReserva novoItem = new ItemReserva(novaSala, inicio, fim);
-        reserva.adicionarItem(novoItem);
-
-        return banco.getReservas().alterar(reserva);
     }
 }
