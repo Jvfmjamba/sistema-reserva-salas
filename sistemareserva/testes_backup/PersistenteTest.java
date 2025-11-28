@@ -1,4 +1,4 @@
-package sistemareserva.persistencia;
+package sistemareserva.testes_backup;
 
 //alexandre criacao da classe de teste do jnuit
 import static org.junit.Assert.assertEquals;
@@ -9,6 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import sistemareserva.modelo.Pessoa;
+import sistemareserva.persistencia.IdInexistenteException;
+import sistemareserva.persistencia.Persistente;
 
 public class PersistenteTest {
 
