@@ -165,6 +165,11 @@ public class ReservaGUI extends JFrame {
         JButton btnExcluir = new JButton("Excluir Sala");
         JButton btnListar = new JButton("Atualizar Lista");
         JButton btnVoltar = new JButton("Voltar");
+        //alexandre novo botao de buscar por id: 
+        JButton btnBuscar = new JButton("Buscar ID");
+        btnBuscar.addActionListener(e -> executarAcaoBuscarSala());
+
+        botoesPanel.add(btnBuscar);
 
         btnCadastrar.addActionListener(e -> executarAcaoCadastrarSala());
         btnAlterar.addActionListener(e -> executarAcaoAlterarSala()); 
@@ -207,6 +212,10 @@ public class ReservaGUI extends JFrame {
         JButton btnExcluir = new JButton("Cancelar Reserva"); 
         JButton btnInfos = new JButton("Infos Reserva");    //botao extra
         JButton btnVoltar = new JButton("Voltar");
+        //alexandre criando o botao de buscar por id:
+        JButton btnBuscar = new JButton("Buscar ID");
+        btnBuscar.addActionListener(e -> executarAcaoBuscarReserva());
+        botoesPanel.add(btnBuscar);
 
         btnNovaReserva.addActionListener(e -> executarAcaoNovaReserva());
         btnAlterar.addActionListener(e -> executarAcaoAlterarReserva()); 
@@ -513,6 +522,30 @@ public class ReservaGUI extends JFrame {
         }
     }
 
+    //alexandre, novo metodo de executar a acao de buscar a sala por id:
+        private void executarAcaoBuscarSala(){
+        String idString = JOptionPane.showInputDialog(this, "ID da Sala para BUSCAR:");
+        if (idString != null){
+            try{
+                int id = Integer.parseInt(idString);
+                Sala sala = service.buscaSalaPorId(id);
+                if (sala != null){
+                    tableModelSalas.setRowCount(0);
+                    tableModelSalas.addRow(new Object[]{
+                        sala.getId(), 
+                        sala.getPredio(), 
+                        sala.getCapacidade()
+                    });
+                } else {
+                    JOptionPane.showMessageDialog(this, "Sala não encontrada.");
+                    listarTodasSalas();
+                }
+            }catch(NumberFormatException e){
+                JOptionPane.showMessageDialog(this, "ID inválido.");
+            }
+        }
+    }
+
     //alexandre metodos da logica para as funcoes da reserva
     private void listarTodasReservas(){
         tableModelReservas.setRowCount(0);
@@ -769,6 +802,39 @@ public class ReservaGUI extends JFrame {
                     }
                 }
             } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "ID inválido.");
+            }
+        }
+    }
+
+    //alexandre adicionando o metodo de executar a cao de buscar por id as reservas:
+
+    private void executarAcaoBuscarReserva(){
+        String idString = JOptionPane.showInputDialog(this, "ID da Reserva para BUSCAR:");
+        if(idString != null){
+            try{
+                int id = Integer.parseInt(idString);
+                Reserva r = service.buscaReservaPorId(id);
+                if(r != null){
+                    tableModelReservas.setRowCount(0);
+                    String infoSala = "Sem Sala";
+                    String infoData = "-";
+                    if (!r.getItensDaReserva().isEmpty()) {
+                        ItemReserva item = r.getItensDaReserva().get(0);
+                        infoSala = "Sala " + item.getSala().getId();
+                        infoData = item.getDataHoraInicio().format(formatter); 
+                    }
+                    tableModelReservas.addRow(new Object[]{
+                        r.getId(),
+                        (r.getResponsavel() != null ? r.getResponsavel().getNome() : "?"),
+                        infoSala,
+                        infoData
+                    });
+                }else{
+                    JOptionPane.showMessageDialog(this, "Reserva não encontrada.");
+                    listarTodasReservas();
+                }
+            }catch(NumberFormatException e){
                 JOptionPane.showMessageDialog(this, "ID inválido.");
             }
         }
