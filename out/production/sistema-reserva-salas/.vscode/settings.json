@@ -1,7 +1,20 @@
+
+//{
+    // esse comando sobrescreve o global, mas so nesse programa
+//    "code-runner.executorMap": {
+//        "java": "cd $workspaceRoot && javac -encoding UTF-8 -d out sistemareserva/modelo/*.java sistemareserva/persistencia/*.java sistemareserva/visao/*.java && [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; java -cp out sistemareserva.visao.ReservaGUI"
+//    },
+//    "java.project.referencedLibraries": [
+//        "lib/**/*.jar"
+//    ]
+//}
+
+
+
 {
-    // Este comando SOBRESCREVE o global, mas SÓ para este projeto.
-    // É o comando "mágico" para o sistema de reservas,
+    "java.jdt.ls.java.home": "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.1.8-hotspot",
+
     "code-runner.executorMap": {
-        "java": "cd $workspaceRoot && javac -encoding UTF-8 -d out sistemareserva/modelo/*.java sistemareserva/persistencia/*.java sistemareserva/visao/Programa.java && [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; java -cp out sistemareserva.visao.Programa"
+        "java": "cd $workspaceRoot && javac -encoding UTF-8 -d out sistemareserva/modelo/*.java sistemareserva/persistencia/*.java sistemareserva/visao/*.java && [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; java -cp out sistemareserva.visao.ReservaGUI"
     }
 }
