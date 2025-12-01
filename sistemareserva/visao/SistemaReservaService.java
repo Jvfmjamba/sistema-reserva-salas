@@ -11,21 +11,7 @@ public class SistemaReservaService {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     public SistemaReservaService() {
-        carregarDadosIniciais();
-    }
-
-    private void carregarDadosIniciais() {
-        banco.getPessoas().inserir(new Pessoa("Professor Girafales"));
-        banco.getPessoas().inserir(new Pessoa("Dona Florinda"));
-        banco.getPessoas().inserir(new Pessoa("Seu Madruga"));
-        banco.getPessoas().inserir(new Pessoa("Professor Matheus"));
-
-        banco.getSalas().inserir(new Sala("CCOMP", 50, true, true, false, true));
-        banco.getSalas().inserir(new Sala("CCOMP", 30, true, false, false, true));
-        banco.getSalas().inserir(new Sala("CCOMP", 100, true, true, true, true));
-        banco.getSalas().inserir(new Sala("CCOMP", 10, true, false, false, false));
-        banco.getSalas().inserir(new Sala("ZOOTEC", 25, false, false, false, false));
-        banco.getSalas().inserir(new Sala("ARQUIT", 40, true, true, false, true));
+        banco.carregarDadosIniciais();
     }
 
     public boolean cadastrarPessoa(String nome) {

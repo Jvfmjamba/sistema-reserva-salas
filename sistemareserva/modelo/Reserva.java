@@ -1,10 +1,11 @@
 package sistemareserva.modelo;
+import java.io.Serializable;
 import java.time.*;
 import java.util.List;
 import java.util.ArrayList;
 //armazena as infos das reservas
 
-public class Reserva extends Entidade{
+public class Reserva extends Entidade implements Serializable {
     private Pessoa responsavel;
     //private LocalDateTime dataHoraInicio;
     //private LocalDateTime dataHoraFim;

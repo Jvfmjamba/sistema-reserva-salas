@@ -1,17 +1,18 @@
 package sistemareserva.persistencia;
-import java.util.*;
+
 import sistemareserva.modelo.*;
-import sistemareserva.visao.*;
+import java.util.*;
 
 public class BancoDeDados {
-    static Persistente<Pessoa> pessoas = new Persistente<>();
-    static Persistente<Sala> salas = new Persistente<>();
-    Persistente<Reserva> reservas = new Persistente<>();
 
-    //(Julia) mais de uma sala na mesma reserva
+    static Persistente<Pessoa> pessoas = new Persistente<>("persistencia/pessoas.db");
+    static Persistente<Sala> salas = new Persistente<>("persistencia/salas.db");
+    Persistente<Reserva> reservas = new Persistente<>("persistencia/reservas.db");
 
-    public void salvarReserva(Reserva reserva) {    
-        reservas.inserir(reserva);  //talvez esse inserir de problema, mas n da pra usar add pq não é uma lista
+    public BancoDeDados() {}
+
+    public void salvarReserva(Reserva reserva) {
+        reservas.inserir(reserva); // Persistente já salva automaticamente
     }
 
     public Reserva buscarReserva(int id) {
@@ -21,49 +22,39 @@ public class BancoDeDados {
         return null;
     }
 
-     public List<Reserva> getReservas2() {    //novo get reservas
+    public List<Reserva> getReservas2() {
         return reservas.listarTodos();
-    } 
-//-------------------------------------------------------------------------
-    //adicionando getters e setters para pessoa, sala e reserva
+    }
+
     public static Persistente<Pessoa> getPessoas() {
         return pessoas;
     }
 
-    public void setPessoas(Persistente<Pessoa> pessoas) {
-        this.pessoas = pessoas;
-    }
-
-    public Persistente<Reserva> getReservas() {return reservas;}
-
-    public void setReservas(Persistente<Reserva> reservas) {
-        this.reservas = reservas;
+    public Persistente<Reserva> getReservas() {
+        return reservas;
     }
 
     public static Persistente<Sala> getSalas() {
         return salas;
     }
 
-    public void setSalas(Persistente<Sala> salas) {
-        this.salas = salas;
-    }
-
-
-    // ... (carregarDadosIniciais, exibirMenuPrincipal e cadastrarPessoa continuam iguais) ...
     public static void carregarDadosIniciais() {
-        System.out.println("Inicializando sistema e carregando dados...");
-        getPessoas().inserir(new Pessoa("Professor Girafales"));
-        getPessoas().inserir(new Pessoa("Dona Florinda"));
-        getPessoas().inserir(new Pessoa("Seu Madruga"));
-        getPessoas().inserir(new Pessoa("Professor Matheus"));
 
-        getSalas().inserir(new Sala("CCOMP", 50, true, true, false, true));
-        getSalas().inserir(new Sala("CCOMP", 30, true, false, false, true));
-        getSalas().inserir(new Sala("CCOMP", 100, true, true, true, true));
-        getSalas().inserir(new Sala("CCOMP", 10, true, false, false, false));
-        getSalas().inserir(new Sala("ZOOTEC", 25, false, false, false, false));
-        getSalas().inserir(new Sala("ARQUIT", 40, true, true, false, true));
+        if (getPessoas().listarTodos().isEmpty()) {
+            getPessoas().inserir(new Pessoa("Professor Girafales"));
+            getPessoas().inserir(new Pessoa("Dona Florinda"));
+            getPessoas().inserir(new Pessoa("Seu Madruga"));
+            getPessoas().inserir(new Pessoa("Professor Matheus"));
+        }
 
+        if (getSalas().listarTodos().isEmpty()) {
+            getSalas().inserir(new Sala("CCOMP", 50, true, true, false, true));
+            getSalas().inserir(new Sala("CCOMP", 30, true, false, false, true));
+            getSalas().inserir(new Sala("CCOMP", 100, true, true, true, true));
+            getSalas().inserir(new Sala("CCOMP", 10, true, false, false, false));
+            getSalas().inserir(new Sala("ZOOTEC", 25, false, false, false, false));
+            getSalas().inserir(new Sala("ARQUIT", 40, true, true, false, true));
+        }
     }
 
     public Pessoa buscarPessoa(int id) {
@@ -79,5 +70,4 @@ public class BancoDeDados {
         }
         return null;
     }
-
 }

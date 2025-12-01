@@ -1,9 +1,10 @@
 package sistemareserva.modelo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Pessoa extends Entidade {
+public class Pessoa extends Entidade implements Serializable {
     //Entidade matricula = new Entidade();
     protected String nome;
 
