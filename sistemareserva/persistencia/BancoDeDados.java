@@ -57,12 +57,12 @@ public class BancoDeDados {
         getPessoas().inserir(new Pessoa("Seu Madruga"));
         getPessoas().inserir(new Pessoa("Professor Matheus"));
 
-        getSalas().inserir(new Sala("CCOMP", 50, true, true, false, true));
-        getSalas().inserir(new Sala("CCOMP", 30, true, false, false, true));
-        getSalas().inserir(new Sala("CCOMP", 100, true, true, true, true));
-        getSalas().inserir(new Sala("CCOMP", 10, true, false, false, false));
-        getSalas().inserir(new Sala("ZOOTEC", 25, false, false, false, false));
-        getSalas().inserir(new Sala("ARQUIT", 40, true, true, false, true));
+        getSalas().inserir(new Sala("CCOMP", 50));
+        getSalas().inserir(new Sala("CCOMP", 30));
+        getSalas().inserir(new Sala("CCOMP", 100));
+        getSalas().inserir(new Sala("CCOMP", 10));
+        getSalas().inserir(new Sala("ZOOTEC", 25));
+        getSalas().inserir(new Sala("ARQUIT", 40));
 
     }
 

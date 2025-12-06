@@ -409,41 +409,36 @@ public class ReservaGUI extends JFrame {
         }
     }
 
-    private void executarAcaoCadastrarSala(){
-        JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
+    private void executarAcaoCadastrarSala() {
+        JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5)); 
         JTextField txtPredio = new JTextField();
         JTextField txtCapacidade = new JTextField();
-        JCheckBox chkQuadro = new JCheckBox("Quadro");
-        JCheckBox chkProjetor = new JCheckBox("Projetor");
-        JCheckBox chkPC = new JCheckBox("Computador");
-        JCheckBox chkAr = new JCheckBox("Ar-Condicionado");
+        
+        
         panel.add(new JLabel("Prédio/Bloco:"));
         panel.add(txtPredio);
         panel.add(new JLabel("Capacidade:"));
         panel.add(txtCapacidade);
-        panel.add(chkQuadro);
-        panel.add(chkProjetor);
-        panel.add(chkPC);
-        panel.add(chkAr);
 
         int result = JOptionPane.showConfirmDialog(this, panel, "Nova Sala", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-        
-        if(result == JOptionPane.OK_OPTION){
-            try{
+
+        if (result == JOptionPane.OK_OPTION) {
+            try {
                 String predio = txtPredio.getText();
                 int capacidade = Integer.parseInt(txtCapacidade.getText());
-                boolean sucesso = service.cadastrarSala(predio, capacidade, chkQuadro.isSelected(), chkProjetor.isSelected(), chkPC.isSelected(), chkAr.isSelected());
-                if(sucesso){
-                    JOptionPane.showMessageDialog(this, "Sala cadastrada!");
+                
+                if (service.cadastrarSala(predio, capacidade)) {
+                    JOptionPane.showMessageDialog(this, "Sala cadastrada com sucesso!");
                     listarTodasSalas();
-                }else{
-                    JOptionPane.showMessageDialog(this, "Erro ao cadastrar sala.");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Erro ao cadastrar Sala.", "Erro", JOptionPane.ERROR_MESSAGE);
                 }
-            }catch(NumberFormatException ex){
-                JOptionPane.showMessageDialog(this, "Capacidade deve ser número.");
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Erro: Capacidade deve ser um número válido.", "Erro de Formato", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
+
     // novo metodo adiocnado para alterar sala, antes nao tinha
     private void executarAcaoAlterarSala() {
         String idString = null;
@@ -464,39 +459,31 @@ public class ReservaGUI extends JFrame {
                     JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
                     JTextField txtPredio = new JTextField(salaAtual.getPredio());
                     JTextField txtCapacidade = new JTextField(String.valueOf(salaAtual.getCapacidade()));
-                    JCheckBox chkQuadro = new JCheckBox("Quadro", salaAtual.temQuadro());
-                    JCheckBox chkProjetor = new JCheckBox("Projetor", salaAtual.temProjetor());
-                    JCheckBox chkPC = new JCheckBox("Computador", salaAtual.temComputador());
-                    JCheckBox chkAr = new JCheckBox("Ar-Condicionado", salaAtual.temArCondicionado());
-
+                    
                     panel.add(new JLabel("Prédio/Bloco:"));
                     panel.add(txtPredio);
                     panel.add(new JLabel("Capacidade:"));
                     panel.add(txtCapacidade);
-                    panel.add(chkQuadro);
-                    panel.add(chkProjetor);
-                    panel.add(chkPC);
-                    panel.add(chkAr);
 
-                    int result = JOptionPane.showConfirmDialog(this, panel, "Alterar Sala ID " + id, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                    int result = JOptionPane.showConfirmDialog(this, panel, "Editar Sala ID " + id, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
                     if(result == JOptionPane.OK_OPTION){
                         String predio = txtPredio.getText();
                         int capacidade = Integer.parseInt(txtCapacidade.getText());
-                        boolean sucesso = service.alterarSala(id, predio, capacidade, chkQuadro.isSelected(), chkProjetor.isSelected(), chkPC.isSelected(), chkAr.isSelected());
                         
+                        boolean sucesso = service.alterarSala(id, predio, capacidade);
                         if(sucesso){
                             JOptionPane.showMessageDialog(this, "Sala alterada com sucesso!");
                             listarTodasSalas();
                         } else {
-                            JOptionPane.showMessageDialog(this, "Erro ao alterar sala.");
+                            JOptionPane.showMessageDialog(this, "Erro ao alterar sala.", "Erro", JOptionPane.ERROR_MESSAGE);
                         }
                     }
                 } else {
-                    JOptionPane.showMessageDialog(this, "Sala não encontrada.");
+                    JOptionPane.showMessageDialog(this, "Sala não encontrada.", "Erro", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "ID ou Capacidade inválidos.");
+                JOptionPane.showMessageDialog(this, "ID ou Capacidade inválidos.", "Erro", JOptionPane.ERROR_MESSAGE);
             }
         }
     }

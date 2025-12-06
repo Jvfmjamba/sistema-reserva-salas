@@ -20,12 +20,12 @@ public class SistemaReservaService {
         banco.getPessoas().inserir(new Pessoa("Seu Madruga"));
         banco.getPessoas().inserir(new Pessoa("Professor Matheus"));
 
-        banco.getSalas().inserir(new Sala("CCOMP", 50, true, true, false, true));
-        banco.getSalas().inserir(new Sala("CCOMP", 30, true, false, false, true));
-        banco.getSalas().inserir(new Sala("CCOMP", 100, true, true, true, true));
-        banco.getSalas().inserir(new Sala("CCOMP", 10, true, false, false, false));
-        banco.getSalas().inserir(new Sala("ZOOTEC", 25, false, false, false, false));
-        banco.getSalas().inserir(new Sala("ARQUIT", 40, true, true, false, true));
+        banco.getSalas().inserir(new Sala("CCOMP", 50));
+        banco.getSalas().inserir(new Sala("CCOMP", 30));
+        banco.getSalas().inserir(new Sala("CCOMP", 100));
+        banco.getSalas().inserir(new Sala("CCOMP", 10));
+        banco.getSalas().inserir(new Sala("ZOOTEC", 25));
+        banco.getSalas().inserir(new Sala("ARQUIT", 40));
     }
 
     public boolean cadastrarPessoa(String nome) {
@@ -79,12 +79,12 @@ public class SistemaReservaService {
         return banco.getSalas().listarTodos();
     }
 
-    public boolean cadastrarSala(String predio, int capacidade, boolean quadro, boolean projetor, boolean pc, boolean ar) {
+    public boolean cadastrarSala(String predio, int capacidade) {
         // alexandre metodo para receber os dados do formulario da GUI e criar a Sala
         if (predio == null || predio.trim().isEmpty() || capacidade <= 0) {
             return false;
         }
-        Sala novaSala = new Sala(predio, capacidade, quadro, projetor, pc, ar);
+        Sala novaSala = new Sala(predio, capacidade);
         // alexandre mudança do return
         return banco.getSalas().inserir(novaSala);
     }
@@ -105,16 +105,16 @@ public class SistemaReservaService {
         }
     }
 
-    public boolean alterarSala(int id, String predio, int capacidade, boolean quadro, boolean projetor, boolean pc, boolean ar) {
+    public boolean alterarSala(int id, String predio, int capacidade) {
         try {
             Sala sala = banco.getSalas().buscaId(id);
             // atualiza os recrusos
             sala.setPredio(predio);
             sala.setCapacidade(capacidade);
-            sala.quadro = quadro;
+            /*sala.quadro = quadro;
             sala.projetor = projetor;
             sala.computador = pc;
-            sala.arCondicionado = ar;
+            sala.arCondicionado = ar;*/
             
             return banco.getSalas().alterar(sala);
         }catch(IdInexistenteException e){
