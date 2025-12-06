@@ -366,6 +366,14 @@ public class ReservaGUI extends JFrame {
     }
 
     private void executarAcaoAlterarPessoa() {
+        //alexandre: protecao pra caso a pessoa selecione mais de um item pra alterar
+        int[] linhas = tabelaPessoas.getSelectedRows();
+
+        if (linhas.length > 1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecione apenas UMA linha para alterar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return; 
+        }
+
         String idString = null;
         int linhaSelecionada = tabelaPessoas.getSelectedRow();
         
@@ -441,6 +449,13 @@ public class ReservaGUI extends JFrame {
 
     // novo metodo adiocnado para alterar sala, antes nao tinha
     private void executarAcaoAlterarSala() {
+        //alexandre: protecao pra caso a pessoa selecione mais de um item pra alterar
+        int[] linhas = tabelaPessoas.getSelectedRows();
+
+        if (linhas.length > 1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecione apenas UMA linha para alterar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return; 
+        }
         String idString = null;
         int linhaSelecionada = tabelaSalas.getSelectedRow();
         
@@ -690,6 +705,13 @@ public class ReservaGUI extends JFrame {
     }
 
     private void executarAcaoAlterarReserva() {
+        //alexandre: protecao pra caso a pessoa selecione mais de um item pra alterar
+        int[] linhas = tabelaPessoas.getSelectedRows();
+
+        if (linhas.length > 1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecione apenas UMA linha para alterar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return; 
+        }
         String idString = JOptionPane.showInputDialog(this, "Digite o ID da Reserva para ALTERAR:");
         
         if (idString != null) {
