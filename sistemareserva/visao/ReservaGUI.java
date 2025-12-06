@@ -595,7 +595,13 @@ public class ReservaGUI extends JFrame {
         JPanel panelForm = new JPanel(new GridLayout(0, 2, 5, 5)); //divide a janela em duas colunas, cada linha com a mesma altura
         JPanel panelTabela = new JPanel(new BorderLayout());   //tem um sub painel
 
-        JTextField txtIdPessoa = new JTextField();
+        //JTextField txtIdPessoa = new JTextField();
+        java.util.List<Pessoa> pessoa = service.listarPessoas();
+        JComboBox<Pessoa> comboPessoa = new JComboBox<>();
+
+        for(Pessoa p : pessoa){
+            comboPessoa.addItem(p);
+        }
 
         //(Julia) combo box de salas
         java.util.List<Sala> salas = service.listarSalas();
@@ -675,8 +681,8 @@ public class ReservaGUI extends JFrame {
                     }
                 });
         //ajustei aqui pra ficar no lugar certo da tabela
-        panelForm.add(new JLabel("ID Responsável:"));
-        panelForm.add(txtIdPessoa);
+        panelForm.add(new JLabel("Responsável:"));
+        panelForm.add(comboPessoa);
         panelForm.add(new JLabel("Sala:"));
         panelForm.add(comboSala);   //mudança pro combo box
 
@@ -696,27 +702,33 @@ public class ReservaGUI extends JFrame {
 
         if(result == JOptionPane.OK_OPTION){
             try{
-                int idPessoa = Integer.parseInt(txtIdPessoa.getText());
+                Pessoa pessoaSelecionada = (Pessoa) comboPessoa.getSelectedItem();
+                if (pessoaSelecionada == null) {
+                    JOptionPane.showMessageDialog(this, "Selecione um responsável.");
+                    return;
+                }
 
-            Reserva novaReserva = service.criarReserva(idPessoa);//cria reeserva principal
+                int idPessoa = pessoaSelecionada.getId();
+                Reserva novaReserva = service.criarReserva(idPessoa);
+                //(Julia) mudei do inicio do try até aqui pra implementar o combo box de pessoas
 
-            boolean sucessoFinal = true;
-            for(ItemReserva item : reservasTemp){   //(Julia) testando aqui
-            boolean ok = service.adicionarItemNaReserva(
-                novaReserva.getId(),
-                item.getSala().getId(),
-                item.getDataHoraInicio(),
-                item.getDataHoraFim()
-            );
-            if(!ok) sucessoFinal = false;
-        }
-            
-                    if (sucessoFinal){
-                        JOptionPane.showMessageDialog(this, "Reserva realizada!");
-                        listarTodasReservas();
-                    }else{
-                        JOptionPane.showMessageDialog(this, "Erro: confira os IDs e disponibilidade.");
-                    }
+                boolean sucessoFinal = true;
+                for(ItemReserva item : reservasTemp){   //(Julia) testando aqui
+                boolean ok = service.adicionarItemNaReserva(
+                    novaReserva.getId(),
+                    item.getSala().getId(),
+                    item.getDataHoraInicio(),
+                    item.getDataHoraFim()
+                );
+                if(!ok) sucessoFinal = false;
+                }
+                
+                if (sucessoFinal){
+                    JOptionPane.showMessageDialog(this, "Reserva realizada!");
+                    listarTodasReservas();
+                }else{
+                    JOptionPane.showMessageDialog(this, "Erro: confira os IDs e disponibilidade.");
+                }
             }catch(Exception ex){
                 JOptionPane.showMessageDialog(this, "Erro de formato. Use dd/MM/yyyy HH:mm");
             }
