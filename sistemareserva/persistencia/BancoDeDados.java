@@ -4,8 +4,8 @@ import sistemareserva.modelo.*;
 import sistemareserva.visao.*;
 
 public class BancoDeDados {
-    static Persistente<Pessoa> pessoas = new Persistente<>();
-    static Persistente<Sala> salas = new Persistente<>();
+    Persistente<Pessoa> pessoas = new Persistente<>(); //alexandre: de acordo com as especificacoes os dados tem que ficar nos objetos, ent removi o "static"
+    Persistente<Sala> salas = new Persistente<>(); //alexandre: de acordo com as especificacoes os dados tem que ficar nos objetos, ent removi o "static"
     Persistente<Reserva> reservas = new Persistente<>();
 
     //(Julia) mais de uma sala na mesma reserva
@@ -26,7 +26,7 @@ public class BancoDeDados {
     } 
 //-------------------------------------------------------------------------
     //adicionando getters e setters para pessoa, sala e reserva
-    public static Persistente<Pessoa> getPessoas() {
+    public Persistente<Pessoa> getPessoas() { //retirei static
         return pessoas;
     }
 
@@ -40,7 +40,7 @@ public class BancoDeDados {
         this.reservas = reservas;
     }
 
-    public static Persistente<Sala> getSalas() {
+    public Persistente<Sala> getSalas() { // retirei static
         return salas;
     }
 

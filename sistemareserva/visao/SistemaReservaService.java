@@ -11,6 +11,7 @@ public class SistemaReservaService {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     public SistemaReservaService() {
+        this.banco = new BancoDeDados();//alexandre: criei o objeto que segura os dados conforme pede as especificacoes
         carregarDadosIniciais();
     }
 
