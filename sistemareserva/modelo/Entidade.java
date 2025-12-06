@@ -17,4 +17,10 @@ public abstract class Entidade {
     public Entidade(int id){
         this.id = id;
     }
+
+    //alexandre: adicionei o tostring que tava faltando em entidade
+    @Override
+    public String toString(){
+        return String.valueOf(id);
+    }
 }
