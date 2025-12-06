@@ -628,6 +628,11 @@ public class ReservaGUI extends JFrame {
 
         //--------------------------------------------------------
         JButton btnAdicionar = new JButton("Adicionar sala");   
+        JButton btnExcluir = new JButton("Excluir sala");   
+        JPanel panelBotoes = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0)); //substitui o grid layout por esse pra ajustar a formatação
+        panelBotoes.add(btnAdicionar);
+        panelBotoes.add(btnExcluir);
+
 
         String[] colunas = {"Sala", "Início", "Fim"};   //define o nome das colunas da tabela
         DefaultTableModel modeloTemp = new DefaultTableModel(colunas, 0);   //inicialmente nenhuma linha
@@ -656,6 +661,7 @@ public class ReservaGUI extends JFrame {
                             //JOptionPane.showConfirmDialog(panel, "Horário inválido!");
                             //alexandre: aqui mudei para o pop up mostrar so o "ok"
                             JOptionPane.showMessageDialog(this, "A data de término deve ser posterior à data de início.", "Erro de Data", JOptionPane.ERROR_MESSAGE);
+                            return;
                         }
 
                         ItemReserva item = new ItemReserva(salaSelecionada, inicio, fim);
@@ -680,6 +686,25 @@ public class ReservaGUI extends JFrame {
                         JOptionPane.showMessageDialog(panel, "Formato inválido de data/hora");
                     }
                 });
+
+                //listener do botão excluir:
+                btnExcluir.addActionListener(e -> {
+                    int linha = tabelaTemp.getSelectedRow();
+
+                    if (linha == -1) {
+                        JOptionPane.showMessageDialog(this, "Selecione uma sala para excluir.");
+                        return;
+                    }
+
+                    reservasTemp.remove(linha);
+                    modeloTemp.removeRow(linha);
+
+                    int linhas = tabelaTemp.getRowCount();
+                    int novaAltura = Math.min(120 + (linhas * 22), 220);
+                    scrollTemp.setPreferredSize(new Dimension(280, novaAltura));
+                    scrollTemp.revalidate();
+                });
+
         //ajustei aqui pra ficar no lugar certo da tabela
         panelForm.add(new JLabel("Responsável:"));
         panelForm.add(comboPessoa);
@@ -691,7 +716,8 @@ public class ReservaGUI extends JFrame {
         panelForm.add(new JLabel("Fim:"));
         panelForm.add(txtDataFim);
 
-        panelForm.add(btnAdicionar);
+        //panelForm.add(btnAdicionar);
+        panelForm.add(panelBotoes); //add botão de excluir na hora de fazer a reserva sem alterar o alinhamento
         panelForm.add(scrollTemp);
 
         panel.add(panelForm, BorderLayout.WEST);
@@ -709,6 +735,11 @@ public class ReservaGUI extends JFrame {
                 }
 
                 int idPessoa = pessoaSelecionada.getId();
+                if (reservasTemp.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Nenhuma sala foi adicionada à reserva.", "Erro", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 Reserva novaReserva = service.criarReserva(idPessoa);
                 //(Julia) mudei do inicio do try até aqui pra implementar o combo box de pessoas
 
