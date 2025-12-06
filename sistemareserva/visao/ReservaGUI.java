@@ -866,86 +866,158 @@ public class ReservaGUI extends JFrame {
         }
     }
 
+    //alexandre: refiz toda a executaracaoalterar reserva, agora ta funcioando com selecao dos itens
     private void executarAcaoAlterarReserva() {
-        //alexandre: protecao pra caso a pessoa selecione mais de um item pra alterar
-        int[] linhasSelecionadas = tabelaReservas.getSelectedRows();
-        if (linhasSelecionadas.length > 1) {
-            JOptionPane.showMessageDialog(this, "Por favor, selecione apenas UMA reserva para alterar.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        String idString = JOptionPane.showInputDialog(this, "Digite o ID da Reserva para ALTERAR:");
+        String idString = null;
         
+        int linhaSelecionada = tabelaReservas.getSelectedRow();
+        if (linhaSelecionada != -1) {
+            int modelRow = tabelaReservas.convertRowIndexToModel(linhaSelecionada);
+            idString = String.valueOf(tableModelReservas.getValueAt(modelRow, 0));
+        } else {
+            idString = JOptionPane.showInputDialog(this, "Nenhuma linha selecionada.\nDigite o ID da Reserva para ALTERAR:");
+        }
+
         if (idString != null) {
             try {
                 int idReserva = Integer.parseInt(idString);
-                Reserva reservaAtual = service.buscaReservaPorId(idReserva); 
+                Reserva reservaAtual = service.buscaReservaPorId(idReserva);
 
                 if (reservaAtual != null) {
-                    // preenche o painel 
-                    JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
+                    List<ItemReserva> itensTemp = new ArrayList<>(reservaAtual.getItensDaReserva());
                     
-                    // pega dados do primeiro item da reserva 
-                    ItemReserva itemAtual = reservaAtual.getItensDaReserva().isEmpty() ? null : reservaAtual.getItensDaReserva().get(0);
+                    JPanel panelPrincipal = new JPanel(new BorderLayout(10, 10));
                     
-                    JTextField txtIdPessoa = new JTextField(String.valueOf(reservaAtual.getResponsavel().getId()));
-                    JTextField txtIdSala = new JTextField(itemAtual != null ? String.valueOf(itemAtual.getSala().getId()) : "");
+                    JPanel panelTopo = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                    JTextField txtIdPessoa = new JTextField(String.valueOf(reservaAtual.getResponsavel().getId()), 10);
+                    panelTopo.add(new JLabel("ID Responsável:"));
+                    panelTopo.add(txtIdPessoa);
                     
-                    String dataIniStr = itemAtual != null ? itemAtual.getDataHoraInicio().format(formatter) : "dd/MM/yyyy HH:mm";
-                    String dataFimStr = itemAtual != null ? itemAtual.getDataHoraFim().format(formatter) : "dd/MM/yyyy HH:mm";
-
-                    //(Julia) pra não ficar apagando os parâmetros de data e hora
-                    MaskFormatter formatoDataHora = null;
-                    JFormattedTextField txtDataInicio;
-                    JFormattedTextField txtDataFim;
-
-                    try{
-                        formatoDataHora = new MaskFormatter("##/##/#### ##:##");
-                        formatoDataHora.setPlaceholderCharacter('_');
-                    }catch(ParseException e){
-                        e.printStackTrace();
+                    String[] colunasItens = {"Sala", "Início (dd/MM/yyyy HH:mm)", "Fim (dd/MM/yyyy HH:mm)"};
+                    DefaultTableModel modeloItens = new DefaultTableModel(colunasItens, 0);
+                    JTable tabelaItens = new JTable(modeloItens);
+                    JScrollPane scrollItens = new JScrollPane(tabelaItens);
+                    scrollItens.setPreferredSize(new Dimension(500, 150));
+                    
+                    for (ItemReserva item : itensTemp) {
+                        modeloItens.addRow(new Object[]{
+                            item.getSala().getPredio() + " (" + item.getSala().getId() + ")", 
+                            item.getDataHoraInicio().format(formatter),
+                            item.getDataHoraFim().format(formatter)
+                        });
                     }
 
-                    txtDataInicio = new JFormattedTextField(formatoDataHora);
-                    txtDataFim = new JFormattedTextField(formatoDataHora);
-                    //--------------------------------------------------------
-
-                    panel.add(new JLabel("Novo ID Responsável:"));
-                    panel.add(txtIdPessoa);
-                    panel.add(new JLabel("Novo ID Sala:"));
-                    panel.add(txtIdSala);
-
-                    panel.add(new JLabel("Nova Data Início:"));
-                    panel.add(txtDataInicio);
-                    panel.add(new JLabel("Nova Data Fim:"));
-                    panel.add(txtDataFim);
-
-                    int result = JOptionPane.showConfirmDialog(this, panel, "Alterar Reserva ID " + idReserva, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-                    if(result == JOptionPane.OK_OPTION){
-                        try{
-                            int idPessoa = Integer.parseInt(txtIdPessoa.getText());
-                            int idSala = Integer.parseInt(txtIdSala.getText());
-                            LocalDateTime inicio = LocalDateTime.parse(txtDataInicio.getText(), formatter);
-                            LocalDateTime fim = LocalDateTime.parse(txtDataFim.getText(), formatter);
-                            //verifica se a data de termino é depois da data de iicio
-                            if (fim.isBefore(inicio) || fim.isEqual(inicio)) {
-                                throw new Exception("A data de término deve ser posterior à data de início.");
+                    JPanel panelBotoes = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                    JButton btnAddSala = new JButton("Adicionar Sala");
+                    JButton btnRemSala = new JButton("Remover Sala Selecionada");
+                    
+                    btnAddSala.addActionListener(e -> {
+                        JPanel panelAdd = new JPanel(new GridLayout(0, 2));
+                        JComboBox<Sala> comboSala = new JComboBox<>();
+                        for(Sala s : service.listarSalas()) comboSala.addItem(s);
+                        
+                        javax.swing.text.MaskFormatter formatoDataHora = null;
+                        try { formatoDataHora = new javax.swing.text.MaskFormatter("##/##/#### ##:##"); formatoDataHora.setPlaceholderCharacter('_'); } catch (Exception ex) {}
+                        JFormattedTextField txtIni = new JFormattedTextField(formatoDataHora);
+                        JFormattedTextField txtFim = new JFormattedTextField(formatoDataHora);
+                        
+                        panelAdd.add(new JLabel("Sala:")); panelAdd.add(comboSala);
+                        panelAdd.add(new JLabel("Início:")); panelAdd.add(txtIni);
+                        panelAdd.add(new JLabel("Fim:")); panelAdd.add(txtFim);
+                        
+                        int res = JOptionPane.showConfirmDialog(panelPrincipal, panelAdd, "Adicionar Item", JOptionPane.OK_CANCEL_OPTION);
+                        if (res == JOptionPane.OK_OPTION) {
+                            try {
+                                Sala s = (Sala) comboSala.getSelectedItem();
+                                LocalDateTime ini = LocalDateTime.parse(txtIni.getText(), formatter);
+                                LocalDateTime fim = LocalDateTime.parse(txtFim.getText(), formatter);
+                                
+                                if (fim.isBefore(ini) || fim.isEqual(ini)) throw new Exception("Data final inválida");
+                                
+                                ItemReserva novoItem = new ItemReserva(s, ini, fim);
+                                itensTemp.add(novoItem);
+                                modeloItens.addRow(new Object[]{ s.getPredio() + " (" + s.getId() + ")", ini.format(formatter), fim.format(formatter) });
+                            } catch (Exception ex) {
+                                JOptionPane.showMessageDialog(panelPrincipal, "Erro: " + ex.getMessage());
                             }
-                            boolean sucesso = service.alterarReserva(idReserva, idPessoa, idSala, inicio, fim);
-                            if (sucesso){
-                                JOptionPane.showMessageDialog(this, "Reserva alterada!");
+                        }
+                    });
+
+                    btnRemSala.addActionListener(e -> {
+                        int row = tabelaItens.getSelectedRow();
+                        if (row != -1) {
+                            // isso aqui evita o bug de nao atualizar as datas
+                            if (tabelaItens.isEditing()) {
+                                tabelaItens.getCellEditor().stopCellEditing();
+                            }
+                            itensTemp.remove(row);
+                            modeloItens.removeRow(row);
+                        } else {
+                            JOptionPane.showMessageDialog(panelPrincipal, "Selecione um item na tabela para remover.");
+                        }
+                    });
+
+                    panelBotoes.add(btnAddSala);
+                    panelBotoes.add(btnRemSala);
+
+                    panelPrincipal.add(panelTopo, BorderLayout.NORTH);
+                    panelPrincipal.add(scrollItens, BorderLayout.CENTER);
+                    panelPrincipal.add(panelBotoes, BorderLayout.SOUTH);
+
+                    int result = JOptionPane.showConfirmDialog(this, panelPrincipal, "Editando Reserva " + idReserva, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+                    if (result == JOptionPane.OK_OPTION) {
+                        try {
+                            // isso aqui evita o bug de nao atualizar as datas
+                            if (tabelaItens.isEditing()) {
+                                tabelaItens.getCellEditor().stopCellEditing();
+                            }
+
+                            int novoIdPessoa = Integer.parseInt(txtIdPessoa.getText());
+                            
+                            if (itensTemp.isEmpty()) {
+                                JOptionPane.showMessageDialog(this, "A reserva precisa ter pelo menos uma sala.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                                return;
+                            }
+
+                            List<ItemReserva> itensAtualizadosParaSalvar = new ArrayList<>();
+                            
+                            for (int i = 0; i < modeloItens.getRowCount(); i++) {
+                                String dataIniStr = (String) modeloItens.getValueAt(i, 1);
+                                String dataFimStr = (String) modeloItens.getValueAt(i, 2);
+                                
+                                Sala salaOriginal = itensTemp.get(i).getSala();
+                                
+                                LocalDateTime novaIni = LocalDateTime.parse(dataIniStr, formatter);
+                                LocalDateTime novaFim = LocalDateTime.parse(dataFimStr, formatter);
+                                
+                                if (novaFim.isBefore(novaIni) || novaFim.isEqual(novaIni)) {
+                                    throw new Exception("Data final inválida na linha " + (i+1));
+                                }
+
+                                itensAtualizadosParaSalvar.add(new ItemReserva(salaOriginal, novaIni, novaFim));
+                            }
+
+                            boolean sucesso = service.atualizarReservaCompleta(idReserva, novoIdPessoa, itensAtualizadosParaSalvar);
+                            
+                            if (sucesso) {
+                                JOptionPane.showMessageDialog(this, "Reserva atualizada com sucesso!");
                                 listarTodasReservas();
-                            }else{
-                                JOptionPane.showMessageDialog(this, "Erro na alteração.");
+                            } else {
+                                JOptionPane.showMessageDialog(this, "Erro ao atualizar. Verifique conflitos.", "Erro", JOptionPane.ERROR_MESSAGE);
                             }
-                        } catch(Exception ex) {
-                             JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage());
+                        } catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(this, "ID de Pessoa inválido.");
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(this, "Erro ao salvar: " + ex.getMessage());
                         }
                     }
-                }else{
+
+                } else {
                     JOptionPane.showMessageDialog(this, "Reserva não encontrada.");
                 }
-            } catch(Exception ex){
-                JOptionPane.showMessageDialog(this, "Dados inválidos ou erro de formato.");
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "ID inválido.");
             }
         }
     }

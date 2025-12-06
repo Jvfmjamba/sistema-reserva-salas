@@ -295,4 +295,35 @@ public class SistemaReservaService {
             return false; // Algum ID não foi encontrado
         }
     }
+
+    //novo metodo de alterar reserva que suporta a alteracao de varios itens na reserva!
+    public boolean atualizarReservaCompleta(int idReserva, int idPessoa, List<ItemReserva> novosItens){
+        try {
+            Reserva reserva = banco.getReservas().buscaId(idReserva);
+            Pessoa novaPessoa = banco.getPessoas().buscaId(idPessoa);
+
+            if (reserva == null || novaPessoa == null) return false;
+
+            // atualiza o id repsonsavel
+            if (reserva.getResponsavel().getId() != idPessoa) {
+                if (reserva.getResponsavel() != null) {
+                    reserva.getResponsavel().removerReserva(reserva);
+                }
+                reserva.setResponsavel(novaPessoa);
+                novaPessoa.adicionarReserva(reserva);
+            }
+
+            // atualiza a lista de itens
+            reserva.getItensDaReserva().clear();
+            
+            for (ItemReserva item : novosItens){
+                reserva.adicionarItem(item);
+            }
+
+            return banco.getReservas().alterar(reserva);
+
+        }catch(IdInexistenteException e){
+            return false;
+        }
+    }
 }
