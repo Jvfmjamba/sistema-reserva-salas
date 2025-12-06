@@ -49,7 +49,7 @@ public class SistemaReservaService {
     public Pessoa buscarPessoaPorId(int id) {
         try{
             // agr trata a excecao
-            return banco.getPessoas().buscaId(id);
+        return banco.getPessoas().buscaId(id);
         }catch(IdInexistenteException e){
             return null;
         }
@@ -157,6 +157,22 @@ public class SistemaReservaService {
             return false;
         }
     }
+
+    //método exclusivo para verificar conflito:
+    public boolean temConflito(int idSala, LocalDateTime inicio, LocalDateTime fim) {
+        for (Reserva r : banco.getReservas2()) {
+            for (ItemReserva item : r.getItensDaReserva()) {
+                if (item.getSala().getId() == idSala) {
+                    boolean naoConflita = fim.isBefore(item.getDataHoraInicio()) || inicio.isAfter(item.getDataHoraFim());
+                    if (!naoConflita) {
+                        return true;   //conflito
+                    }
+                }
+            }
+        }
+        return false;  //sem conflito
+    }
+
 
     public Reserva criarReserva(int idPessoa) {     //(Julia) pra conseguir colocar mais de uma sala na mesma reserva
         Pessoa p = banco.buscarPessoa(idPessoa);

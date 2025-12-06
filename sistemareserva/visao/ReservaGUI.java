@@ -8,6 +8,7 @@ import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.text.ParseException;
 import java.util.List;
+import java.util.function.Function;
 //imports necessarios para datas e horas:
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
@@ -589,15 +590,31 @@ public class ReservaGUI extends JFrame {
     }
 
     private void executarAcaoNovaReserva(){
+
+        Function<Component, JPanel> wrap = comp -> {    //função dentro do método pra facilitar --> formatação
+            JPanel p = new JPanel(new BorderLayout());
+            p.add(comp, BorderLayout.CENTER);
+            return p;
+        };
+
         List<ItemReserva> reservasTemp = new ArrayList<>(); //(Julia) múltiplas salas em uma reserva
 
         JPanel panel = new JPanel(new BorderLayout(10, 10));  //painel principal com dois subpaineis: Form e Tabela 
-        JPanel panelForm = new JPanel(new GridLayout(0, 2, 5, 5)); //divide a janela em duas colunas, cada linha com a mesma altura
+        //JPanel panelForm = new JPanel(new GridLayout(0, 2, 5, 5)); 
+        //ajuste formatação início
+        JPanel panelForm = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+        //ajuste formatação fim
+
         JPanel panelTabela = new JPanel(new BorderLayout());   //tem um sub painel
 
         //JTextField txtIdPessoa = new JTextField();
         java.util.List<Pessoa> pessoa = service.listarPessoas();
         JComboBox<Pessoa> comboPessoa = new JComboBox<>();
+        //comboPessoa.setPreferredSize(new Dimension(10, 28));    //formatação
 
         for(Pessoa p : pessoa){
             comboPessoa.addItem(p);
@@ -606,6 +623,8 @@ public class ReservaGUI extends JFrame {
         //(Julia) combo box de salas
         java.util.List<Sala> salas = service.listarSalas();
         JComboBox<Sala> comboSala = new JComboBox<>();
+        //comboSala.setPreferredSize(new Dimension(10, 28));
+
 
         for(Sala s : salas){
             comboSala.addItem(s);   //preenche a lista 
@@ -624,12 +643,14 @@ public class ReservaGUI extends JFrame {
         }
 
         txtDataInicio = new JFormattedTextField(formatoDataHora);
+        txtDataInicio.setPreferredSize(new Dimension(10, 28));  //formatação
         txtDataFim = new JFormattedTextField(formatoDataHora);
+        txtDataFim.setPreferredSize(new Dimension(10, 28)); //formatação
 
         //--------------------------------------------------------
         JButton btnAdicionar = new JButton("Adicionar sala");   
         JButton btnExcluir = new JButton("Excluir sala");   
-        JPanel panelBotoes = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0)); //substitui o grid layout por esse pra ajustar a formatação
+        JPanel panelBotoes = new JPanel(new GridLayout(1, 2, 5, 5));
         panelBotoes.add(btnAdicionar);
         panelBotoes.add(btnExcluir);
 
@@ -641,7 +662,9 @@ public class ReservaGUI extends JFrame {
 
         //add barra de rolagem caso a tabela fique muito grande
         JScrollPane scrollTemp = new JScrollPane(tabelaTemp);
-        scrollTemp.setPreferredSize(new Dimension(280, 120));   //ajusta o scroll
+        scrollTemp.setPreferredSize(new Dimension(400, 120));   //ajusta o scroll
+        scrollTemp.setMaximumSize(new Dimension(500, 200)); //acompanha a largura da janela
+
         scrollTemp.setMaximumSize(new Dimension(280, 200));
         panelTabela.add(scrollTemp, BorderLayout.CENTER);
             //(Julia) add mais de uma sala em uma única reserva
@@ -656,12 +679,40 @@ public class ReservaGUI extends JFrame {
                     try{
                         LocalDateTime inicio = LocalDateTime.parse(txtDataInicio.getText(), formatter);
                         LocalDateTime fim = LocalDateTime.parse(txtDataFim.getText(), formatter); 
-
-                        if(!inicio.isBefore(fim)){
-                            //JOptionPane.showConfirmDialog(panel, "Horário inválido!");
-                            //alexandre: aqui mudei para o pop up mostrar so o "ok"
-                            JOptionPane.showMessageDialog(this, "A data de término deve ser posterior à data de início.", "Erro de Data", JOptionPane.ERROR_MESSAGE);
+                        //verificando conflito ao add salas:
+                        //horário inválido
+                        if (!inicio.isBefore(fim)) {
+                            JOptionPane.showMessageDialog(this,
+                                "A data de término deve ser posterior à data de início.", "Erro de Data",
+                                JOptionPane.ERROR_MESSAGE);
                             return;
+                        }
+
+                        //conflito com reservas já feitas
+                        if (service.temConflito(salaSelecionada.getId(), inicio, fim)) {
+                            JOptionPane.showMessageDialog(this,
+                                    "Esta sala já possui uma reserva cadastrada neste horário.",
+                                    "Conflito com banco",
+                                    JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+
+                        //conflito com reservas da tabela
+                        for (ItemReserva itemExistente : reservasTemp) {
+                            if (itemExistente.getSala().getId() == salaSelecionada.getId()) {
+
+                                boolean naoConflita =
+                                        fim.isBefore(itemExistente.getDataHoraInicio()) ||
+                                        inicio.isAfter(itemExistente.getDataHoraFim());
+
+                                if (!naoConflita) {
+                                    JOptionPane.showMessageDialog(this,
+                                            "Conflito com outra reserva adicionada nesta mesma operação.",
+                                            "Conflito interno",
+                                            JOptionPane.ERROR_MESSAGE);
+                                    return;
+                                }
+                            }
                         }
 
                         ItemReserva item = new ItemReserva(salaSelecionada, inicio, fim);
@@ -682,7 +733,7 @@ public class ReservaGUI extends JFrame {
                         //reseta os valores pras próximas reservas
                         txtDataInicio.setValue(null);
                         txtDataFim.setValue(null);
-                    }catch(Exception ex){
+                    }catch(Exception ex){   //essa exceção já é tratada pelos if else acima, então tem que ver se vai tirar esse try catch ou lançar mais duas exceções (2 tipos de conflito)
                         JOptionPane.showMessageDialog(panel, "Formato inválido de data/hora");
                     }
                 });
@@ -705,25 +756,76 @@ public class ReservaGUI extends JFrame {
                     scrollTemp.revalidate();
                 });
 
-        //ajustei aqui pra ficar no lugar certo da tabela
-        panelForm.add(new JLabel("Responsável:"));
-        panelForm.add(comboPessoa);
-        panelForm.add(new JLabel("Sala:"));
-        panelForm.add(comboSala);   //mudança pro combo box
+        //formatação (ref: código produtoForm.java disponibilizado no github):
+        //linha 1 -> responsavel pela reserva
+        gbc.gridx = 0; 
+        gbc.gridy = 0;
+        gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.NONE;  // label não cresce
+        panelForm.add(new JLabel("Responsável:"), gbc);
+        gbc.gridx = 1; 
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;  // combo cresce
+        panelForm.add(comboPessoa, gbc);
 
-        panelForm.add(new JLabel("Início:"));
-        panelForm.add(txtDataInicio);
-        panelForm.add(new JLabel("Fim:"));
-        panelForm.add(txtDataFim);
+        //linha 2 -> sala
+        gbc.gridx = 0; 
+        gbc.gridy = 1;
+        gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        panelForm.add(new JLabel("Sala:"), gbc);
+        gbc.gridx = 1; 
+        gbc.gridy = 1;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panelForm.add(comboSala, gbc);
 
-        //panelForm.add(btnAdicionar);
-        panelForm.add(panelBotoes); //add botão de excluir na hora de fazer a reserva sem alterar o alinhamento
-        panelForm.add(scrollTemp);
+        //linha 3 -> datahora início
+        gbc.gridx = 0; 
+        gbc.gridy = 2;
+        gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        panelForm.add(new JLabel("Início:"), gbc);
+        gbc.gridx = 1; 
+        gbc.gridy = 2;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panelForm.add(txtDataInicio, gbc);
+
+        //linha 4 -> datahora fim
+        gbc.gridx = 0; 
+        gbc.gridy = 3;
+        gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        panelForm.add(new JLabel("Fim:"), gbc);
+        gbc.gridx = 1; 
+        gbc.gridy = 3;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panelForm.add(txtDataFim, gbc);
+
+        //linha 5 -> botões
+        gbc.gridx = 0; 
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        gbc.weightx = 0;
+        panelForm.add(panelBotoes, gbc);
+
+        //linha 6 -> tabela
+        gbc.gridx = 0; 
+        gbc.gridy = 5;
+        gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        panelForm.add(scrollTemp, gbc);
+
 
         panel.add(panelForm, BorderLayout.WEST);
         panel.add(panelTabela, BorderLayout.CENTER);
 
-
+        panel.setPreferredSize(new Dimension(425, 450));
         int result= JOptionPane.showConfirmDialog(this, panel, "Nova Reserva", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
         if(result == JOptionPane.OK_OPTION){
@@ -742,9 +844,8 @@ public class ReservaGUI extends JFrame {
 
                 Reserva novaReserva = service.criarReserva(idPessoa);
                 //(Julia) mudei do inicio do try até aqui pra implementar o combo box de pessoas
-
                 boolean sucessoFinal = true;
-                for(ItemReserva item : reservasTemp){   //(Julia) testando aqui
+                for(ItemReserva item : reservasTemp){  
                 boolean ok = service.adicionarItemNaReserva(
                     novaReserva.getId(),
                     item.getSala().getId(),
