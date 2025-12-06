@@ -1012,6 +1012,9 @@ public class ReservaGUI extends JFrame {
         }
     }
 
+    //alexandre: agora a main fica no Programa.java
+    
+    /* 
     public static void main(String[] args) {
         // dica do chat, adicionar o LookAndFeel pra deixar a janela mais bonita 
         try { 
@@ -1022,4 +1025,5 @@ public class ReservaGUI extends JFrame {
             new ReservaGUI();
         });
     }
+        */
 }
