@@ -19,30 +19,30 @@ import sistemareserva.modelo.ItemReserva;
 public class ReservaGUI extends JFrame {
 
     private SistemaReservaService service;
-
-    private JTable tabelaPessoas;
+    
+    private JTable tabelaPessoas; 
     private DefaultTableModel tableModel; //alexandre mudei o jtextarea
 
-    //novas variaveis
+    //novas variaveis 
     private JTable tabelaSalas;
     private DefaultTableModel tableModelSalas;
 
     private JTable tabelaReservas;
     private DefaultTableModel tableModelReservas;
-
+    
     // alexandre formatarr para datas (ta meio errado acho que tem q ajustar isso dps)
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-    private CardLayout cardLayout;
-    private JPanel mainPanel;
+    private CardLayout cardLayout; 
+    private JPanel mainPanel; 
 
     public ReservaGUI() {
-        service = new SistemaReservaService();
+        service = new SistemaReservaService(); 
 
         setTitle("Sistema de Reserva de Salas - SWING");
         setSize(900, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(null); 
         configurarLayoutPrincipal();
         setVisible(true);
     }
@@ -51,28 +51,28 @@ public class ReservaGUI extends JFrame {
         //alexandre inicia cardlayoout, consegue mostrar um painel por vez
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
-
+        
         //alexandre adicionei os paineis iniciais na tela, separados
         JPanel painelMenu = criarPainelMenuPrincipal();
         JPanel painelPessoas = criarPainelGerenciarPessoas();
-
+        
         // alexandre criando e adicionando os painéis novos salas e reevervas
         JPanel painelSalas = criarPainelGerenciarSalas();
         JPanel painelReservas = criarPainelGerenciarReservas();
-
+        
         mainPanel.add(painelMenu, "MENU");
         mainPanel.add(painelPessoas, "PESSOAS");
         mainPanel.add(painelSalas, "SALAS");
         mainPanel.add(painelReservas, "RESERVAS");
 
         add(mainPanel);
-
+        
         cardLayout.show(mainPanel, "MENU"); //qual tela começa aparecendo
     }
 
     private JPanel criarPainelMenuPrincipal() {
         JPanel painel = new JPanel(new BorderLayout());
-
+        
         JLabel titulo = new JLabel("=== SISTEMA DE RESERVA DE SALAS ===", SwingConstants.CENTER);
         titulo.setFont(new Font("Arial", Font.BOLD, 20));
         painel.add(titulo, BorderLayout.NORTH);
@@ -88,13 +88,13 @@ public class ReservaGUI extends JFrame {
             cardLayout.show(mainPanel, "PESSOAS");
             listarTodasPessoas(); // atualiza tabela
         });
-
+        
         // agr os botoes de reerva e salas funciomam msm
         btnSalas.addActionListener(e -> {
             cardLayout.show(mainPanel, "SALAS");
             listarTodasSalas();
         });
-
+        
         btnReservas.addActionListener(e -> {
             cardLayout.show(mainPanel, "RESERVAS");
             listarTodasReservas();
@@ -144,7 +144,7 @@ public class ReservaGUI extends JFrame {
             public boolean isCellEditable(int row, int column) {
                 return false; //dica de boa pratica do chat pra evitar bananagem
             }
-        };
+        }; 
         tabelaPessoas = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(tabelaPessoas);
 
@@ -153,7 +153,7 @@ public class ReservaGUI extends JFrame {
 
         return painel;
     }
-
+    
     // alexandre painel de gerenciar salas, copiei do de pessoas e alterei
     private JPanel criarPainelGerenciarSalas(){
         JPanel painel = new JPanel(new BorderLayout(10, 10));
@@ -165,22 +165,22 @@ public class ReservaGUI extends JFrame {
         JButton btnExcluir = new JButton("Excluir Sala");
         JButton btnListar = new JButton("Atualizar Lista");
         JButton btnVoltar = new JButton("Voltar");
-        //alexandre novo botao de buscar por id:
+        //alexandre novo botao de buscar por id: 
         JButton btnBuscar = new JButton("Buscar ID");
         btnBuscar.addActionListener(e -> executarAcaoBuscarSala());
 
         botoesPanel.add(btnBuscar);
 
         btnCadastrar.addActionListener(e -> executarAcaoCadastrarSala());
-        btnAlterar.addActionListener(e -> executarAcaoAlterarSala());
+        btnAlterar.addActionListener(e -> executarAcaoAlterarSala()); 
         btnExcluir.addActionListener(e -> executarAcaoExcluirSala());
         btnListar.addActionListener(e -> listarTodasSalas());
-        btnVoltar.addActionListener(e -> cardLayout.show(mainPanel, "MENU"));
-
+        btnVoltar.addActionListener(e -> cardLayout.show(mainPanel, "MENU")); 
+       
 
         //adicionando os botoes no painel
         botoesPanel.add(btnCadastrar);
-        botoesPanel.add(btnAlterar);
+        botoesPanel.add(btnAlterar); 
         botoesPanel.add(btnExcluir);
         botoesPanel.add(btnListar);
         botoesPanel.add(btnVoltar);
@@ -196,8 +196,8 @@ public class ReservaGUI extends JFrame {
 
     // alexandre painel de gerenciar as reservas, copiei do de pessoas e alterei
 
-    //FALTA ALGUNS METODOS AINDA, O DE ALTERAR, FALTA IMPLEMENTAR O DE CANCELAR,
-    //E TEM QUE AJUSTAR TAMBEM A PARA DE DATA E HORARIOS PRA FICAR MAIS FACIL DE DIGITAR, AZ VEZES O CHAT
+    //FALTA ALGUNS METODOS AINDA, O DE ALTERAR, FALTA IMPLEMENTAR O DE CANCELAR, 
+    //E TEM QUE AJUSTAR TAMBEM A PARA DE DATA E HORARIOS PRA FICAR MAIS FACIL DE DIGITAR, AZ VEZES O CHAT 
     //DA UMA IDEIA BOA DE FICAR MAIS FACIL PRO USUARIO, TIPO UM CAPO PRO DIA/MES/ANO E OUTRO PRA HORARIO, MAS ISSO É DETALHE TMB FDS
     //E FALTA TMB COLOCAR OS RECURSOS NA RESERVA, DE QUANTIDADE DE PESSOAS, E NECCESECIDADE DE RECURCSOS
     private JPanel criarPainelGerenciarReservas(){
@@ -209,7 +209,7 @@ public class ReservaGUI extends JFrame {
         JButton btnNovaReserva = new JButton("Nova Reserva");
         JButton btnAlterar = new JButton("Alterar Reserva"); // Botao adicionado
         JButton btnListar = new JButton("Atualizar Lista");
-        JButton btnExcluir = new JButton("Cancelar Reserva");
+        JButton btnExcluir = new JButton("Cancelar Reserva"); 
         JButton btnInfos = new JButton("Infos Reserva");    //botao extra
         JButton btnVoltar = new JButton("Voltar");
         //alexandre criando o botao de buscar por id:
@@ -218,9 +218,9 @@ public class ReservaGUI extends JFrame {
         botoesPanel.add(btnBuscar);
 
         btnNovaReserva.addActionListener(e -> executarAcaoNovaReserva());
-        btnAlterar.addActionListener(e -> executarAcaoAlterarReserva());
+        btnAlterar.addActionListener(e -> executarAcaoAlterarReserva()); 
         btnListar.addActionListener(e -> listarTodasReservas());
-        btnExcluir.addActionListener(e -> executarAcaoCancelarReserva());
+        btnExcluir.addActionListener(e -> executarAcaoCancelarReserva()); 
         btnVoltar.addActionListener(e -> cardLayout.show(mainPanel, "MENU"));
 
         //config botão de infos da reserva:
@@ -255,11 +255,11 @@ public class ReservaGUI extends JFrame {
                         .append("\n");
             }
 
-            JOptionPane.showMessageDialog(this, detalhes.toString(),
+            JOptionPane.showMessageDialog(this, detalhes.toString(), 
                     "Detalhes da Reserva", JOptionPane.INFORMATION_MESSAGE);
         });
 
-
+        
         botoesPanel.add(btnNovaReserva);
         botoesPanel.add(btnAlterar);
         botoesPanel.add(btnListar);
@@ -279,19 +279,19 @@ public class ReservaGUI extends JFrame {
         painel.add(new JScrollPane(tabelaReservas), BorderLayout.CENTER);
         return painel;
     }
-
+    
 
 
     private void listarTodasPessoas() {
 
-        tableModel.setRowCount(0);
+        tableModel.setRowCount(0); 
         List<Pessoa> pessoas = service.listarPessoas();
 
         if (pessoas.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Nenhuma pessoa cadastrada.");
         } else {
             for (Pessoa p : pessoas) {
-
+                
                 Object[] linha = {p.getId(), p.getNome()};
                 tableModel.addRow(linha);
             }
@@ -304,7 +304,7 @@ public class ReservaGUI extends JFrame {
         if (nome != null && !nome.trim().isEmpty()) {
             if (service.cadastrarPessoa(nome)) {
                 JOptionPane.showMessageDialog(this, "Sucesso!");
-                listarTodasPessoas();
+                listarTodasPessoas(); 
             } else {
                 JOptionPane.showMessageDialog(this, "Erro ao cadastrar.", "Erro", JOptionPane.ERROR_MESSAGE);
             }
@@ -315,14 +315,14 @@ public class ReservaGUI extends JFrame {
         //alexandre aqui vc pode agr clicar em cima do nome da pessoa e excluir, sem precisar digitar o id
         String idString = null;
         int linhaSelecionada = tabelaPessoas.getSelectedRow();
-
+        
         if (linhaSelecionada != -1) {
             int idSelecionado = (int) tabelaPessoas.getValueAt(linhaSelecionada, 0);
             int confirm = JOptionPane.showConfirmDialog(this, "Deseja excluir o ID " + idSelecionado + "?");
             if (confirm == JOptionPane.YES_OPTION) {
                 service.excluirPessoa(idSelecionado);
                 listarTodasPessoas();
-                return;
+                return; 
             }
         }
 
@@ -368,7 +368,7 @@ public class ReservaGUI extends JFrame {
     private void executarAcaoAlterarPessoa() {
         String idString = null;
         int linhaSelecionada = tabelaPessoas.getSelectedRow();
-
+        
         if (linhaSelecionada != -1) {
             idString = String.valueOf(tabelaPessoas.getValueAt(linhaSelecionada, 0));
         } else {
@@ -399,7 +399,7 @@ public class ReservaGUI extends JFrame {
 
     private void listarTodasSalas(){
         tableModelSalas.setRowCount(0);
-        List<Sala> salas = service.listarSalas();
+        List<Sala> salas = service.listarSalas(); 
         if(salas != null && !salas.isEmpty()){
             for(Sala s : salas){
                 tableModelSalas.addRow(new Object[]{s.getId(), s.getPredio(), s.getCapacidade()});
@@ -427,7 +427,7 @@ public class ReservaGUI extends JFrame {
         panel.add(chkAr);
 
         int result = JOptionPane.showConfirmDialog(this, panel, "Nova Sala", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-
+        
         if(result == JOptionPane.OK_OPTION){
             try{
                 String predio = txtPredio.getText();
@@ -448,7 +448,7 @@ public class ReservaGUI extends JFrame {
     private void executarAcaoAlterarSala() {
         String idString = null;
         int linhaSelecionada = tabelaSalas.getSelectedRow();
-
+        
         if (linhaSelecionada != -1) {
             idString = String.valueOf(tabelaSalas.getValueAt(linhaSelecionada, 0));
         } else {
@@ -484,7 +484,7 @@ public class ReservaGUI extends JFrame {
                         String predio = txtPredio.getText();
                         int capacidade = Integer.parseInt(txtCapacidade.getText());
                         boolean sucesso = service.alterarSala(id, predio, capacidade, chkQuadro.isSelected(), chkProjetor.isSelected(), chkPC.isSelected(), chkAr.isSelected());
-
+                        
                         if(sucesso){
                             JOptionPane.showMessageDialog(this, "Sala alterada com sucesso!");
                             listarTodasSalas();
@@ -501,54 +501,24 @@ public class ReservaGUI extends JFrame {
         }
     }
 
-    private void executarAcaoExcluirSala() {
-        String idString = null;
-        int linhaSelecionada = tabelaSalas.getSelectedRow();
-
-        // Se o usuário selecionou a sala direto na tabela:
-        if (linhaSelecionada != -1) {
-            int idSelecionado = (int) tabelaSalas.getValueAt(linhaSelecionada, 0);
-            int confirm = JOptionPane.showConfirmDialog(
-                    this,
-                    "Deseja excluir a sala ID " + idSelecionado + "?",
-                    "Confirmar exclusão",
-                    JOptionPane.YES_NO_OPTION
-            );
-
-            if (confirm == JOptionPane.YES_OPTION) {
-                boolean sucesso = service.excluirSala(idSelecionado);
-
-                if (sucesso) {
-                    JOptionPane.showMessageDialog(this, "Sala excluída com sucesso!");
-                } else {
-                    JOptionPane.showMessageDialog(this, "Não foi possível excluir. A sala pode estar vinculada a uma reserva.");
-                }
-
+    private void executarAcaoExcluirSala(){
+        int row = tabelaSalas.getSelectedRow();
+        if(row != -1){
+            int id =(int)tabelaSalas.getValueAt(row, 0);
+            if (JOptionPane.showConfirmDialog(this, "Excluir Sala ID " + id + "?") == JOptionPane.YES_OPTION) {
+                service.excluirSala(id);
                 listarTodasSalas();
-                return;
             }
-        }
-
-        // Se não escolheu pela tabela, abre input manual
-        idString = JOptionPane.showInputDialog(this, "Digite o ID da sala para excluir:");
-
-        if (idString != null) {
-            try {
-                int id = Integer.parseInt(idString);
-
-                boolean sucesso = service.excluirSala(id);
-
-                if (sucesso) {
-                    JOptionPane.showMessageDialog(this, "Sala excluída com sucesso!");
-                } else {
-                    JOptionPane.showMessageDialog(this, "Erro: ID não encontrado ou sala vinculada a reserva.");
-                }
-
-                listarTodasSalas();
-
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "ID inválido.");
-            }
+        }else{
+             String idStr = JOptionPane.showInputDialog(this, "ID da Sala para excluir:");
+             if(idStr != null){
+                 try{
+                     service.excluirSala(Integer.parseInt(idStr));
+                     listarTodasSalas();
+                 }catch(Exception e){
+                     JOptionPane.showMessageDialog(this, "ID inválido.");
+                 }
+             }
         }
     }
 
@@ -562,8 +532,8 @@ public class ReservaGUI extends JFrame {
                 if (sala != null){
                     tableModelSalas.setRowCount(0);
                     tableModelSalas.addRow(new Object[]{
-                        sala.getId(),
-                        sala.getPredio(),
+                        sala.getId(), 
+                        sala.getPredio(), 
                         sala.getCapacidade()
                     });
                 } else {
@@ -602,7 +572,7 @@ public class ReservaGUI extends JFrame {
     private void executarAcaoNovaReserva(){
         List<ItemReserva> reservasTemp = new ArrayList<>(); //(Julia) múltiplas salas em uma reserva
 
-        JPanel panel = new JPanel(new BorderLayout(10, 10));  //painel principal com dois subpaineis: Form e Tabela
+        JPanel panel = new JPanel(new BorderLayout(10, 10));  //painel principal com dois subpaineis: Form e Tabela 
         JPanel panelForm = new JPanel(new GridLayout(0, 2, 5, 5)); //divide a janela em duas colunas, cada linha com a mesma altura
         JPanel panelTabela = new JPanel(new BorderLayout());   //tem um sub painel
 
@@ -613,7 +583,7 @@ public class ReservaGUI extends JFrame {
         JComboBox<Sala> comboSala = new JComboBox<>();
 
         for(Sala s : salas){
-            comboSala.addItem(s);   //preenche a lista
+            comboSala.addItem(s);   //preenche a lista 
         }
 
         //(Julia) pra não ficar apagando os parâmetros de data e hora
@@ -632,7 +602,7 @@ public class ReservaGUI extends JFrame {
         txtDataFim = new JFormattedTextField(formatoDataHora);
 
         //--------------------------------------------------------
-        JButton btnAdicionar = new JButton("Adicionar sala");
+        JButton btnAdicionar = new JButton("Adicionar sala");   
 
         String[] colunas = {"Sala", "Início", "Fim"};   //define o nome das colunas da tabela
         DefaultTableModel modeloTemp = new DefaultTableModel(colunas, 0);   //inicialmente nenhuma linha
@@ -655,7 +625,7 @@ public class ReservaGUI extends JFrame {
                     //int idSala = salaSelecionada.getId();
                     try{
                         LocalDateTime inicio = LocalDateTime.parse(txtDataInicio.getText(), formatter);
-                        LocalDateTime fim = LocalDateTime.parse(txtDataFim.getText(), formatter);
+                        LocalDateTime fim = LocalDateTime.parse(txtDataFim.getText(), formatter); 
 
                         if(!inicio.isBefore(fim)){
                             JOptionPane.showConfirmDialog(panel, "Horário inválido!");
@@ -719,7 +689,7 @@ public class ReservaGUI extends JFrame {
             );
             if(!ok) sucessoFinal = false;
         }
-
+            
                     if (sucessoFinal){
                         JOptionPane.showMessageDialog(this, "Reserva realizada!");
                         listarTodasReservas();
@@ -734,22 +704,22 @@ public class ReservaGUI extends JFrame {
 
     private void executarAcaoAlterarReserva() {
         String idString = JOptionPane.showInputDialog(this, "Digite o ID da Reserva para ALTERAR:");
-
+        
         if (idString != null) {
             try {
                 int idReserva = Integer.parseInt(idString);
-                Reserva reservaAtual = service.buscaReservaPorId(idReserva);
+                Reserva reservaAtual = service.buscaReservaPorId(idReserva); 
 
                 if (reservaAtual != null) {
-                    // preenche o painel
+                    // preenche o painel 
                     JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
-
-                    // pega dados do primeiro item da reserva
+                    
+                    // pega dados do primeiro item da reserva 
                     ItemReserva itemAtual = reservaAtual.getItensDaReserva().isEmpty() ? null : reservaAtual.getItensDaReserva().get(0);
-
+                    
                     JTextField txtIdPessoa = new JTextField(String.valueOf(reservaAtual.getResponsavel().getId()));
                     JTextField txtIdSala = new JTextField(itemAtual != null ? String.valueOf(itemAtual.getSala().getId()) : "");
-
+                    
                     String dataIniStr = itemAtual != null ? itemAtual.getDataHoraInicio().format(formatter) : "dd/MM/yyyy HH:mm";
                     String dataFimStr = itemAtual != null ? itemAtual.getDataHoraFim().format(formatter) : "dd/MM/yyyy HH:mm";
 
@@ -786,7 +756,7 @@ public class ReservaGUI extends JFrame {
                         int idSala = Integer.parseInt(txtIdSala.getText());
                         LocalDateTime inicio = LocalDateTime.parse(txtDataInicio.getText(), formatter);
                         LocalDateTime fim = LocalDateTime.parse(txtDataFim.getText(), formatter);
-
+                        
                         // Chama o metodo de alterar do service
                         boolean sucesso = service.alterarReserva(idReserva, idPessoa, idSala, inicio, fim);
                         if (sucesso){
@@ -807,54 +777,35 @@ public class ReservaGUI extends JFrame {
 
     // implementanod de fsto agora o metodo de cancelar reserva, antes tava so de enfeite agr ta funcionando
     private void executarAcaoCancelarReserva() {
-        int linha = tabelaReservas.getSelectedRow();
-
-        if (linha != -1) {
-            int idSelecionado = (int) tabelaReservas.getValueAt(linha, 0);
-
-            int confirm = JOptionPane.showConfirmDialog(
-                    this,
-                    "Cancelar a reserva ID " + idSelecionado + "?",
-                    "Confirmar",
-                    JOptionPane.YES_NO_OPTION
-            );
-
-            if (confirm == JOptionPane.YES_OPTION) {
-                boolean ok = service.cancelarReserva(idSelecionado);
-
-                if (ok) {
-                    JOptionPane.showMessageDialog(this, "Reserva cancelada com sucesso!");
-                } else {
-                    JOptionPane.showMessageDialog(this, "Erro ao cancelar reserva.");
-                }
-
-                listarTodasReservas();
-            }
-            return;
+        String idString = null;
+        int linhaSelecionada = tabelaReservas.getSelectedRow();
+        
+        // tenta pegar o ID da linha selecionada
+        if (linhaSelecionada != -1) {
+            idString = String.valueOf(tabelaReservas.getValueAt(linhaSelecionada, 0));
+        }else{
+            idString = JOptionPane.showInputDialog(this, "Digite o ID da Reserva para CANCELAR:");
         }
-
-        // Input manual
-        String idString = JOptionPane.showInputDialog(this, "ID da reserva para cancelar:");
 
         if (idString != null) {
             try {
-                int id = Integer.parseInt(idString);
-
-                boolean ok = service.cancelarReserva(id);
-
-                if (ok) {
-                    JOptionPane.showMessageDialog(this, "Reserva cancelada com sucesso!");
-                } else {
-                    JOptionPane.showMessageDialog(this, "Erro ao cancelar reserva.");
+                int idReserva = Integer.parseInt(idString);
+                int confirm = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja cancelar a reserva " + idReserva + "?");
+                
+                if (confirm == JOptionPane.YES_OPTION) {
+                    boolean sucesso = service.cancelarReserva(idReserva);
+                    if (sucesso) {
+                        JOptionPane.showMessageDialog(this, "Reserva cancelada com sucesso!");
+                        listarTodasReservas();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Erro ao cancelar (ID não encontrado?).");
+                    }
                 }
-
-                listarTodasReservas();
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "ID inválido.");
             }
         }
     }
-
 
     //alexandre adicionando o metodo de executar a cao de buscar por id as reservas:
 
@@ -871,7 +822,7 @@ public class ReservaGUI extends JFrame {
                     if (!r.getItensDaReserva().isEmpty()) {
                         ItemReserva item = r.getItensDaReserva().get(0);
                         infoSala = "Sala " + item.getSala().getId();
-                        infoData = item.getDataHoraInicio().format(formatter);
+                        infoData = item.getDataHoraInicio().format(formatter); 
                     }
                     tableModelReservas.addRow(new Object[]{
                         r.getId(),
@@ -890,11 +841,11 @@ public class ReservaGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        // dica do chat, adicionar o LookAndFeel pra deixar a janela mais bonita
-        try {
+        // dica do chat, adicionar o LookAndFeel pra deixar a janela mais bonita 
+        try { 
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ignored) {}
-
+        
         SwingUtilities.invokeLater(() -> {
             new ReservaGUI();
         });

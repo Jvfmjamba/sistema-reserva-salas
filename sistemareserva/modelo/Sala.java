@@ -1,8 +1,7 @@
 package sistemareserva.modelo;
-import java.io.Serializable;
 import java.util.*;
 
-public class Sala extends Entidade implements Serializable {
+public class Sala extends Entidade {
     protected String predio;
     protected int capacidade;
     //recursos:
