@@ -647,7 +647,9 @@ public class ReservaGUI extends JFrame {
                         LocalDateTime fim = LocalDateTime.parse(txtDataFim.getText(), formatter); 
 
                         if(!inicio.isBefore(fim)){
-                            JOptionPane.showConfirmDialog(panel, "Horário inválido!");
+                            //JOptionPane.showConfirmDialog(panel, "Horário inválido!");
+                            //alexandre: aqui mudei para o pop up mostrar so o "ok"
+                            JOptionPane.showMessageDialog(this, "A data de término deve ser posterior à data de início.", "Erro de Data", JOptionPane.ERROR_MESSAGE);
                         }
 
                         ItemReserva item = new ItemReserva(salaSelecionada, inicio, fim);
