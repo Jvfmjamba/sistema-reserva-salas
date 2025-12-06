@@ -160,6 +160,7 @@ public class ReservaGUI extends JFrame {
             }
         }; 
         tabelaPessoas = new JTable(tableModel);
+        tabelaPessoas.setAutoCreateRowSorter(true);//ordena
         JScrollPane scrollPane = new JScrollPane(tabelaPessoas);
 
         painel.add(botoesPanel, BorderLayout.NORTH);
@@ -203,6 +204,7 @@ public class ReservaGUI extends JFrame {
             @Override public boolean isCellEditable(int row, int column) { return false; }
         };
         tabelaSalas =new JTable(tableModelSalas);
+        tabelaSalas.setAutoCreateRowSorter(true);//ordena 
         painel.add(botoesPanel, BorderLayout.NORTH);
         painel.add(new JScrollPane(tabelaSalas), BorderLayout.CENTER);
         return painel;
@@ -289,6 +291,7 @@ public class ReservaGUI extends JFrame {
         };
 
         tabelaReservas = new JTable(tableModelReservas);
+        tabelaReservas.setAutoCreateRowSorter(true);//ordena
         painel.add(botoesPanel, BorderLayout.NORTH);
         painel.add(new JScrollPane(tabelaReservas), BorderLayout.CENTER);
         return painel;
