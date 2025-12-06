@@ -173,6 +173,37 @@ public class SistemaReservaService {
         return false;  //sem conflito
     }
 
+    public boolean temConflitoIgnorandoReserva(int idReservaIgnorar, int idSala, LocalDateTime inicio, LocalDateTime fim) {
+
+        for (Reserva r : banco.getReservas2()) {
+
+            // ignora a própria reserva que está sendo alterada
+            if (r.getId() == idReservaIgnorar) {
+                continue;
+            }
+
+            for (ItemReserva item : r.getItensDaReserva()) {
+
+                // só importa conflito com a mesma sala
+                if (item.getSala().getId() == idSala) {
+
+                    // NÃO há conflito se:
+                    // fim < início existente  OU  início > fim existente
+                    boolean naoConflita =
+                            fim.isBefore(item.getDataHoraInicio()) ||
+                            inicio.isAfter(item.getDataHoraFim());
+
+                    if (!naoConflita) {
+                        return true; // conflito existe
+                    }
+                }
+            }
+        }
+
+        return false; // nenhum conflito encontrado
+    }
+
+
 
     public Reserva criarReserva(int idPessoa) {     //(Julia) pra conseguir colocar mais de uma sala na mesma reserva
         Pessoa p = banco.buscarPessoa(idPessoa);
