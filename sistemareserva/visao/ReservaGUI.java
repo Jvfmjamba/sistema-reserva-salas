@@ -468,10 +468,9 @@ public class ReservaGUI extends JFrame {
     // novo metodo adiocnado para alterar sala, antes nao tinha
     private void executarAcaoAlterarSala() {
         //alexandre: protecao pra caso a pessoa selecione mais de um item pra alterar
-        int[] linhas = tabelaPessoas.getSelectedRows();
-
-        if (linhas.length > 1) {
-            JOptionPane.showMessageDialog(this, "Por favor, selecione apenas UMA linha para alterar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+        int[] linhasSelecionadas = tabelaSalas.getSelectedRows();
+        if (linhasSelecionadas.length > 1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecione apenas UMA sala para alterar.", "Aviso", JOptionPane.WARNING_MESSAGE);
             return; 
         }
         String idString = null;
@@ -869,11 +868,10 @@ public class ReservaGUI extends JFrame {
 
     private void executarAcaoAlterarReserva() {
         //alexandre: protecao pra caso a pessoa selecione mais de um item pra alterar
-        int[] linhas = tabelaPessoas.getSelectedRows();
-
-        if (linhas.length > 1) {
-            JOptionPane.showMessageDialog(this, "Por favor, selecione apenas UMA linha para alterar.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            return; 
+        int[] linhasSelecionadas = tabelaReservas.getSelectedRows();
+        if (linhasSelecionadas.length > 1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecione apenas UMA reserva para alterar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
         }
         String idString = JOptionPane.showInputDialog(this, "Digite o ID da Reserva para ALTERAR:");
         
@@ -922,23 +920,28 @@ public class ReservaGUI extends JFrame {
                     panel.add(txtDataFim);
 
                     int result = JOptionPane.showConfirmDialog(this, panel, "Alterar Reserva ID " + idReserva, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-
                     if(result == JOptionPane.OK_OPTION){
-                        int idPessoa = Integer.parseInt(txtIdPessoa.getText());
-                        int idSala = Integer.parseInt(txtIdSala.getText());
-                        LocalDateTime inicio = LocalDateTime.parse(txtDataInicio.getText(), formatter);
-                        LocalDateTime fim = LocalDateTime.parse(txtDataFim.getText(), formatter);
-                        
-                        // Chama o metodo de alterar do service
-                        boolean sucesso = service.alterarReserva(idReserva, idPessoa, idSala, inicio, fim);
-                        if (sucesso){
-                            JOptionPane.showMessageDialog(this, "Reserva alterada!");
-                            listarTodasReservas();
-                        }else{
-                            JOptionPane.showMessageDialog(this, "Erro na alteração.");
+                        try{
+                            int idPessoa = Integer.parseInt(txtIdPessoa.getText());
+                            int idSala = Integer.parseInt(txtIdSala.getText());
+                            LocalDateTime inicio = LocalDateTime.parse(txtDataInicio.getText(), formatter);
+                            LocalDateTime fim = LocalDateTime.parse(txtDataFim.getText(), formatter);
+                            //verifica se a data de termino é depois da data de iicio
+                            if (fim.isBefore(inicio) || fim.isEqual(inicio)) {
+                                throw new Exception("A data de término deve ser posterior à data de início.");
+                            }
+                            boolean sucesso = service.alterarReserva(idReserva, idPessoa, idSala, inicio, fim);
+                            if (sucesso){
+                                JOptionPane.showMessageDialog(this, "Reserva alterada!");
+                                listarTodasReservas();
+                            }else{
+                                JOptionPane.showMessageDialog(this, "Erro na alteração.");
+                            }
+                        } catch(Exception ex) {
+                             JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage());
                         }
                     }
-                } else {
+                }else{
                     JOptionPane.showMessageDialog(this, "Reserva não encontrada.");
                 }
             } catch(Exception ex){
@@ -1013,7 +1016,7 @@ public class ReservaGUI extends JFrame {
     }
 
     //alexandre: agora a main fica no Programa.java
-    
+
     /* 
     public static void main(String[] args) {
         // dica do chat, adicionar o LookAndFeel pra deixar a janela mais bonita 
