@@ -15,17 +15,30 @@ public class SistemaReservaService {
     }
 
     private void carregarDadosIniciais() {
-        banco.getPessoas().inserir(new Pessoa("Professor Girafales"));
-        banco.getPessoas().inserir(new Pessoa("Dona Florinda"));
-        banco.getPessoas().inserir(new Pessoa("Seu Madruga"));
+        banco.getPessoas().inserir(new Pessoa("Alexandre"));
+        banco.getPessoas().inserir(new Pessoa("Julia"));
+        banco.getPessoas().inserir(new Pessoa("Joao Vitor"));
+        banco.getPessoas().inserir(new Pessoa("Marcus Vinicius"));
         banco.getPessoas().inserir(new Pessoa("Professor Matheus"));
+        banco.getPessoas().inserir(new Pessoa("Professor Elverton"));
+        banco.getPessoas().inserir(new Pessoa("Professor Vinicius"));
+        banco.getPessoas().inserir(new Pessoa("Professora Milenne"));
 
         banco.getSalas().inserir(new Sala("CCOMP", 50));
         banco.getSalas().inserir(new Sala("CCOMP", 30));
+        banco.getSalas().inserir(new Sala("CCOMP", 45));
         banco.getSalas().inserir(new Sala("CCOMP", 100));
-        banco.getSalas().inserir(new Sala("CCOMP", 10));
-        banco.getSalas().inserir(new Sala("ZOOTEC", 25));
-        banco.getSalas().inserir(new Sala("ARQUIT", 40));
+        banco.getSalas().inserir(new Sala("CCOMP-lab", 30));
+        banco.getSalas().inserir(new Sala("CCOMP-lab", 20));
+        banco.getSalas().inserir(new Sala("ECONOMIA", 35));
+        banco.getSalas().inserir(new Sala("ECONOMIA", 25));
+        banco.getSalas().inserir(new Sala("ECONOMIA", 55));
+        banco.getSalas().inserir(new Sala("ZOOTEC", 50));
+        banco.getSalas().inserir(new Sala("ZOOTEC", 10));
+        banco.getSalas().inserir(new Sala("ARQUIT", 25));
+        banco.getSalas().inserir(new Sala("ARQUIT", 30));
+        banco.getSalas().inserir(new Sala("MUSICA", 55));
+        banco.getSalas().inserir(new Sala("MUSICA", 15));
     }
 
     public boolean cadastrarPessoa(String nome) {

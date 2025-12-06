@@ -49,6 +49,8 @@ public class BancoDeDados {
     }
 
 
+    //alexandre: nao precisa mais disso aqui, foi pro service:
+    /* 
     // ... (carregarDadosIniciais, exibirMenuPrincipal e cadastrarPessoa continuam iguais) ...
     public static void carregarDadosIniciais() {
         System.out.println("Inicializando sistema e carregando dados...");
@@ -65,6 +67,7 @@ public class BancoDeDados {
         getSalas().inserir(new Sala("ARQUIT", 40));
 
     }
+    */
 
     public Pessoa buscarPessoa(int id) {
         for (Pessoa p : pessoas.listarTodos()) {
