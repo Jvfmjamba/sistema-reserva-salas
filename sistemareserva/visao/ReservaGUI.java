@@ -41,7 +41,21 @@ public class ReservaGUI extends JFrame {
 
         setTitle("Sistema de Reserva de Salas - SWING");
         setSize(900, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        //alexandre : janela que apareceao fechar o sistema:
+        addWindowListener(new java.awt.event.WindowAdapter(){
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e){
+                int confirm =JOptionPane.showConfirmDialog(null, 
+                    "Tem certeza que deseja sair do sistema?\nOs dados não salvos serão perdidos", 
+                    "Sair", 
+                    JOptionPane.YES_NO_OPTION);
+                if(confirm == JOptionPane.YES_OPTION){
+                    System.exit(0);
+                }
+            }
+        });
         setLocationRelativeTo(null); 
         configurarLayoutPrincipal();
         setVisible(true);
