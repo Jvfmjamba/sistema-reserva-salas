@@ -262,7 +262,6 @@ public class ReservaGUI extends JFrame {
 
     // alexandre painel de gerenciar as reservas, copiei do de pessoas e alterei
 
-
     private JPanel criarPainelGerenciarReservas(){
         JPanel painel = new JPanel(new BorderLayout(10, 10));
         painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -288,6 +287,14 @@ public class ReservaGUI extends JFrame {
 
         //config botão de infos da reserva:
         btnInfos.addActionListener(e -> {
+            //verifica se o usuário selecionou mais de uma linha
+            int[] linhasSelecionadas = tabelaReservas.getSelectedRows();
+            
+            if (linhasSelecionadas.length > 1) {
+                JOptionPane.showMessageDialog(this, "Por favor, selecione apenas UMA reserva para ver os detalhes.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return; 
+            }
+
             int linha = tabelaReservas.getSelectedRow();
             if(linha == -1){
                 JOptionPane.showMessageDialog(this, "Selecione uma reserva na tabela.");
@@ -331,7 +338,7 @@ public class ReservaGUI extends JFrame {
         botoesPanel.add(btnVoltar);
 
 
-        String[] colunas = {"ID Reserva", "Responsável"};//, "Sala", "Horário"};
+        String[] colunas = {"ID Reserva", "Responsável"};=
 
         tableModelReservas = new DefaultTableModel(colunas, 0) {
             @Override public boolean isCellEditable(int row, int column) { return false; }
@@ -343,7 +350,6 @@ public class ReservaGUI extends JFrame {
         painel.add(new JScrollPane(tabelaReservas), BorderLayout.CENTER);
         return painel;
     }
-    
 
 
     private void listarTodasPessoas() {
