@@ -11,8 +11,6 @@ public class Reserva extends Entidade{
 
     private List<ItemReserva> itensDaReserva;
 
-    //alexandre atualizei os construtores
-
     public Reserva(){
         this.responsavel =null;
         this.itensDaReserva =new ArrayList<>();

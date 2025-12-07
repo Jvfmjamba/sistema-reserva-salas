@@ -4,12 +4,6 @@ import java.util.*;
 public class Sala extends Entidade {
     protected String predio;
     protected int capacidade;
-    //alexandre : removi os recursos das salas ja que nao vamos usar mais
-    //recursos:
-    /*public boolean quadro;
-    public boolean projetor;
-    public boolean computador;
-    public boolean arCondicionado;*/
 
     public String getPredio() {
         return predio;
@@ -28,34 +22,12 @@ public class Sala extends Entidade {
     public Sala() {
         predio = null;
         capacidade = 0;
-        //quadro = projetor = computador = arCondicionado = false;
     }
 
     public Sala(String predio, int capacidade){
         this.predio = predio;
         this.capacidade = capacidade;
-        /*this.quadro = quadro;
-        this.projetor = projetor;
-        this.computador = computador;
-        this.arCondicionado = arCondicionado;*/
     }
-
-    /*public boolean temQuadro() {
-        return quadro;
-    }
-
-    public boolean temProjetor() {
-        return projetor;
-    }
-
-    public boolean temComputador() {
-        return computador;
-    }
-
-    public boolean temArCondicionado() {
-        return arCondicionado;
-    }*/
-
 
     @Override
     public String toString() {

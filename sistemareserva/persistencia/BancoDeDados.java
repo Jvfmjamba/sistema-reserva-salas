@@ -24,7 +24,7 @@ public class BancoDeDados {
      public List<Reserva> getReservas2() {    //novo get reservas
         return reservas.listarTodos();
     } 
-//-------------------------------------------------------------------------
+
     //adicionando getters e setters para pessoa, sala e reserva
     public Persistente<Pessoa> getPessoas() { //retirei static
         return pessoas;
@@ -49,35 +49,15 @@ public class BancoDeDados {
     }
 
 
-    //alexandre: nao precisa mais disso aqui, foi pro service:
-    /* 
-    // ... (carregarDadosIniciais, exibirMenuPrincipal e cadastrarPessoa continuam iguais) ...
-    public static void carregarDadosIniciais() {
-        System.out.println("Inicializando sistema e carregando dados...");
-        getPessoas().inserir(new Pessoa("Professor Girafales"));
-        getPessoas().inserir(new Pessoa("Dona Florinda"));
-        getPessoas().inserir(new Pessoa("Seu Madruga"));
-        getPessoas().inserir(new Pessoa("Professor Matheus"));
-
-        getSalas().inserir(new Sala("CCOMP", 50));
-        getSalas().inserir(new Sala("CCOMP", 30));
-        getSalas().inserir(new Sala("CCOMP", 100));
-        getSalas().inserir(new Sala("CCOMP", 10));
-        getSalas().inserir(new Sala("ZOOTEC", 25));
-        getSalas().inserir(new Sala("ARQUIT", 40));
-
-    }
-    */
-
-    public Pessoa buscarPessoa(int id) {
-        for (Pessoa p : pessoas.listarTodos()) {
+    public Pessoa buscarPessoa(int id){
+        for (Pessoa p : pessoas.listarTodos()){
             if (p.getId() == id) return p;
         }
         return null;
     }
 
-    public Sala buscarSala(int id) {
-        for (Sala s : salas.listarTodos()) {
+    public Sala buscarSala(int id){
+        for(Sala s : salas.listarTodos()){
             if (s.getId() == id) return s;
         }
         return null;

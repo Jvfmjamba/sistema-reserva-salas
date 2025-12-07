@@ -27,7 +27,6 @@ public class Pessoa extends Entidade {
         return "Pessoa - Matricula = " + id + ", Nome= " + nome;
     }
 
-    // alexandre tentando consertar os erros que o matheus falou
 
     private List<Reserva> minhasReservas =new ArrayList<>();
 
@@ -39,13 +38,10 @@ public class Pessoa extends Entidade {
         return minhasReservas;
     }
 
-    //alexandre adicionei a funcao removerpessoa
-
     public void removerReserva(Reserva reserva){
-    this.minhasReservas.remove(reserva);
-}
+        
+    }
 
-    // alexandre tentando consertar os erros que o matheus falou
 }
 
 

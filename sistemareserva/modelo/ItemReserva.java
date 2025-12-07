@@ -6,15 +6,12 @@ import java.time.format.DateTimeFormatter;
 
 
 public class ItemReserva{
-    //private Sala sala = new Sala();
     private Sala sala;
 
-    //alexandre tirou dataHoraInicio e dataHoraFim de Reserva.java e trouxe aqui pra ItemReserva.java
+    //dataHoraInicio e dataHoraFim removido de de Reserva.java, agora esta aqui em ItemReserva.java
 
     private LocalDateTime dataHoraInicio;
     private LocalDateTime dataHoraFim;
-
-    //alexandre tirou dataHoraInicio e dataHoraFim de Reserva.java e trouxe aqui pra ItemReserva.java
 
     public ItemReserva(Sala sala,LocalDateTime dataHoraInicio, LocalDateTime dataHoraFim){
         this.sala=sala;
@@ -30,7 +27,7 @@ public class ItemReserva{
         this.sala = sala;
     }
 
-    //alexandre adicionei getter e setter pra DataHoraInicio e DataHoraFim
+    //getter e setter pra DataHoraInicio e DataHoraFim
 
     public LocalDateTime getDataHoraInicio(){
         return dataHoraInicio;
@@ -39,9 +36,6 @@ public class ItemReserva{
     public LocalDateTime getDataHoraFim(){
         return dataHoraFim;
     }
-
-    //alexandre adicionei getter e setter pra DataHoraInicio e DataHoraFim
-
     
     @Override
     public String toString() {

@@ -9,17 +9,12 @@ public class Persistente<T extends Entidade> {
     private static int proxId =10;
 
     //construtor
-    public Persistente(){      //construtor
+    public Persistente(){
         this.lista = new ArrayList<>();
     }
 
     //alexandre alterando funcoes existentes e criando novas para retornar boolena, e funcionar os testes de unidade
 
-    /*
-    public void inserir(T novoObjeto) {
-        novoObjeto.setId(proxId++);
-        this.lista.add(novoObjeto);
-    }*/
 
     public boolean inserir(T novoObjeto) {
         // verifica se o objeto tem um id
@@ -55,11 +50,11 @@ public class Persistente<T extends Entidade> {
     }
 
     public List<T> listarTodos() {
-        // Retorna uma CÓPIA da lista, para proteger a lista original de modificações externas.
+        // retorna uma copia da lista, para proteger a lista original de modificações externas
         return new ArrayList<>(this.lista);
     }
 
-    // alexandre adicionando toString no Persistente.java
+    //toString adicionado no Persistente.java
     @Override
     public String toString(){
         if(lista.isEmpty()){
@@ -73,12 +68,6 @@ public class Persistente<T extends Entidade> {
         return builder.toString();
     }
 
-    // alexandre adicionando toString no Persistente.java
-
-    //*********************************************************************************************** 
-
-    //alexandre adicionando o método Alterar, nas especificacoes ele fala que tem que ter métodos pra inserção, alteração e exclusão, a gente só tem os que insere e exclui
-
     public boolean alterar(T objetoModificado){
     for(int i=0; i<lista.size();i++){
         if(lista.get(i).getId() ==objetoModificado.getId()){
@@ -89,6 +78,5 @@ public class Persistente<T extends Entidade> {
     return false;
     }
 
-    //alexandre adicionando o método Alterar, nas especificacoes ele fala que tem que ter métodos pra inserção, alte ração e exclusão, a gente só tem os que insere e exclui
 
 }
