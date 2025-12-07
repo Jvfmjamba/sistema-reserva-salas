@@ -944,11 +944,6 @@ public class ReservaGUI extends JFrame {
                     return;
                 }
 
-                //*************************************
-                // CORREÇÃO DOS ERROS 2 e 3:
-                // Em vez de chamar 'criarReserva' e 'adicionarItem' (que não existem),
-                // chamamos o novo método 'realizarReservaLista' que resolve tudo.
-                //*************************************
                 boolean sucesso = service.realizarReservaLista(idPessoa, reservasTemp);
 
                 if (sucesso){
@@ -957,7 +952,6 @@ public class ReservaGUI extends JFrame {
                 } else {
                     JOptionPane.showMessageDialog(this, "Erro: Conflito de horário ou ID de pessoa inválido.", "Erro", JOptionPane.ERROR_MESSAGE);
                 }
-                //*************************************
 
             } catch(NumberFormatException ex){
                 JOptionPane.showMessageDialog(this, "ID da Pessoa inválido.", "Erro", JOptionPane.ERROR_MESSAGE);
@@ -1230,18 +1224,4 @@ public class ReservaGUI extends JFrame {
         }
     }
 
-    //alexandre: agora a main fica no Programa.java
-
-    /* 
-    public static void main(String[] args) {
-        // dica do chat, adicionar o LookAndFeel pra deixar a janela mais bonita 
-        try { 
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception ignored) {}
-        
-        SwingUtilities.invokeLater(() -> {
-            new ReservaGUI();
-        });
-    }
-        */
 }
