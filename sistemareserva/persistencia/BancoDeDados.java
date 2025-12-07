@@ -48,7 +48,8 @@ public class BancoDeDados {
         this.salas = salas;
     }
 
-
+// Percorre todas as pessoas cadastradas e retorna aquela com o ID informado.
+// Se não encontrar, retorna null.
     public Pessoa buscarPessoa(int id){
         for (Pessoa p : pessoas.listarTodos()){
             if (p.getId() == id) return p;
