@@ -520,24 +520,49 @@ public class ReservaGUI extends JFrame {
         }
     }
 
-    private void executarAcaoExcluirSala(){
-        int row = tabelaSalas.getSelectedRow();
-        if(row != -1){
-            int id =(int)tabelaSalas.getValueAt(row, 0);
-            if (JOptionPane.showConfirmDialog(this, "Excluir Sala ID " + id + "?") == JOptionPane.YES_OPTION) {
-                service.excluirSala(id);
-                listarTodasSalas();
+
+    private void executarAcaoExcluirSala() {
+        int[] linhasSelecionadas = tabelaSalas.getSelectedRows();
+        
+        if (linhasSelecionadas.length == 0) {
+            JOptionPane.showMessageDialog(this, "Selecione uma ou mais salas para excluir.");
+            return;
+        }
+
+        StringBuilder idsParaExcluir = new StringBuilder();
+        for (int i = 0; i < linhasSelecionadas.length; i++) {
+            int modelRow = tabelaSalas.convertRowIndexToModel(linhasSelecionadas[i]);
+            idsParaExcluir.append(tableModelSalas.getValueAt(modelRow, 0)).append(" ");
+        }
+
+        int confirmacao = JOptionPane.showConfirmDialog(
+            this, 
+            "Tem certeza que deseja excluir os IDs de Sala: " + idsParaExcluir.toString().trim() + "?", 
+            "Confirmar Exclusão", 
+            JOptionPane.YES_NO_OPTION, 
+            JOptionPane.WARNING_MESSAGE
+        );
+
+        if (confirmacao == JOptionPane.YES_OPTION) {
+            int excluidos = 0;
+            for (int i = linhasSelecionadas.length - 1; i >= 0; i--) {
+                int modelRow = tabelaSalas.convertRowIndexToModel(linhasSelecionadas[i]);
+                try {
+                    int id = (int) tableModelSalas.getValueAt(modelRow, 0);
+                    if (service.excluirSala(id)) {
+                        excluidos++;
+                    }
+                } catch (Exception e) {
+                    // Ignora erros individuais e continua
+                }
             }
-        }else{
-             String idStr = JOptionPane.showInputDialog(this, "ID da Sala para excluir:");
-             if(idStr != null){
-                 try{
-                     service.excluirSala(Integer.parseInt(idStr));
-                     listarTodasSalas();
-                 }catch(Exception e){
-                     JOptionPane.showMessageDialog(this, "ID inválido.");
-                 }
-             }
+            
+            if (excluidos > 0) {
+                JOptionPane.showMessageDialog(this, excluidos + " sala(s) excluída(s) com sucesso!");
+                listarTodasSalas(); // Atualiza a tabela
+            } else {
+                JOptionPane.showMessageDialog(this, "Nenhuma sala foi excluída.");
+            }
         }
     }
 
@@ -1051,33 +1076,47 @@ public class ReservaGUI extends JFrame {
     }
 
     // implementanod de fsto agora o metodo de cancelar reserva, antes tava so de enfeite agr ta funcionando
+
     private void executarAcaoCancelarReserva() {
-        String idString = null;
-        int linhaSelecionada = tabelaReservas.getSelectedRow();
+        int[] linhasSelecionadas = tabelaReservas.getSelectedRows();
         
-        // tenta pegar o ID da linha selecionada
-        if (linhaSelecionada != -1) {
-            idString = String.valueOf(tabelaReservas.getValueAt(linhaSelecionada, 0));
-        }else{
-            idString = JOptionPane.showInputDialog(this, "Digite o ID da Reserva para CANCELAR:");
+        if (linhasSelecionadas.length == 0) {
+            JOptionPane.showMessageDialog(this, "Selecione uma ou mais reservas para cancelar.");
+            return;
         }
 
-        if (idString != null) {
-            try {
-                int idReserva = Integer.parseInt(idString);
-                int confirm = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja cancelar a reserva " + idReserva + "?");
-                
-                if (confirm == JOptionPane.YES_OPTION) {
-                    boolean sucesso = service.cancelarReserva(idReserva);
-                    if (sucesso) {
-                        JOptionPane.showMessageDialog(this, "Reserva cancelada com sucesso!");
-                        listarTodasReservas();
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Erro ao cancelar (ID não encontrado?).");
+        StringBuilder idsParaCancelar = new StringBuilder();
+        for (int i = 0; i < linhasSelecionadas.length; i++) {
+            int modelRow = tabelaReservas.convertRowIndexToModel(linhasSelecionadas[i]);
+            idsParaCancelar.append(tableModelReservas.getValueAt(modelRow, 0)).append(" ");
+        }
+
+        int confirmacao = JOptionPane.showConfirmDialog(
+            this, 
+            "Tem certeza que deseja CANCELAR os IDs de Reserva: " + idsParaCancelar.toString().trim() + "?", 
+            "Confirmar Cancelamento", 
+            JOptionPane.YES_NO_OPTION, 
+            JOptionPane.WARNING_MESSAGE
+        );
+
+        if (confirmacao == JOptionPane.YES_OPTION) {
+            int cancelados = 0;
+            for (int i = linhasSelecionadas.length - 1; i >= 0; i--) {
+                int modelRow = tabelaReservas.convertRowIndexToModel(linhasSelecionadas[i]);
+                try {
+                    int id = (int) tableModelReservas.getValueAt(modelRow, 0);
+                    if (service.cancelarReserva(id)) {
+                        cancelados++;
                     }
+                } catch (Exception e) {
                 }
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "ID inválido.");
+            }
+            
+            if (cancelados > 0) {
+                JOptionPane.showMessageDialog(this, cancelados + " reserva(s) cancelada(s) com sucesso!");
+                listarTodasReservas(); // Atualiza a tabela
+            } else {
+                JOptionPane.showMessageDialog(this, "Nenhuma reserva foi cancelada.");
             }
         }
     }
