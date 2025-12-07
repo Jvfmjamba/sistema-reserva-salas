@@ -213,10 +213,7 @@ public class ReservaGUI extends JFrame {
 
     // alexandre painel de gerenciar as reservas, copiei do de pessoas e alterei
 
-    //FALTA ALGUNS METODOS AINDA, O DE ALTERAR, FALTA IMPLEMENTAR O DE CANCELAR, 
-    //E TEM QUE AJUSTAR TAMBEM A PARA DE DATA E HORARIOS PRA FICAR MAIS FACIL DE DIGITAR, AZ VEZES O CHAT 
-    //DA UMA IDEIA BOA DE FICAR MAIS FACIL PRO USUARIO, TIPO UM CAPO PRO DIA/MES/ANO E OUTRO PRA HORARIO, MAS ISSO É DETALHE TMB FDS
-    //E FALTA TMB COLOCAR OS RECURSOS NA RESERVA, DE QUANTIDADE DE PESSOAS, E NECCESECIDADE DE RECURCSOS
+
     private JPanel criarPainelGerenciarReservas(){
         JPanel painel = new JPanel(new BorderLayout(10, 10));
         painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -330,33 +327,65 @@ public class ReservaGUI extends JFrame {
     }
 
     private void executarAcaoExcluirPessoa() {
-        //alexandre aqui vc pode agr clicar em cima do nome da pessoa e excluir, sem precisar digitar o id
-        String idString = null;
-        int linhaSelecionada = tabelaPessoas.getSelectedRow();
+        // Pega todos os índices selecionados na tabela
+        int[] linhasSelecionadas = tabelaPessoas.getSelectedRows();
         
-        if (linhaSelecionada != -1) {
-            int idSelecionado = (int) tabelaPessoas.getValueAt(linhaSelecionada, 0);
-            int confirm = JOptionPane.showConfirmDialog(this, "Deseja excluir o ID " + idSelecionado + "?");
-            if (confirm == JOptionPane.YES_OPTION) {
-                service.excluirPessoa(idSelecionado);
-                listarTodasPessoas();
-                return; 
+        if (linhasSelecionadas.length == 0) {
+            // Se nada foi selecionado, mantém o comportamento antigo (pedir ID)
+            String idString = JOptionPane.showInputDialog(this, "Nenhuma linha selecionada.\nDigite o ID para EXCLUIR:");
+            if (idString != null) {
+                try {
+                    int id = Integer.parseInt(idString);
+                    if (service.excluirPessoa(id)) {
+                        JOptionPane.showMessageDialog(this, "Excluído com sucesso!");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Erro: ID não encontrado.");
+                    }
+                    listarTodasPessoas();
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "ID inválido.");
+                }
             }
+            return;
         }
 
-        // se nao tiver selecionado ngm, ai deixa a caixinha que o marcus colocou mesmo, de colocar o id manualmente
-        idString = JOptionPane.showInputDialog(this, "Digite o ID para EXCLUIR:");
-        if (idString != null) {
-            try {
-                int id = Integer.parseInt(idString);
-                if (service.excluirPessoa(id)) {
-                    JOptionPane.showMessageDialog(this, "Excluído com sucesso!");
-                } else {
-                    JOptionPane.showMessageDialog(this, "Erro: ID não encontrado ou com pendências.");
+        // Constrói uma mensagem listando os IDs que serão excluídos
+        StringBuilder idsParaExcluir = new StringBuilder();
+        for (int i = 0; i < linhasSelecionadas.length; i++) {
+            int modelRow = tabelaPessoas.convertRowIndexToModel(linhasSelecionadas[i]);
+            // AQUI ESTAVA O ERRO: Mudamos de 'tableModelPessoas' para 'tableModel'
+            idsParaExcluir.append(tableModel.getValueAt(modelRow, 0)).append(" ");
+        }
+
+        int confirmacao = JOptionPane.showConfirmDialog(
+            this, 
+            "Tem certeza que deseja excluir os IDs de Pessoa: " + idsParaExcluir.toString().trim() + "?", 
+            "Confirmar Exclusão", 
+            JOptionPane.YES_NO_OPTION, 
+            JOptionPane.WARNING_MESSAGE
+        );
+
+        if (confirmacao == JOptionPane.YES_OPTION) {
+            int excluidos = 0;
+            // Loop reverso para evitar problemas de índice ao remover
+            for (int i = linhasSelecionadas.length - 1; i >= 0; i--) {
+                int modelRow = tabelaPessoas.convertRowIndexToModel(linhasSelecionadas[i]);
+                try {
+                    // AQUI TAMBÉM: Mudamos de 'tableModelPessoas' para 'tableModel'
+                    int id = (int) tableModel.getValueAt(modelRow, 0);
+                    if (service.excluirPessoa(id)) {
+                        excluidos++;
+                    }
+                } catch (Exception e) {
+                    // Ignora erros individuais e continua
                 }
-                listarTodasPessoas();
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "ID inválido.");
+            }
+            
+            if (excluidos > 0) {
+                JOptionPane.showMessageDialog(this, excluidos + " pessoa(s) excluída(s) com sucesso!");
+                listarTodasPessoas(); // Atualiza a tabela
+            } else {
+                JOptionPane.showMessageDialog(this, "Nenhuma pessoa foi excluída (talvez tenham reservas ativas).");
             }
         }
     }
