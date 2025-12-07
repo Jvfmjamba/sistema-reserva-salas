@@ -203,7 +203,7 @@ public class SistemaReservaService {
     }
     // RESERVAS RESERVAS RESERVAS
 
-    public boolean temConflito(int idSala, LocalDateTime inicio, LocalDateTime fim) {
+    public boolean temConflito(int idSala, LocalDateTime inicio, LocalDateTime fim){
         for (Reserva r : banco.getReservas().listarTodos()) {
             for (ItemReserva item : r.getItensDaReserva()) {
                 if (item.getSala().getId() == idSala) {
