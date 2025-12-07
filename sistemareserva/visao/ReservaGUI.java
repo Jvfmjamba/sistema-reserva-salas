@@ -868,8 +868,14 @@ public class ReservaGUI extends JFrame {
 
     //alexandre: refiz toda a executaracaoalterar reserva, agora ta funcioando com selecao dos itens
     private void executarAcaoAlterarReserva() {
+        // verifica se o usuário selecionou mais de uma linha
+        int[] linhasSelecionadas = tabelaReservas.getSelectedRows();
+        if (linhasSelecionadas.length > 1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecione apenas UMA reserva para alterar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         String idString = null;
-        
         int linhaSelecionada = tabelaReservas.getSelectedRow();
         if (linhaSelecionada != -1) {
             int modelRow = tabelaReservas.convertRowIndexToModel(linhaSelecionada);
@@ -894,10 +900,34 @@ public class ReservaGUI extends JFrame {
                     panelTopo.add(txtIdPessoa);
                     
                     String[] colunasItens = {"Sala", "Início (dd/MM/yyyy HH:mm)", "Fim (dd/MM/yyyy HH:mm)"};
-                    DefaultTableModel modeloItens = new DefaultTableModel(colunasItens, 0);
+                    
+                    //bloquear a edicao do nome das salas
+                    DefaultTableModel modeloItens = new DefaultTableModel(colunasItens, 0) {
+                        @Override
+                        public boolean isCellEditable(int row, int column) {
+                            // coluna 0 (sala) retorna false (nao editavel).
+                            // colunas 1 e 2 (datas) retorna true (editavel).
+                            return column != 0; 
+                        }
+                    };
+
                     JTable tabelaItens = new JTable(modeloItens);
                     JScrollPane scrollItens = new JScrollPane(tabelaItens);
-                    scrollItens.setPreferredSize(new Dimension(500, 150));
+                    scrollItens.setPreferredSize(new Dimension(550, 150)); 
+
+                    try {
+                        javax.swing.text.MaskFormatter mascaraData = new javax.swing.text.MaskFormatter("##/##/#### ##:##");
+                        mascaraData.setPlaceholderCharacter('_');
+                        
+                        JFormattedTextField campoData = new JFormattedTextField(mascaraData);
+                        
+                        DefaultCellEditor editorData = new DefaultCellEditor(campoData);
+                        
+                        tabelaItens.getColumnModel().getColumn(1).setCellEditor(editorData);
+                        tabelaItens.getColumnModel().getColumn(2).setCellEditor(editorData);
+                    } catch (Exception ex) {
+                        ex.printStackTrace(); 
+                    }
                     
                     for (ItemReserva item : itensTemp) {
                         modeloItens.addRow(new Object[]{
@@ -946,7 +976,6 @@ public class ReservaGUI extends JFrame {
                     btnRemSala.addActionListener(e -> {
                         int row = tabelaItens.getSelectedRow();
                         if (row != -1) {
-                            // isso aqui evita o bug de nao atualizar as datas
                             if (tabelaItens.isEditing()) {
                                 tabelaItens.getCellEditor().stopCellEditing();
                             }
@@ -968,7 +997,6 @@ public class ReservaGUI extends JFrame {
 
                     if (result == JOptionPane.OK_OPTION) {
                         try {
-                            // isso aqui evita o bug de nao atualizar as datas
                             if (tabelaItens.isEditing()) {
                                 tabelaItens.getCellEditor().stopCellEditing();
                             }
