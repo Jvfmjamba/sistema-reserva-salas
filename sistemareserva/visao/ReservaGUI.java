@@ -888,34 +888,32 @@ public class ReservaGUI extends JFrame {
                     JOptionPane.showMessageDialog(this, "Selecione um responsável.");
                     return;
                 }
-
                 int idPessoa = pessoaSelecionada.getId();
+                
                 if (reservasTemp.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Nenhuma sala foi adicionada à reserva.", "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Adicione pelo menos uma sala à lista!", "Aviso", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
-                Reserva novaReserva = service.criarReserva(idPessoa);
-                //(Julia) mudei do inicio do try até aqui pra implementar o combo box de pessoas
-                boolean sucessoFinal = true;
-                for(ItemReserva item : reservasTemp){  
-                boolean ok = service.adicionarItemNaReserva(
-                    novaReserva.getId(),
-                    item.getSala().getId(),
-                    item.getDataHoraInicio(),
-                    item.getDataHoraFim()
-                );
-                if(!ok) sucessoFinal = false;
-                }
-                
-                if (sucessoFinal){
-                    JOptionPane.showMessageDialog(this, "Reserva realizada!");
+                //*************************************
+                // CORREÇÃO DOS ERROS 2 e 3:
+                // Em vez de chamar 'criarReserva' e 'adicionarItem' (que não existem),
+                // chamamos o novo método 'realizarReservaLista' que resolve tudo.
+                //*************************************
+                boolean sucesso = service.realizarReservaLista(idPessoa, reservasTemp);
+
+                if (sucesso){
+                    JOptionPane.showMessageDialog(this, "Reserva realizada com sucesso!");
                     listarTodasReservas();
-                }else{
-                    JOptionPane.showMessageDialog(this, "Erro: confira os IDs e disponibilidade.");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Erro: Conflito de horário ou ID de pessoa inválido.", "Erro", JOptionPane.ERROR_MESSAGE);
                 }
-            }catch(Exception ex){
-                JOptionPane.showMessageDialog(this, "Erro de formato. Use dd/MM/yyyy HH:mm");
+                //*************************************
+
+            } catch(NumberFormatException ex){
+                JOptionPane.showMessageDialog(this, "ID da Pessoa inválido.", "Erro", JOptionPane.ERROR_MESSAGE);
+            } catch(Exception ex){
+                JOptionPane.showMessageDialog(this, "Erro inesperado: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
