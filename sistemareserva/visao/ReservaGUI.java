@@ -86,25 +86,47 @@ public class ReservaGUI extends JFrame {
     }
 
     private JPanel criarPainelMenuPrincipal() {
+        // Painel principal com fundo suave
         JPanel painel = new JPanel(new BorderLayout());
+        painel.setBackground(new Color(245, 245, 250)); 
+
+        //ti tulo - topo
+        JPanel painelTitulo = new JPanel();
+        painelTitulo.setLayout(new BoxLayout(painelTitulo, BoxLayout.Y_AXIS));
+        painelTitulo.setBackground(new Color(60, 90, 150));
+        painelTitulo.setBorder(BorderFactory.createEmptyBorder(30, 0, 30, 0));
+
+        JLabel titulo = new JLabel("SISTEMA DE RESERVA DE SALAS");
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        titulo.setForeground(Color.WHITE);
+        titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
         
-        JLabel titulo = new JLabel("=== SISTEMA DE RESERVA DE SALAS ===", SwingConstants.CENTER);
-        titulo.setFont(new Font("Arial", Font.BOLD, 20));
-        painel.add(titulo, BorderLayout.NORTH);
+        JLabel subTitulo = new JLabel("Trabalho - Programação Modular - Professor Matheus");
+        subTitulo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        subTitulo.setForeground(new Color(200, 220, 255));
+        subTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JPanel menuBotoes = new JPanel(new GridLayout(1, 3, 10, 10));
-        menuBotoes.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50)); // Margem para ficar bonito
+        painelTitulo.add(titulo);
+        painelTitulo.add(Box.createRigidArea(new Dimension(0, 5)));//espaço entre os textos
+        painelTitulo.add(subTitulo);
+        
+        painel.add(painelTitulo, BorderLayout.NORTH);
 
-        JButton btnPessoas = new JButton("1 - Gerenciar Pessoas");
-        JButton btnSalas = new JButton("2 - Gerenciar Salas");
-        JButton btnReservas = new JButton("3 - Gerenciar Reservas");
+        // centro - botoes
+        JPanel menuBotoes = new JPanel(new GridLayout(3, 1, 15, 15));
+        menuBotoes.setBackground(new Color(245, 245, 250)); 
+        // margem pra separar os botoes
+        menuBotoes.setBorder(BorderFactory.createEmptyBorder(60, 200, 60, 200)); 
+
+        JButton btnPessoas = criarBotaoBonito("Gerenciar Pessoas");
+        JButton btnSalas = criarBotaoBonito("Gerenciar Salas");
+        JButton btnReservas = criarBotaoBonito("Gerenciar Reservas");
 
         btnPessoas.addActionListener(e -> {
             cardLayout.show(mainPanel, "PESSOAS");
-            listarTodasPessoas(); // atualiza tabela
+            listarTodasPessoas();
         });
         
-        // agr os botoes de reerva e salas funciomam msm
         btnSalas.addActionListener(e -> {
             cardLayout.show(mainPanel, "SALAS");
             listarTodasSalas();
@@ -118,9 +140,36 @@ public class ReservaGUI extends JFrame {
         menuBotoes.add(btnPessoas);
         menuBotoes.add(btnSalas);
         menuBotoes.add(btnReservas);
-
         painel.add(menuBotoes, BorderLayout.CENTER);
+        // rodape
+        JPanel rodape = new JPanel();
+        rodape.setBackground(new Color(230, 230, 230));
+        rodape.add(new JLabel("Desenvolvido por Alexandre, Julia, João Vitor e Marcus Vinicius"));
+        painel.add(rodape, BorderLayout.SOUTH);
+
         return painel;
+    }
+
+    private JButton criarBotaoBonito(String texto){
+        JButton btn= new JButton(texto);
+        btn.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        btn.setBackground(Color.WHITE);
+        btn.setForeground(new Color(50, 50, 50));
+        btn.setFocusPainted(false); 
+        btn.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(200, 200, 200), 1),//borda cinza
+            BorderFactory.createEmptyBorder(10, 20, 10, 20) //espaçamento interno
+        ));
+        // efeito de passar mouse por cima
+        btn.addMouseListener(new java.awt.event.MouseAdapter(){
+            public void mouseEntered(java.awt.event.MouseEvent evt){
+                btn.setBackground(new Color(220, 230, 255));
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt){
+                btn.setBackground(Color.WHITE);
+            }
+        });
+        return btn;
     }
 
     // alexandre metodo novo para gerenciar as pessoas
