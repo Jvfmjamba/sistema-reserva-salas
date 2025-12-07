@@ -287,12 +287,11 @@ public class ReservaGUI extends JFrame {
 
         //config botão de infos da reserva:
         btnInfos.addActionListener(e -> {
-            //verifica se o usuário selecionou mais de uma linha
+            // Verifica se o usuário selecionou mais de uma linha
             int[] linhasSelecionadas = tabelaReservas.getSelectedRows();
-            
             if (linhasSelecionadas.length > 1) {
                 JOptionPane.showMessageDialog(this, "Por favor, selecione apenas UMA reserva para ver os detalhes.", "Aviso", JOptionPane.WARNING_MESSAGE);
-                return; 
+                return;
             }
 
             int linha = tabelaReservas.getSelectedRow();
@@ -338,7 +337,7 @@ public class ReservaGUI extends JFrame {
         botoesPanel.add(btnVoltar);
 
 
-        String[] colunas = {"ID Reserva", "Responsável"};=
+        String[] colunas = {"ID Reserva", "Responsável"};//, "Sala", "Horário"};
 
         tableModelReservas = new DefaultTableModel(colunas, 0) {
             @Override public boolean isCellEditable(int row, int column) { return false; }
