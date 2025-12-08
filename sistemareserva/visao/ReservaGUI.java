@@ -381,11 +381,12 @@ public class ReservaGUI extends JFrame {
         }
     }
 
-    //abre caixa de diálogo pedindo nome, envia ao serviço para salvar e atualiza a tabela. exibe avisos de sucesso ou erro.
+    //abre caixa de dialogo pedindo nome, envia ao serviço para salvar e atualiza a tabela
     private void executarAcaoCadastrarPessoa() {
         String nome = JOptionPane.showInputDialog(this, "Digite o NOME da pessoa:", "Cadastrar", JOptionPane.QUESTION_MESSAGE);
 
-        if (nome != null && !nome.trim().isEmpty()) {
+        // exibe avisos de sucesso ou erro.
+        if (nome != null && !nome.trim().isEmpty()){
             if (service.cadastrarPessoa(nome)) {
                 JOptionPane.showMessageDialog(this, "Sucesso!");
                 listarTodasPessoas(); 
@@ -395,74 +396,69 @@ public class ReservaGUI extends JFrame {
         }
     }
 
-    //Exclui uma ou várias pessoas:
-    //if-> há linhas selecionadas na tabela, exclui essas.
-    //else-> nenhuma selecionada, pede ID manual.
+   
     private void executarAcaoExcluirPessoa() {
-        // Pega todos os índices selecionados na tabela
+        // pega todos os índices selecionados na tabela
         int[] linhasSelecionadas = tabelaPessoas.getSelectedRows();
         
         if (linhasSelecionadas.length == 0) {
-            // Se nada foi selecionado, mantém o comportamento antigo (pedir ID)
+            // se nada foi selecionado, ele pede o id da pessoas
             String idString = JOptionPane.showInputDialog(this, "Nenhuma linha selecionada.\nDigite o ID para EXCLUIR:");
             if (idString != null) {
-                try {
+                try{
                     int id = Integer.parseInt(idString);
                     if (service.excluirPessoa(id)) {
                         JOptionPane.showMessageDialog(this, "Excluído com sucesso!");
-                    } else {
+                    }else{
                         JOptionPane.showMessageDialog(this, "Erro: ID não encontrado.");
                     }
                     listarTodasPessoas();
-                } catch (NumberFormatException e) {
+                }catch (NumberFormatException e) {
                     JOptionPane.showMessageDialog(this, "ID inválido.");
                 }
             }
             return;
         }
 
-        // Constrói uma mensagem listando os IDs que serão excluídos
+        // listando os id´s selecionados que serao excluidos
         StringBuilder idsParaExcluir = new StringBuilder();
         for (int i = 0; i < linhasSelecionadas.length; i++) {
             int modelRow = tabelaPessoas.convertRowIndexToModel(linhasSelecionadas[i]);
-            // AQUI ESTAVA O ERRO: Mudamos de 'tableModelPessoas' para 'tableModel'
             idsParaExcluir.append(tableModel.getValueAt(modelRow, 0)).append(" ");
         }
 
-        int confirmacao = JOptionPane.showConfirmDialog(
-            this, 
-            "Tem certeza que deseja excluir os IDs de Pessoa: " + idsParaExcluir.toString().trim() + "?", 
+        //confirmaçao pra ver se o usuario realemnte quer excluir todos os ids selecionados
+        int confirmacao = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja excluir os IDs de Pessoa: " + idsParaExcluir.toString().trim() + "?", 
             "Confirmar Exclusão", 
             JOptionPane.YES_NO_OPTION, 
             JOptionPane.WARNING_MESSAGE
         );
 
-        if (confirmacao == JOptionPane.YES_OPTION) {
+        if (confirmacao == JOptionPane.YES_OPTION){
             int excluidos = 0;
-            // Loop reverso para evitar problemas de índice ao remover
+            // loop reverso para evitar problemas de indice ao remover
             for (int i = linhasSelecionadas.length - 1; i >= 0; i--) {
                 int modelRow = tabelaPessoas.convertRowIndexToModel(linhasSelecionadas[i]);
                 try {
-                    // AQUI TAMBÉM: Mudamos de 'tableModelPessoas' para 'tableModel'
                     int id = (int) tableModel.getValueAt(modelRow, 0);
                     if (service.excluirPessoa(id)) {
                         excluidos++;
                     }
                 } catch (Exception e) {
-                    // Ignora erros individuais e continua
+                    // ignora erros individuais e continua
                 }
             }
             
             if (excluidos > 0) {
                 JOptionPane.showMessageDialog(this, excluidos + " pessoa(s) excluída(s) com sucesso!");
-                listarTodasPessoas(); // Atualiza a tabela
+                listarTodasPessoas(); // atualiza a tabela
             } else {
                 JOptionPane.showMessageDialog(this, "Nenhuma pessoa foi excluída (talvez tenham reservas ativas).");
             }
         }
     }
 
-    //Pede ID de pessoa, busca no serviço e mostra apenas ela na tabela. Se não existir, informa erro e recarrega lista completa.
+    //pede ID de pessoa, busca no sistemaReservaService e mostra apenas ela na tabela. se nao existir, informa erro e recarrega lista completa.
     private void executarAcaoBuscarPessoa() {
         String idString = JOptionPane.showInputDialog(this, "ID para BUSCAR:");
         if (idString != null) {
@@ -485,13 +481,10 @@ public class ReservaGUI extends JFrame {
         }
     }
 
-    //Edita uma pessoa.
-    //Usa pessoa selecionada na tabela ou pede ID.
-    //Solicita novo nome e salva alterado, atualizando a tabela.
+    //funcao de alterar pessoa, usa a pessoa selecionada na tabela com o mouse, ou informada pelo id, solicita um novo nome e atualiza na tabela
     private void executarAcaoAlterarPessoa() {
-        //alexandre: protecao pra caso a pessoa selecione mais de um item pra alterar
+        //protecao pra caso a pessoa selecione mais de um item pra alterar
         int[] linhas = tabelaPessoas.getSelectedRows();
-
         if (linhas.length > 1) {
             JOptionPane.showMessageDialog(this, "Por favor, selecione apenas UMA linha para alterar.", "Aviso", JOptionPane.WARNING_MESSAGE);
             return; 
@@ -500,7 +493,7 @@ public class ReservaGUI extends JFrame {
         String idString = null;
         int linhaSelecionada = tabelaPessoas.getSelectedRow();
         
-        if (linhaSelecionada != -1) {
+        if (linhaSelecionada != -1){
             idString = String.valueOf(tabelaPessoas.getValueAt(linhaSelecionada, 0));
         } else {
             idString = JOptionPane.showInputDialog(this, "ID para ALTERAR:");
@@ -510,7 +503,6 @@ public class ReservaGUI extends JFrame {
             try {
                 int id = Integer.parseInt(idString);
                 Pessoa pessoa = service.buscarPessoaPorId(id);
-
                 if (pessoa != null) {
                     String novoNome = JOptionPane.showInputDialog(this, "Novo nome para '" + pessoa.getNome() + "':", pessoa.getNome());
                     if (novoNome != null && service.alterarPessoa(id, novoNome)) {
@@ -526,8 +518,9 @@ public class ReservaGUI extends JFrame {
         }
     }
 
-    // metodos de logicas paras a ssalas:
-    //Limpa tabela e lista todas as salas cadastradas.
+    // MÉTODOS SALAS: 
+
+    //limpa a tabela e lista todas as salas cadastradas
     private void listarTodasSalas(){
         tableModelSalas.setRowCount(0);
         List<Sala> salas = service.listarSalas(); 
@@ -536,18 +529,18 @@ public class ReservaGUI extends JFrame {
                 tableModelSalas.addRow(new Object[]{s.getId(), s.getPredio(), s.getCapacidade()});
             }
         }else{
-            //alexandre aqui pode colocar um aviso se a lista estiver vazia dps
+            //alexandre aqui pode colocar um aviso se a lista estiver vazia
         }
     }
 
-    //Abre formulário com prédio/bloco e capacidade.
-    //Salva via serviço, verifica erros e atualiza tabela.
+
+    //metodo para cadastrar uma sala, abre o formulario com predio, bloco e capacidade. salva no sistemareservaservice e atualiza tabela
     private void executarAcaoCadastrarSala() {
         JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5)); 
         JTextField txtPredio = new JTextField();
         JTextField txtCapacidade = new JTextField();
         
-        
+        //caixas para preencher
         panel.add(new JLabel("Prédio/Bloco:"));
         panel.add(txtPredio);
         panel.add(new JLabel("Capacidade:"));
@@ -555,8 +548,8 @@ public class ReservaGUI extends JFrame {
 
         int result = JOptionPane.showConfirmDialog(this, panel, "Nova Sala", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-        if (result == JOptionPane.OK_OPTION) {
-            try {
+        if(result == JOptionPane.OK_OPTION){
+            try{
                 String predio = txtPredio.getText();
                 int capacidade = Integer.parseInt(txtCapacidade.getText());
                 
@@ -572,12 +565,10 @@ public class ReservaGUI extends JFrame {
         }
     }
 
-    // novo metodo adiocnado para alterar sala, antes nao tinha
-    //Edita sala selecionada ou via ID manual.
-    //Mostra formulário preenchido com valores atuais.
-    //Após edição, envia ao serviço e atualiza tabela.
+    //metodo para alterar sala selecionada ou informada por id.
+    //mostra o formulario preenchido com os valores novos, envia a ediçao pro service e atualiza a tabela
     private void executarAcaoAlterarSala() {
-        //alexandre: protecao pra caso a pessoa selecione mais de um item pra alterar
+        //protecao pra caso a pessoa selecione mais de um item pra alterar
         int[] linhasSelecionadas = tabelaSalas.getSelectedRows();
         if (linhasSelecionadas.length > 1) {
             JOptionPane.showMessageDialog(this, "Por favor, selecione apenas UMA sala para alterar.", "Aviso", JOptionPane.WARNING_MESSAGE);
@@ -602,6 +593,7 @@ public class ReservaGUI extends JFrame {
                     JTextField txtPredio = new JTextField(salaAtual.getPredio());
                     JTextField txtCapacidade = new JTextField(String.valueOf(salaAtual.getCapacidade()));
                     
+                    //caixas para preencher
                     panel.add(new JLabel("Prédio/Bloco:"));
                     panel.add(txtPredio);
                     panel.add(new JLabel("Capacidade:"));
@@ -631,21 +623,20 @@ public class ReservaGUI extends JFrame {
     }
 
 
-    //Exclui uma ou mais salas selecionadas na tabela após confirmação.
+    //metodp para excluir uma ou mais salas selecionadas na tabela após confirmaçao
     private void executarAcaoExcluirSala() {
         int[] linhasSelecionadas = tabelaSalas.getSelectedRows();
-        
         if (linhasSelecionadas.length == 0) {
             JOptionPane.showMessageDialog(this, "Selecione uma ou mais salas para excluir.");
             return;
         }
-
+        //lista os ids das salas selecionadas
         StringBuilder idsParaExcluir = new StringBuilder();
         for (int i = 0; i < linhasSelecionadas.length; i++) {
             int modelRow = tabelaSalas.convertRowIndexToModel(linhasSelecionadas[i]);
             idsParaExcluir.append(tableModelSalas.getValueAt(modelRow, 0)).append(" ");
         }
-
+        //confirma se o usuario quer excluir todas as salas selecionadas
         int confirmacao = JOptionPane.showConfirmDialog(
             this, 
             "Tem certeza que deseja excluir os IDs de Sala: " + idsParaExcluir.toString().trim() + "?", 
@@ -654,6 +645,7 @@ public class ReservaGUI extends JFrame {
             JOptionPane.WARNING_MESSAGE
         );
 
+        //se marcar quer sim, vai excluindo
         if (confirmacao == JOptionPane.YES_OPTION) {
             int excluidos = 0;
             for (int i = linhasSelecionadas.length - 1; i >= 0; i--) {
@@ -664,23 +656,22 @@ public class ReservaGUI extends JFrame {
                         excluidos++;
                     }
                 } catch (Exception e) {
-                    // Ignora erros individuais e continua
+                    // ignora erros individuais e continua
                 }
             }
             
             if (excluidos > 0) {
                 JOptionPane.showMessageDialog(this, excluidos + " sala(s) excluída(s) com sucesso!");
-                listarTodasSalas(); // Atualiza a tabela
+                listarTodasSalas(); // atualiza a tabela
             } else {
                 JOptionPane.showMessageDialog(this, "Nenhuma sala foi excluída.");
             }
         }
     }
 
-    //alexandre, novo metodo de executar a acao de buscar a sala por id:
-        //Pede ID de sala, busca no serviço e mostra apenas ela na tabela.
-    //Se não existir, mostra aviso e recarrega todas as salas.
-        private void executarAcaoBuscarSala(){
+
+    //metodo para buscar sala por id, busca no service e mostra apenas ela na tabela
+    private void executarAcaoBuscarSala(){
         String idString = JOptionPane.showInputDialog(this, "ID da Sala para BUSCAR:");
         if (idString != null){
             try{
@@ -703,9 +694,10 @@ public class ReservaGUI extends JFrame {
         }
     }
 
-    //alexandre metodos da logica para as funcoes da reserva
-    //Limpa tabela de reservas e insere todas as reservas cadastradas.
-    //Exibe nome do responsável e informações da primeira sala da reserva.
+    //METODOS RESERVAS
+
+
+    //metodo para listar reservas, limpa a tabela, insere odas as cadastradas, exibe o nome do responsavel e informaçoes
     private void listarTodasReservas(){
         tableModelReservas.setRowCount(0);
         List<Reserva> reservas = service.listarReservas();
@@ -728,18 +720,18 @@ public class ReservaGUI extends JFrame {
         }
     }
 
-    //Responsável por criar reservas com múltiplas salas
+    //metodo para criar reservas com varias salas
     private void executarAcaoNovaReserva(){
 
-        Function<Component, JPanel> wrap = comp -> {    //função dentro do método pra facilitar --> formatação
+        Function<Component, JPanel> wrap = comp -> {//função dentro do método pra facilitar - formatação
             JPanel p = new JPanel(new BorderLayout());
             p.add(comp, BorderLayout.CENTER);
             return p;
         };
 
-        List<ItemReserva> reservasTemp = new ArrayList<>(); //(Julia) múltiplas salas em uma reserva
+        List<ItemReserva> reservasTemp = new ArrayList<>(); //múltiplas salas em uma reserva
 
-        JPanel panel = new JPanel(new BorderLayout(10, 10));  //painel principal com dois subpaineis: Form e Tabela 
+        JPanel panel = new JPanel(new BorderLayout(10, 10));//painel principal com dois subpaineis: form e yabela 
         //JPanel panelForm = new JPanel(new GridLayout(0, 2, 5, 5)); 
         //ajuste formatação início
         JPanel panelForm = new JPanel(new GridBagLayout());
@@ -749,7 +741,7 @@ public class ReservaGUI extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
         //ajuste formatação fim
 
-        JPanel panelTabela = new JPanel(new BorderLayout());   //tem um sub painel
+        JPanel panelTabela = new JPanel(new BorderLayout());//tem um sub painel
 
         java.util.List<Pessoa> pessoa = service.listarPessoas();
         JComboBox<Pessoa> comboPessoa = new JComboBox<>();
@@ -758,13 +750,13 @@ public class ReservaGUI extends JFrame {
             comboPessoa.addItem(p);
         }
 
-        //(Julia) combo box de salas
+        //combo box de salas
         java.util.List<Sala> salas = service.listarSalas();
         JComboBox<Sala> comboSala = new JComboBox<>();
 
 
         for(Sala s : salas){
-            comboSala.addItem(s);   //preenche a lista 
+            comboSala.addItem(s);//preenche a lista 
         }
 
         //(Julia) pra não ficar apagando os parâmetros de data e hora
@@ -780,7 +772,7 @@ public class ReservaGUI extends JFrame {
         }
 
         txtDataInicio = new JFormattedTextField(formatoDataHora);
-        txtDataInicio.setPreferredSize(new Dimension(10, 28));  //formatação
+        txtDataInicio.setPreferredSize(new Dimension(10, 28)); //formatação
         txtDataFim = new JFormattedTextField(formatoDataHora);
         txtDataFim.setPreferredSize(new Dimension(10, 28)); //formatação
 
@@ -792,14 +784,14 @@ public class ReservaGUI extends JFrame {
         panelBotoes.add(btnExcluir);
 
 
-        String[] colunas = {"Sala", "Início", "Fim"};   //define o nome das colunas da tabela
-        DefaultTableModel modeloTemp = new DefaultTableModel(colunas, 0);   //inicialmente nenhuma linha
+        String[] colunas = {"Sala", "Início", "Fim"};//define o nome das colunas da tabela
+        DefaultTableModel modeloTemp = new DefaultTableModel(colunas, 0);//inicialmente nenhuma linha
         JTable tabelaTemp = new JTable(modeloTemp); //tabela "dinamica"
         tabelaTemp.setRowHeight(22);
 
         //add barra de rolagem caso a tabela fique muito grande
         JScrollPane scrollTemp = new JScrollPane(tabelaTemp);
-        scrollTemp.setPreferredSize(new Dimension(400, 120));   //ajusta o scroll
+        scrollTemp.setPreferredSize(new Dimension(400, 120));  //ajusta o scroll
         scrollTemp.setMaximumSize(new Dimension(500, 200)); //acompanha a largura da janela
 
         scrollTemp.setMaximumSize(new Dimension(280, 200));
@@ -865,7 +857,6 @@ public class ReservaGUI extends JFrame {
                         scrollTemp.setPreferredSize(new Dimension(280, altura));
                         scrollTemp.revalidate();
 
-
                         //reseta os valores pras próximas reservas
                         txtDataInicio.setValue(null);
                         txtDataFim.setValue(null);
@@ -892,7 +883,7 @@ public class ReservaGUI extends JFrame {
                     scrollTemp.revalidate();
                 });
 
-        //formatação (ref: código produtoForm.java disponibilizado no github):
+        //formatação 
         //linha 1 -> responsavel pela reserva
         gbc.gridx = 0; 
         gbc.gridy = 0;
@@ -995,8 +986,7 @@ public class ReservaGUI extends JFrame {
         }
     }
 
-    //alexandre: refiz toda a executaracaoalterar reserva, agora ta funcioando com selecao dos itens
-    //Permite alterar completamente uma reserva:
+    //metodo para alterar reserva
     private void executarAcaoAlterarReserva() {
         // verifica se o usuário selecionou mais de uma linha
         int[] linhasSelecionadas = tabelaReservas.getSelectedRows();
@@ -1040,12 +1030,14 @@ public class ReservaGUI extends JFrame {
                             return column != 0; 
                         }
                     };
+                    //bloquear a edicao do nome das salas
 
                     JTable tabelaItens = new JTable(modeloItens);
                     JScrollPane scrollItens = new JScrollPane(tabelaItens);
                     scrollItens.setPreferredSize(new Dimension(550, 150)); 
 
                     try {
+                        //formatacao bonitinha das datas e horarios pra facilitar
                         javax.swing.text.MaskFormatter mascaraData = new javax.swing.text.MaskFormatter("##/##/#### ##:##");
                         mascaraData.setPlaceholderCharacter('_');
                         
@@ -1077,6 +1069,7 @@ public class ReservaGUI extends JFrame {
                         for(Sala s : service.listarSalas()) comboSala.addItem(s);
                         
                         javax.swing.text.MaskFormatter formatoDataHora = null;
+                        //formatacao bonitinha das datas e horarios pra facilitar
                         try { formatoDataHora = new javax.swing.text.MaskFormatter("##/##/#### ##:##"); formatoDataHora.setPlaceholderCharacter('_'); } catch (Exception ex) {}
                         JFormattedTextField txtIni = new JFormattedTextField(formatoDataHora);
                         JFormattedTextField txtFim = new JFormattedTextField(formatoDataHora);
@@ -1180,9 +1173,7 @@ public class ReservaGUI extends JFrame {
         }
     }
 
-    // implementanod de fsto agora o metodo de cancelar reserva, antes tava so de enfeite agr ta funcionando
-    //Cancela uma ou várias reservas selecionadas, com confirmação antes de apagar.
-    //Após cancelar, atualiza tabela.
+    //metodo para cancelar reserva, cancela uma ou varias selecionadas, pode informar por id tmb. apos cancelar atualiza a tabela
     private void executarAcaoCancelarReserva() {
         int[] linhasSelecionadas = tabelaReservas.getSelectedRows();
         
@@ -1191,12 +1182,13 @@ public class ReservaGUI extends JFrame {
             return;
         }
 
+        //lista os ids pra cancelar
         StringBuilder idsParaCancelar = new StringBuilder();
         for (int i = 0; i < linhasSelecionadas.length; i++) {
             int modelRow = tabelaReservas.convertRowIndexToModel(linhasSelecionadas[i]);
             idsParaCancelar.append(tableModelReservas.getValueAt(modelRow, 0)).append(" ");
         }
-
+        //confirma se o usuario quer cancelar todas as reservas selecionadas
         int confirmacao = JOptionPane.showConfirmDialog(
             this,
             "Tem certeza que deseja CANCELAR os IDs de Reserva: " + idsParaCancelar.toString().trim() + "?",
@@ -1204,10 +1196,11 @@ public class ReservaGUI extends JFrame {
             JOptionPane.YES_NO_OPTION, 
             JOptionPane.WARNING_MESSAGE
         );
-
-        if (confirmacao == JOptionPane.YES_OPTION) {
+ 
+        //se sim, ele cancela todas as selecionadas
+        if (confirmacao == JOptionPane.YES_OPTION){
             int cancelados = 0;
-            for (int i = linhasSelecionadas.length - 1; i >= 0; i--) {
+            for (int i = linhasSelecionadas.length - 1; i >= 0; i--){
                 int modelRow = tabelaReservas.convertRowIndexToModel(linhasSelecionadas[i]);
                 try {
                     int id = (int) tableModelReservas.getValueAt(modelRow, 0);
@@ -1218,18 +1211,17 @@ public class ReservaGUI extends JFrame {
                 }
             }
             
-            if (cancelados > 0) {
+            if(cancelados > 0){
                 JOptionPane.showMessageDialog(this, cancelados + " reserva(s) cancelada(s) com sucesso!");
-                listarTodasReservas(); // Atualiza a tabela
-            } else {
+                listarTodasReservas(); //atualiza a tabela
+            }else{
                 JOptionPane.showMessageDialog(this, "Nenhuma reserva foi cancelada.");
             }
         }
     }
 
-    //alexandre adicionando o metodo de executar a cao de buscar por id as reservas:
-    //Pede ID de reserva, busca no serviço e exibe somente ela na tabela.
-    //Se não existir, avisa e mostra todas novamente.
+
+    //metodo para buscar uma reserva por id. pede o id, busca ela no service e mostra so ela na tabela
     private void executarAcaoBuscarReserva(){
         String idString = JOptionPane.showInputDialog(this, "ID da Reserva para BUSCAR:");
         if(idString != null){
