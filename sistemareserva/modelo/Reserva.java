@@ -20,7 +20,7 @@ public class Reserva extends Entidade{
         this.responsavel =responsavel;
         this.itensDaReserva =new ArrayList<>();
     }
-
+    //getters e setters
     public Pessoa getResponsavel() {
         return responsavel;
     }

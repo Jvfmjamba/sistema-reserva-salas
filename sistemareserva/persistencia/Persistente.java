@@ -16,6 +16,11 @@ public class Persistente<T extends Entidade> {
     //alexandre alterando funcoes existentes e criando novas para retornar boolena, e funcionar os testes de unidade
 
 
+    // Insere um novo objeto.
+    // Se o objeto já tem ID, verifica se é duplicado.
+    // Se o ID já existir na lista, não insere e retorna false.
+    // Se o ID não existir, adiciona normalmente.
+    // Se o objeto não tem ID (id = 0), gera um novo ID automaticamente e adiciona.
     public boolean inserir(T novoObjeto) {
         // verifica se o objeto tem um id
         if (novoObjeto.getId() != 0) {
@@ -35,10 +40,15 @@ public class Persistente<T extends Entidade> {
         return true;
     }
 
+    // Exclui o objeto cujo ID corresponde ao fornecido.
+    // Retorna true se encontrou e removeu, false caso contrário.
     public boolean excluir(int id) {
         return lista.removeIf(objeto-> objeto.getId() ==id);
     }
 
+    // Busca um objeto pelo ID percorrendo a lista.
+    // Se encontrar, retorna o objeto.
+    // Se percorrer tudo e não achar, lança a exceção IdInexistenteException.
     public T buscaId(int id) throws IdInexistenteException{
         for(T objeto : lista) {
             if(objeto.getId() == id) {
@@ -49,12 +59,15 @@ public class Persistente<T extends Entidade> {
         throw new IdInexistenteException("Entidade com ID " + id + " não encontrada.");
     }
 
+    // Retorna uma cópia da lista interna para evitar que ela seja alterada externamente.
     public List<T> listarTodos() {
         // retorna uma copia da lista, para proteger a lista original de modificações externas
         return new ArrayList<>(this.lista);
     }
 
     //toString adicionado no Persistente.java
+    // Retorna uma string com todos os itens da lista, um por linha.
+    // Se a lista estiver vazia, retorna a mensagem "Nenhum item cadastrado".
     @Override
     public String toString(){
         if(lista.isEmpty()){
@@ -68,6 +81,9 @@ public class Persistente<T extends Entidade> {
         return builder.toString();
     }
 
+    // Procura na lista um objeto com o mesmo ID do objeto modificado.
+    // Se encontrar, substitui pelo objeto novo e retorna true.
+    // Se não encontrar, retorna false.
     public boolean alterar(T objetoModificado){
     for(int i=0; i<lista.size();i++){
         if(lista.get(i).getId() ==objetoModificado.getId()){

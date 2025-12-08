@@ -10,9 +10,14 @@ public class BancoDeDados {
 
     //(Julia) mais de uma sala na mesma reserva
 
+    // Salva uma reserva no banco usando o método inserir de Persistente.
+    // Inserir é usado em vez de add porque Persistente controla IDs e regras internas.
+
     public void salvarReserva(Reserva reserva) {    
         reservas.inserir(reserva);  //talvez esse inserir de problema, mas n da pra usar add pq não é uma lista
     }
+// Percorre todas as reservas e retorna a reserva cujo ID corresponde ao informado.
+// Se não encontrar, retorna null.
 
     public Reserva buscarReserva(int id) {
         for (Reserva r : reservas.listarTodos()) {
@@ -20,7 +25,7 @@ public class BancoDeDados {
         }
         return null;
     }
-
+// Retorna uma cópia da lista de reservas armazenadas no Persistente.
      public List<Reserva> getReservas2() {    //novo get reservas
         return reservas.listarTodos();
     } 
@@ -57,6 +62,8 @@ public class BancoDeDados {
         return null;
     }
 
+    // Percorre todas as salas cadastradas e retorna aquela com o ID informado.
+// Se não encontrar, retorna null.
     public Sala buscarSala(int id){
         for(Sala s : salas.listarTodos()){
             if (s.getId() == id) return s;

@@ -15,12 +15,16 @@ public class PersistenteTest {
     private Persistente<Pessoa> bancoPessoas;
 
     // metodo que limpa o banco antes de rodar cada teste
+    // Executa antes de cada teste. Reinicializa o banco para garantir testes independentes.
+
     @Before
     public void setup() {
         bancoPessoas = new Persistente<>();
     }
 
     // TESTES DE INSERIR, COM ID EXISTENTE E COM ID INXISTENTE
+    // Testa inserir uma Pessoa nova que ainda não tem ID.
+    // Deve retornar TRUE e permitir buscá-la pelo ID recém-gerado.
 
     @Test
     public void testInserirEntidadeIdNaoExistente() {
@@ -37,6 +41,9 @@ public class PersistenteTest {
         }
     }
 
+    // Testa inserir uma Pessoa usando manualmente um ID que já existe.
+    // Inserção deve falhar e retornar FALSE.
+
     @Test
     public void testInserirEntidadeIdJaExistente() {
         Pessoa p1 = new Pessoa("Pessoa Original");
@@ -49,7 +56,8 @@ public class PersistenteTest {
     }
 
     //  TESTES DE ALTERAR COM ID EXISTENTE E COM ID INEXISTENTE
-
+    // Testa alterar uma Pessoa que já está no banco.
+    // Deve retornar TRUE e o nome atualizado deve ser encontrado no banco.
     @Test
     public void testAlterarIdExistente() {
         Pessoa p = new Pessoa("Nome Antigo");
@@ -65,6 +73,8 @@ public class PersistenteTest {
         }
     }
 
+    // Testa alterar uma Pessoa que não existe no banco.
+    // Deve retornar FALSE porque o ID não foi encontrado.
     @Test
     public void testAlterarIdNaoExistente() {
         Pessoa p = new Pessoa("Fantasma");
@@ -74,7 +84,8 @@ public class PersistenteTest {
     }
 
     // TESTES DE APAGAR COM ID EXISTENTE E OCM ID INEXISTENTE
-
+    // Testa excluir uma Pessoa já cadastrada.
+    // Deve retornar TRUE e a busca pelo ID deve lançar IdInexistenteException.
     @Test
     public void testApagarIdExistente() {
         Pessoa p = new Pessoa("Para Apagar");
@@ -87,6 +98,8 @@ public class PersistenteTest {
         });
     }
 
+    // Testa excluir um ID que não existe no banco.
+    // Deve retornar FALSE.
     @Test
     public void testApagarIdNaoExistente() {
         boolean resultado = bancoPessoas.excluir(8888);
@@ -94,6 +107,8 @@ public class PersistenteTest {
     }
 
     //  TESTES DE BUSCAR (2 Casos) COM ID EXISTENTE E COM ID INEXISTENTE
+// Testa buscar uma Pessoa já cadastrada.
+// Deve encontrar a pessoa e retornar seu ID corretamente.
 
     @Test
     public void testBuscarIdExistente() {
@@ -106,6 +121,9 @@ public class PersistenteTest {
             assertTrue("Não deveria dar erro", false);
         }
     }
+
+    // Testa buscar ID que não existe.
+    // A função deve lançar IdInexistenteException.
 
     @Test
     public void testBuscarIdNaoExistente() {

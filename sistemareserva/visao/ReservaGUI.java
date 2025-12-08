@@ -37,6 +37,8 @@ public class ReservaGUI extends JFrame {
     private CardLayout cardLayout; 
     private JPanel mainPanel; 
 
+
+    //Cria a janela principal:Instancia o serviço do sistema (SistemaReservaService)
     public ReservaGUI() {
         service = new SistemaReservaService(); 
 
@@ -62,6 +64,8 @@ public class ReservaGUI extends JFrame {
         setVisible(true);
     }
 
+    //Cria o CardLayout
+    //Cria os paineis: menu, pessoas, salas e reservas
     private void configurarLayoutPrincipal() {
         //alexandre inicia cardlayoout, consegue mostrar um painel por vez
         cardLayout = new CardLayout();
@@ -85,6 +89,8 @@ public class ReservaGUI extends JFrame {
         cardLayout.show(mainPanel, "MENU"); //qual tela começa aparecendo
     }
 
+    //Cria a tela principal com
+    //Botões: Gerenciar Pessoas, Salas e Reservas
     private JPanel criarPainelMenuPrincipal() {
         // Painel principal com fundo suave
         JPanel painel = new JPanel(new BorderLayout());
@@ -150,6 +156,9 @@ public class ReservaGUI extends JFrame {
         return painel;
     }
 
+    //Cria um botão estilizado
+    //Fonte maior
+    //Animação ao passar o mouse
     private JButton criarBotaoBonito(String texto){
         JButton btn= new JButton(texto);
         btn.setFont(new Font("Segoe UI", Font.PLAIN, 18));
@@ -173,6 +182,8 @@ public class ReservaGUI extends JFrame {
     }
 
     // alexandre metodo novo para gerenciar as pessoas
+    //Botões: cadastrar, alterar, excluir, buscar, atualizar, voltar
+    //Tabela com ID e Nome
     private JPanel criarPainelGerenciarPessoas() {
         JPanel painel = new JPanel(new BorderLayout(10, 10));
         painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -220,6 +231,7 @@ public class ReservaGUI extends JFrame {
     }
     
     // alexandre painel de gerenciar salas, copiei do de pessoas e alterei
+    //Cria tela de gerenciamento de salas com botões de cadastro, alteração, exclusão, busca, atualização, voltar, e tabela com informações das salas.
     private JPanel criarPainelGerenciarSalas(){
         JPanel painel = new JPanel(new BorderLayout(10, 10));
         painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -261,7 +273,7 @@ public class ReservaGUI extends JFrame {
     }
 
     // alexandre painel de gerenciar as reservas, copiei do de pessoas e alterei
-
+    //Cria a tela principal de reservas, com botões para nova reserva, alterar, buscar, informações de uma reserva, cancelar e voltar, e tabela com reservas existentes.
     private JPanel criarPainelGerenciarReservas(){
         JPanel painel = new JPanel(new BorderLayout(10, 10));
         painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -350,7 +362,7 @@ public class ReservaGUI extends JFrame {
         return painel;
     }
 
-
+    //Atualiza a tabela de pessoas: limpa tudo, busca no serviço e lista todas as pessoas na tabela, mostrando mensagem se não existir nenhuma.
     private void listarTodasPessoas() {
 
         tableModel.setRowCount(0); 
@@ -367,6 +379,7 @@ public class ReservaGUI extends JFrame {
         }
     }
 
+    //Abre caixa de diálogo pedindo nome, envia ao serviço para salvar e atualiza a tabela. Exibe avisos de sucesso ou erro.
     private void executarAcaoCadastrarPessoa() {
         String nome = JOptionPane.showInputDialog(this, "Digite o NOME da pessoa:", "Cadastrar", JOptionPane.QUESTION_MESSAGE);
 
@@ -380,6 +393,9 @@ public class ReservaGUI extends JFrame {
         }
     }
 
+    //Exclui uma ou várias pessoas:
+    //if-> há linhas selecionadas na tabela, exclui essas.
+    //else-> nenhuma selecionada, pede ID manual.
     private void executarAcaoExcluirPessoa() {
         // Pega todos os índices selecionados na tabela
         int[] linhasSelecionadas = tabelaPessoas.getSelectedRows();
@@ -444,6 +460,7 @@ public class ReservaGUI extends JFrame {
         }
     }
 
+    //Pede ID de pessoa, busca no serviço e mostra apenas ela na tabela. Se não existir, informa erro e recarrega lista completa.
     private void executarAcaoBuscarPessoa() {
         String idString = JOptionPane.showInputDialog(this, "ID para BUSCAR:");
         if (idString != null) {
@@ -466,6 +483,9 @@ public class ReservaGUI extends JFrame {
         }
     }
 
+    //Edita uma pessoa.
+    //Usa pessoa selecionada na tabela ou pede ID.
+    //Solicita novo nome e salva alterado, atualizando a tabela.
     private void executarAcaoAlterarPessoa() {
         //alexandre: protecao pra caso a pessoa selecione mais de um item pra alterar
         int[] linhas = tabelaPessoas.getSelectedRows();
@@ -505,7 +525,7 @@ public class ReservaGUI extends JFrame {
     }
 
     // metodos de logicas paras a ssalas:
-
+    //Limpa tabela e lista todas as salas cadastradas.
     private void listarTodasSalas(){
         tableModelSalas.setRowCount(0);
         List<Sala> salas = service.listarSalas(); 
@@ -518,6 +538,8 @@ public class ReservaGUI extends JFrame {
         }
     }
 
+    //Abre formulário com prédio/bloco e capacidade.
+    //Salva via serviço, verifica erros e atualiza tabela.
     private void executarAcaoCadastrarSala() {
         JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5)); 
         JTextField txtPredio = new JTextField();
@@ -549,6 +571,9 @@ public class ReservaGUI extends JFrame {
     }
 
     // novo metodo adiocnado para alterar sala, antes nao tinha
+    //Edita sala selecionada ou via ID manual.
+    //Mostra formulário preenchido com valores atuais.
+    //Após edição, envia ao serviço e atualiza tabela.
     private void executarAcaoAlterarSala() {
         //alexandre: protecao pra caso a pessoa selecione mais de um item pra alterar
         int[] linhasSelecionadas = tabelaSalas.getSelectedRows();
@@ -604,6 +629,7 @@ public class ReservaGUI extends JFrame {
     }
 
 
+    //Exclui uma ou mais salas selecionadas na tabela após confirmação.
     private void executarAcaoExcluirSala() {
         int[] linhasSelecionadas = tabelaSalas.getSelectedRows();
         
@@ -650,6 +676,8 @@ public class ReservaGUI extends JFrame {
     }
 
     //alexandre, novo metodo de executar a acao de buscar a sala por id:
+        //Pede ID de sala, busca no serviço e mostra apenas ela na tabela.
+    //Se não existir, mostra aviso e recarrega todas as salas.
         private void executarAcaoBuscarSala(){
         String idString = JOptionPane.showInputDialog(this, "ID da Sala para BUSCAR:");
         if (idString != null){
@@ -674,6 +702,8 @@ public class ReservaGUI extends JFrame {
     }
 
     //alexandre metodos da logica para as funcoes da reserva
+    //Limpa tabela de reservas e insere todas as reservas cadastradas.
+    //Exibe nome do responsável e informações da primeira sala da reserva.
     private void listarTodasReservas(){
         tableModelReservas.setRowCount(0);
         List<Reserva> reservas = service.listarReservas();
@@ -696,6 +726,7 @@ public class ReservaGUI extends JFrame {
         }
     }
 
+    //Responsável por criar reservas com múltiplas salas
     private void executarAcaoNovaReserva(){
 
         Function<Component, JPanel> wrap = comp -> {    //função dentro do método pra facilitar --> formatação
@@ -718,10 +749,8 @@ public class ReservaGUI extends JFrame {
 
         JPanel panelTabela = new JPanel(new BorderLayout());   //tem um sub painel
 
-        //JTextField txtIdPessoa = new JTextField();
         java.util.List<Pessoa> pessoa = service.listarPessoas();
         JComboBox<Pessoa> comboPessoa = new JComboBox<>();
-        //comboPessoa.setPreferredSize(new Dimension(10, 28));    //formatação
 
         for(Pessoa p : pessoa){
             comboPessoa.addItem(p);
@@ -730,7 +759,6 @@ public class ReservaGUI extends JFrame {
         //(Julia) combo box de salas
         java.util.List<Sala> salas = service.listarSalas();
         JComboBox<Sala> comboSala = new JComboBox<>();
-        //comboSala.setPreferredSize(new Dimension(10, 28));
 
 
         for(Sala s : salas){
@@ -782,7 +810,6 @@ public class ReservaGUI extends JFrame {
                         JOptionPane.showMessageDialog(this, "Selecione uma sala");
                         return;
                     }
-                    //int idSala = salaSelecionada.getId();
                     try{
                         LocalDateTime inicio = LocalDateTime.parse(txtDataInicio.getText(), formatter);
                         LocalDateTime fim = LocalDateTime.parse(txtDataFim.getText(), formatter); 
@@ -967,6 +994,7 @@ public class ReservaGUI extends JFrame {
     }
 
     //alexandre: refiz toda a executaracaoalterar reserva, agora ta funcioando com selecao dos itens
+    //Permite alterar completamente uma reserva:
     private void executarAcaoAlterarReserva() {
         // verifica se o usuário selecionou mais de uma linha
         int[] linhasSelecionadas = tabelaReservas.getSelectedRows();
@@ -1151,7 +1179,8 @@ public class ReservaGUI extends JFrame {
     }
 
     // implementanod de fsto agora o metodo de cancelar reserva, antes tava so de enfeite agr ta funcionando
-
+    //Cancela uma ou várias reservas selecionadas, com confirmação antes de apagar.
+    //Após cancelar, atualiza tabela.
     private void executarAcaoCancelarReserva() {
         int[] linhasSelecionadas = tabelaReservas.getSelectedRows();
         
@@ -1167,8 +1196,8 @@ public class ReservaGUI extends JFrame {
         }
 
         int confirmacao = JOptionPane.showConfirmDialog(
-            this, 
-            "Tem certeza que deseja CANCELAR os IDs de Reserva: " + idsParaCancelar.toString().trim() + "?", 
+            this,
+            "Tem certeza que deseja CANCELAR os IDs de Reserva: " + idsParaCancelar.toString().trim() + "?",
             "Confirmar Cancelamento", 
             JOptionPane.YES_NO_OPTION, 
             JOptionPane.WARNING_MESSAGE
@@ -1197,7 +1226,8 @@ public class ReservaGUI extends JFrame {
     }
 
     //alexandre adicionando o metodo de executar a cao de buscar por id as reservas:
-
+    //Pede ID de reserva, busca no serviço e exibe somente ela na tabela.
+    //Se não existir, avisa e mostra todas novamente.
     private void executarAcaoBuscarReserva(){
         String idString = JOptionPane.showInputDialog(this, "ID da Reserva para BUSCAR:");
         if(idString != null){
