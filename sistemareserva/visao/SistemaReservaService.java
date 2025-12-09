@@ -9,12 +9,11 @@ import sistemareserva.persistencia.*;
 public class SistemaReservaService {
     private BancoDeDados banco;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-    //construtor, cria o banco de dados e chama o metodo que insere pessoas e salas iniciais.
+    //cria o banco de dados e chama o metodo que insere pessoas e salas iniciais.
     public SistemaReservaService() {
         this.banco = new BancoDeDados();
         carregarDadosIniciais();
     }
-
     //insere no banco uma lista fixa de pessoas e salas ja pré-cadastradas para iniciar o sistema com dados iniciais.
     private void carregarDadosIniciais() {
         banco.getPessoas().inserir(new Pessoa("Alexandre"));
@@ -43,26 +42,29 @@ public class SistemaReservaService {
         banco.getSalas().inserir(new Sala("MUSICA", 15));
     }
 
-    // PESSOAS PESSOAS PESSOAS
-    //cadastra uma nova pessoa, valida o nome e insere no banco
     public boolean cadastrarPessoa(String nome) {
         if (nome == null || nome.trim().isEmpty()) 
             return false;
         return banco.getPessoas().inserir(new Pessoa(nome.trim()));
     }
 
-    //retorna todas as pessoas cadastradas no banco
-    public List<Pessoa> listarPessoas() { return banco.getPessoas().listarTodos(); }
-
-    //exclui uma pessoa do banco de dados pelo ID.
-    public boolean excluirPessoa(int id) { return banco.getPessoas().excluir(id); }
-
-    //busca e retorna uma pessoa pelo ID, se o ID não existir, retorna null
-    public Pessoa buscarPessoaPorId(int id) {
-        try { return banco.getPessoas().buscaId(id); } catch (IdInexistenteException e) { return null; }
+    public List<Pessoa> listarPessoas() { 
+        return banco.getPessoas().listarTodos(); 
     }
 
-    //altera o nome de uma pessoa: busca a pessoa – valida o novo nome - salva de volta no banco
+    public boolean excluirPessoa(int id) { 
+        return banco.getPessoas().excluir(id); 
+    }
+
+    public Pessoa buscarPessoaPorId(int id) {
+        try { 
+            return banco.getPessoas().buscaId(id); 
+        } catch (IdInexistenteException e) {
+            return null; 
+        }
+    }
+
+    //altera o nome de uma pessoa: busca a pessoa –> valida o novo nome -> salva de volta no banco
     public boolean alterarPessoa(int id, String novoNome) {
         try {
             Pessoa p = banco.getPessoas().buscaId(id);
@@ -71,11 +73,6 @@ public class SistemaReservaService {
             return banco.getPessoas().alterar(p);
         } catch (IdInexistenteException e) { return false; }
     }
-    // PESSOAS PESSOAS PESSOAS
-
-
-
-    // SALAS SALAS SALAS
 
     //retorna todas as salas cadastradas.
     public List<Sala> listarSalas(){ 
@@ -103,7 +100,7 @@ public class SistemaReservaService {
         }
     }
 
-    //atualiza os dados de uma sala existente: – busca a sala – altera prédio e capacidade –salva no banco
+    //atualiza os dados de uma sala existente: busca a sala –> altera prédio e capacidade –> salva no banco
     public boolean alterarSala(int id, String predio, int capacidade) {
         try {
             Sala sala = banco.getSalas().buscaId(id);
@@ -112,10 +109,6 @@ public class SistemaReservaService {
             return banco.getSalas().alterar(sala);
         } catch (IdInexistenteException e) { return false; }
     }
-    // SALAS SALAS SALAS
-
-
-    // RESERVAS RESERVAS RESERVAS
 
     //retorna todas as reservas cadastradas no banco
     public List<Reserva> listarReservas() {
@@ -137,8 +130,10 @@ public class SistemaReservaService {
 
             Pessoa responsavel = banco.getPessoas().buscaId(idPessoa);
             Sala sala = banco.getSalas().buscaId(idSala);
-            if (responsavel == null || sala == null) return false;
-            if (inicio.isAfter(fim) || inicio.isEqual(fim)) return false;
+            if (responsavel == null || sala == null) 
+                return false;
+            if (inicio.isAfter(fim) || inicio.isEqual(fim)) 
+                return false;
 
             Reserva novaReserva = new Reserva(responsavel);
             ItemReserva item = new ItemReserva(sala, inicio, fim);
@@ -147,7 +142,9 @@ public class SistemaReservaService {
             boolean inseriu = banco.getReservas().inserir(novaReserva);
             if (inseriu) responsavel.adicionarReserva(novaReserva);
             return inseriu;
-        } catch (IdInexistenteException e) { return false; }
+        } catch (IdInexistenteException e) { 
+            return false; 
+        }
     }
 
     // cria uma reserva com vários itens (várias salas e horários) apos validar tudo e verificar conflitos
@@ -156,20 +153,18 @@ public class SistemaReservaService {
             Pessoa responsavel = banco.getPessoas().buscaId(idPessoa);
             if (responsavel == null || itens.isEmpty()) return false;
 
-            //VALIDA OS CONFLITOS ANTES DE SALVAR
             for (ItemReserva item : itens) {
                 if (temConflito(item.getSala().getId(), item.getDataHoraInicio(), item.getDataHoraFim())) {
-                    return false; //SE DER ALGUM ERRO CANCELA TUDO
+                    return false; 
                 }
             }
 
-            //CRIA A RESERVA E ADICOINA TODS OS ITENS
             Reserva novaReserva = new Reserva(responsavel);
             for (ItemReserva item : itens) {
                 novaReserva.adicionarItem(item);
             }
 
-            //SLVA NO BANCO DE DADOS
+            //salva no banco de dados
             boolean inseriu = banco.getReservas().inserir(novaReserva);
             if (inseriu) {
                 responsavel.adicionarReserva(novaReserva);
@@ -182,6 +177,7 @@ public class SistemaReservaService {
         }
     }
 
+    //verifica se não foram digitados caracteres inválidos (ex: números) no campoo do nome
     public void somenteLetras(String texto) throws EntradaInvalidaException {
         if (texto == null || texto.trim().isEmpty())
             throw new EntradaInvalidaException("O campo não pode estar vazio!");
@@ -192,7 +188,6 @@ public class SistemaReservaService {
             }
         }
     }
-
 
     //  cancela uma reserva: remove do responsável e apaga do banco
     public boolean cancelarReserva(int id) {
@@ -205,7 +200,7 @@ public class SistemaReservaService {
         } catch (IdInexistenteException e) { return false; }
     }
 
-    //  ltera uma reserva simples: troca responsavel, substitui item e salva a atualização.
+    //  altera uma reserva simples: troca responsavel, substitui item e salva a atualização.
     public boolean alterarReserva(int idReserva, int idPessoa, int idSala, LocalDateTime inicio, LocalDateTime fim) {
         try {
             Reserva reserva = banco.getReservas().buscaId(idReserva);
@@ -221,7 +216,7 @@ public class SistemaReservaService {
             }
 
             if (!reserva.getItensDaReserva().isEmpty()) {
-                reserva.getItensDaReserva().clear(); //LIMPA OS ITENS ANTIGOS
+                reserva.getItensDaReserva().clear(); //limpa os intens antigos
             }
             
             ItemReserva novoItem = new ItemReserva(novaSala, inicio, fim);
@@ -257,8 +252,6 @@ public class SistemaReservaService {
             return banco.getReservas().alterar(reserva);
         } catch(IdInexistenteException e) { return false; }
     }
-    // RESERVAS RESERVAS RESERVAS
-
 
     // verifica se a sala está ocupada no horário informado, comparando com todas as reservas cadastradas
     public boolean temConflito(int idSala, LocalDateTime inicio, LocalDateTime fim){
