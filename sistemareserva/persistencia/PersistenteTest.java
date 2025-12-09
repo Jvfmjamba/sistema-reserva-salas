@@ -15,7 +15,7 @@ public class PersistenteTest {
     private Persistente<Pessoa> bancoPessoas;
 
     // metodo que limpa o banco antes de rodar cada teste
-    // Executa antes de cada teste. Reinicializa o banco para garantir testes independentes.
+    //executa antes de cada teste, reinicializa o banco para garantir testes independentes
 
     @Before
     public void setup() {
