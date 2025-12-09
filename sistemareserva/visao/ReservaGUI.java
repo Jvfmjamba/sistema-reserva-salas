@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 import sistemareserva.modelo.Pessoa;
 import sistemareserva.modelo.Sala;
+import sistemareserva.persistencia.EntradaInvalidaException;
 import sistemareserva.modelo.Reserva;
 import sistemareserva.modelo.ItemReserva;
 
@@ -383,17 +384,20 @@ public class ReservaGUI extends JFrame {
 
     //abre caixa de dialogo pedindo nome, envia ao serviço para salvar e atualiza a tabela
     private void executarAcaoCadastrarPessoa() {
-        String nome = JOptionPane.showInputDialog(this, "Digite o NOME da pessoa:", "Cadastrar", JOptionPane.QUESTION_MESSAGE);
-
-        // exibe avisos de sucesso ou erro.
-        if (nome != null && !nome.trim().isEmpty()){
-            if (service.cadastrarPessoa(nome)) {
-                JOptionPane.showMessageDialog(this, "Sucesso!");
-                listarTodasPessoas(); 
-            } else {
-                JOptionPane.showMessageDialog(this, "Erro ao cadastrar.", "Erro", JOptionPane.ERROR_MESSAGE);
-            }
-        }
+        try{
+            String nome = JOptionPane.showInputDialog(this, "Digite o NOME da pessoa:", "Cadastrar", JOptionPane.QUESTION_MESSAGE);
+            if (nome != null && !nome.trim().isEmpty()){
+                service.somenteLetras(nome);
+                if (service.cadastrarPessoa(nome)) {
+                    JOptionPane.showMessageDialog(this, "Sucesso!");
+                    listarTodasPessoas(); 
+                } else{
+                    JOptionPane.showMessageDialog(this, "Erro ao cadastrar.", "Erro", JOptionPane.ERROR_MESSAGE);
+                }
+            }   
+        } catch (EntradaInvalidaException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Entrada inválida", JOptionPane.ERROR_MESSAGE);
+        }   
     }
 
    
@@ -505,9 +509,21 @@ public class ReservaGUI extends JFrame {
                 Pessoa pessoa = service.buscarPessoaPorId(id);
                 if (pessoa != null) {
                     String novoNome = JOptionPane.showInputDialog(this, "Novo nome para '" + pessoa.getNome() + "':", pessoa.getNome());
-                    if (novoNome != null && service.alterarPessoa(id, novoNome)) {
-                        JOptionPane.showMessageDialog(this, "Alterado com sucesso!");
-                        listarTodasPessoas();
+
+                    if (novoNome != null) {
+                        try{
+                            service.somenteLetras(novoNome);
+
+                        if (service.alterarPessoa(id, novoNome.trim())) {
+                            JOptionPane.showMessageDialog(this, "Alterado com sucesso!");
+                            listarTodasPessoas();
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Erro ao alterar.", "Erro", JOptionPane.ERROR_MESSAGE);
+                        }
+
+                        }catch(EntradaInvalidaException e){
+                            JOptionPane.showMessageDialog(this, e.getMessage(), "Entrada inválida", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                 } else {
                     JOptionPane.showMessageDialog(this, "ID não encontrado.");
@@ -551,6 +567,8 @@ public class ReservaGUI extends JFrame {
         if(result == JOptionPane.OK_OPTION){
             try{
                 String predio = txtPredio.getText();
+                service.somenteLetras(predio);
+
                 int capacidade = Integer.parseInt(txtCapacidade.getText());
                 
                 if (service.cadastrarSala(predio, capacidade)) {
@@ -559,6 +577,8 @@ public class ReservaGUI extends JFrame {
                 } else {
                     JOptionPane.showMessageDialog(this, "Erro ao cadastrar Sala.", "Erro", JOptionPane.ERROR_MESSAGE);
                 }
+            }catch(EntradaInvalidaException ex){
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), "Entrada inválida", JOptionPane.ERROR_MESSAGE);
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Erro: Capacidade deve ser um número válido.", "Erro de Formato", JOptionPane.ERROR_MESSAGE);
             }
@@ -603,15 +623,21 @@ public class ReservaGUI extends JFrame {
 
                     if(result == JOptionPane.OK_OPTION){
                         String predio = txtPredio.getText();
-                        int capacidade = Integer.parseInt(txtCapacidade.getText());
-                        
-                        boolean sucesso = service.alterarSala(id, predio, capacidade);
-                        if(sucesso){
-                            JOptionPane.showMessageDialog(this, "Sala alterada com sucesso!");
-                            listarTodasSalas();
-                        } else {
-                            JOptionPane.showMessageDialog(this, "Erro ao alterar sala.", "Erro", JOptionPane.ERROR_MESSAGE);
-                        }
+                        try{
+                            service.somenteLetras(predio);
+
+                            int capacidade = Integer.parseInt(txtCapacidade.getText());
+                            
+                            boolean sucesso = service.alterarSala(id, predio, capacidade);
+                            if(sucesso){
+                                JOptionPane.showMessageDialog(this, "Sala alterada com sucesso!");
+                                listarTodasSalas();
+                            } else {
+                                JOptionPane.showMessageDialog(this, "Erro ao alterar sala.", "Erro", JOptionPane.ERROR_MESSAGE);
+                            }  
+                        }catch(EntradaInvalidaException e){
+                            JOptionPane.showMessageDialog(this, e.getMessage(), "O nome da sala deve conter apenas letras", JOptionPane.ERROR_MESSAGE);
+                        }   
                     }
                 } else {
                     JOptionPane.showMessageDialog(this, "Sala não encontrada.", "Erro", JOptionPane.ERROR_MESSAGE);

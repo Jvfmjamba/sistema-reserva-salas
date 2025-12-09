@@ -46,7 +46,8 @@ public class SistemaReservaService {
     // PESSOAS PESSOAS PESSOAS
     //cadastra uma nova pessoa, valida o nome e insere no banco
     public boolean cadastrarPessoa(String nome) {
-        if (nome == null || nome.trim().isEmpty()) return false;
+        if (nome == null || nome.trim().isEmpty()) 
+            return false;
         return banco.getPessoas().inserir(new Pessoa(nome.trim()));
     }
 
@@ -180,6 +181,18 @@ public class SistemaReservaService {
             return false;
         }
     }
+
+    public void somenteLetras(String texto) throws EntradaInvalidaException {
+        if (texto == null || texto.trim().isEmpty())
+            throw new EntradaInvalidaException("O campo não pode estar vazio!");
+
+        for (char c : texto.toCharArray()) {
+            if (!Character.isLetter(c) && c != ' ') {
+                throw new EntradaInvalidaException("Nomes devem conter apenas letras!");
+            }
+        }
+    }
+
 
     //  cancela uma reserva: remove do responsável e apaga do banco
     public boolean cancelarReserva(int id) {
