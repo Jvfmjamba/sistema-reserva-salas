@@ -23,7 +23,7 @@ public class ReservaGUI extends JFrame {
     private SistemaReservaService service;
     
     private JTable tabelaPessoas; 
-    private DefaultTableModel tableModel; //alexandre mudei o jtextarea
+    private DefaultTableModel tableModel; 
 
     //novas variaveis 
     private JTable tabelaSalas;
@@ -44,9 +44,7 @@ public class ReservaGUI extends JFrame {
 
         setTitle("Sistema de Reserva de Salas - SWING");
         setSize(900, 600);
-        //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        //alexandre : janela que aparece ao fechar o sistema:
         addWindowListener(new java.awt.event.WindowAdapter(){
             @Override
             public void windowClosing(java.awt.event.WindowEvent e){
@@ -64,18 +62,16 @@ public class ReservaGUI extends JFrame {
         setVisible(true);
     }
 
-    //Cria o CardLayout
-    //cria os paineis: menu, pessoas, salas e reservas
     private void configurarLayoutPrincipal() {
-        //alexandre: inicia cardlayoout, consegue mostrar um painel por vez
+        // inicializa cardlayoout, mostra um painel por vez
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
         
-        //alexandre adicionei os paineis iniciais na tela, separados
+        // paineis iniciais na tela (separados)
         JPanel painelMenu = criarPainelMenuPrincipal();
         JPanel painelPessoas = criarPainelGerenciarPessoas();
         
-        // alexandre criando e adicionando os painéis novos salas e reevervas
+        // criando e adicionando os painéis novos salas e reevervas
         JPanel painelSalas = criarPainelGerenciarSalas();
         JPanel painelReservas = criarPainelGerenciarReservas();
         
@@ -86,17 +82,16 @@ public class ReservaGUI extends JFrame {
         mainPanel.add(painelReservas, "RESERVAS");
 
         add(mainPanel);
-        
-        cardLayout.show(mainPanel, "MENU"); //qual tela começa aparecendo
+        cardLayout.show(mainPanel, "MENU"); 
     }
 
     // cria a tela principal com botões: Gerenciar Pessoas, Salas e Reservas
     private JPanel criarPainelMenuPrincipal() {
-        // Painel principal 
+        // painel principal 
         JPanel painel = new JPanel(new BorderLayout());
         painel.setBackground(new Color(245, 245, 250)); 
 
-        //titulo - topo
+        //titulo 
         JPanel painelTitulo = new JPanel();
         painelTitulo.setLayout(new BoxLayout(painelTitulo, BoxLayout.Y_AXIS));
         painelTitulo.setBackground(new Color(60, 90, 150));
@@ -109,21 +104,21 @@ public class ReservaGUI extends JFrame {
 
         //cabeçalho
         JLabel subTitulo = new JLabel("Trabalho - Programação Modular - Professor Matheus");
-        //fonte usada
+        //fonte 
         subTitulo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         subTitulo.setForeground(new Color(200, 220, 255));
         subTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         painelTitulo.add(titulo);
-        painelTitulo.add(Box.createRigidArea(new Dimension(0, 5)));//espaço entre os textos
+        painelTitulo.add(Box.createRigidArea(new Dimension(0, 5)));     //espaço entre os textos
         painelTitulo.add(subTitulo);
         
         painel.add(painelTitulo, BorderLayout.NORTH);
 
-        // centro - botoes
+        // botoes
         JPanel menuBotoes = new JPanel(new GridLayout(3, 1, 15, 15));
         menuBotoes.setBackground(new Color(245, 245, 250)); 
-        // margem pra separar os botoes, para melhor formataçao
+        // margem pra separar os botoes (formatação)
         menuBotoes.setBorder(BorderFactory.createEmptyBorder(60, 200, 60, 200)); 
 
         //botoes formatados de gerenciar pessoas, salas e reservas
@@ -131,19 +126,19 @@ public class ReservaGUI extends JFrame {
         JButton btnSalas = criarBotaoBonito("Gerenciar Salas");
         JButton btnReservas = criarBotaoBonito("Gerenciar Reservas");
 
-        //botao menu pessoas
+        //botão menu pessoas
         btnPessoas.addActionListener(e -> {
             cardLayout.show(mainPanel, "PESSOAS");
             listarTodasPessoas();
         });
         
-        //botao menu salas
+        //botão menu salas
         btnSalas.addActionListener(e -> {
             cardLayout.show(mainPanel, "SALAS");
             listarTodasSalas();
         });
         
-        //botao menu reservas
+        //botão menu reservas
         btnReservas.addActionListener(e -> {
             cardLayout.show(mainPanel, "RESERVAS");
             listarTodasReservas();
@@ -153,7 +148,7 @@ public class ReservaGUI extends JFrame {
         menuBotoes.add(btnSalas);
         menuBotoes.add(btnReservas);
         painel.add(menuBotoes, BorderLayout.CENTER);
-        // rodape do menu inicial
+        // rodapé do menu inicial
         JPanel rodape = new JPanel();
         rodape.setBackground(new Color(230, 230, 230));
         rodape.add(new JLabel("Desenvolvido por Alexandre, Julia, João Vitor e Marcus Vinicius"));
@@ -162,18 +157,17 @@ public class ReservaGUI extends JFrame {
         return painel;
     }
 
-
-    //funcao para criar um botao estilizado, com uma fonte maior e animaçao ao passar o mouse por cima
+    // cria botao estilizado (fonte e animação)
     private JButton criarBotaoBonito(String texto){
         JButton btn= new JButton(texto);
         //fonte
         btn.setFont(new Font("Segoe UI", Font.PLAIN, 18));
-        btn.setBackground(Color.WHITE);//cor fundo
+        btn.setBackground(Color.WHITE); //cor fundo
         btn.setForeground(new Color(50, 50, 50));
         btn.setFocusPainted(false); 
         btn.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(200, 200, 200), 1),//borda cinza
-            BorderFactory.createEmptyBorder(10, 20, 10, 20) //espaçamento interno
+            BorderFactory.createLineBorder(new Color(200, 200, 200), 1),    //borda cinza
+            BorderFactory.createEmptyBorder(10, 20, 10, 20)     //espaçamento interno
         ));
         // efeito de passar mouse por cima
         btn.addMouseListener(new java.awt.event.MouseAdapter(){
@@ -185,23 +179,22 @@ public class ReservaGUI extends JFrame {
             }
         });
         return btn;
-    }
+    } 
 
-
-    //funcao que cria o painel de gerenciar pessoas, com botoes de cadastrar, alterr, excluir, buscar, atualizar e voltar
+    // cria o painel de gerenciar pessoas (cadastrar, alterr, excluir, buscar, atualizar e voltar)
     private JPanel criarPainelGerenciarPessoas() {
-        //formatacao
+        //formatação
         JPanel painel = new JPanel(new BorderLayout(10, 10));
         painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        //bootoes do topo
+        //bootões do topo
         JPanel botoesPanel = new JPanel(new GridLayout(1, 6, 5, 0));
         JButton btnCadastrar = new JButton("Cadastrar");
         JButton btnAlterar = new JButton("Alterar");
         JButton btnExcluir = new JButton("Excluir");
         JButton btnBuscar = new JButton("Buscar ID");
         JButton btnAtualizar = new JButton("Atualizar Lista");
-        JButton btnInfos = new JButton("Infos reserva");    //(Julia) consultar as reservas
+        JButton btnInfos = new JButton("Infos reserva");   
         JButton btnVoltar = new JButton("Voltar");
 
         botoesPanel.add(btnCadastrar);
@@ -223,11 +216,11 @@ public class ReservaGUI extends JFrame {
         tableModel = new DefaultTableModel(colunas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; //dica de boa pratica que achei pra evitar bananagem
+                return false; 
             }
         }; 
-        tabelaPessoas = new JTable(tableModel);//cria tabela
-        tabelaPessoas.setAutoCreateRowSorter(true);//ordena
+        tabelaPessoas = new JTable(tableModel); //cria tabela
+        tabelaPessoas.setAutoCreateRowSorter(true); //ordena
         JScrollPane scrollPane = new JScrollPane(tabelaPessoas);
 
         painel.add(botoesPanel, BorderLayout.NORTH);
@@ -236,20 +229,19 @@ public class ReservaGUI extends JFrame {
         return painel;
     }
     
-    //funcao que cria tela de gerenciamento de salas com botões de cadastro, alteração, exclusão, busca, atualização, voltar, e tabela com informações das salas.
+    // cria tela de gerenciamento de salas com botões (cadastro, alteração, exclusão, busca, atualização, voltar, e tabela com informações das salas)
     private JPanel criarPainelGerenciarSalas(){
         JPanel painel = new JPanel(new BorderLayout(10, 10));
         painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        //alexandre botoes
+
         JPanel botoesPanel = new JPanel(new GridLayout(1, 5, 5, 0));
         JButton btnCadastrar = new JButton("Nova Sala");
         JButton btnAlterar = new JButton("Alterar Sala");
         JButton btnExcluir = new JButton("Excluir Sala");
         JButton btnListar = new JButton("Atualizar Lista");
         JButton btnVoltar = new JButton("Voltar");
-        //alexandre novo botao de buscar por id: 
         JButton btnBuscar = new JButton("Buscar ID");
-        btnBuscar.addActionListener(e -> executarAcaoBuscarSala());//busca por id
+        btnBuscar.addActionListener(e -> executarAcaoBuscarSala());     //busca por id
 
         botoesPanel.add(btnBuscar);
 
@@ -260,7 +252,7 @@ public class ReservaGUI extends JFrame {
         btnVoltar.addActionListener(e -> cardLayout.show(mainPanel, "MENU")); 
        
 
-        //adicionando os botoes no painel
+        //adicionando os botões no painel
         botoesPanel.add(btnCadastrar);
         botoesPanel.add(btnAlterar); 
         botoesPanel.add(btnExcluir);
@@ -271,13 +263,13 @@ public class ReservaGUI extends JFrame {
             @Override public boolean isCellEditable(int row, int column) { return false; }
         };
         tabelaSalas =new JTable(tableModelSalas);
-        tabelaSalas.setAutoCreateRowSorter(true);//ordena 
+        tabelaSalas.setAutoCreateRowSorter(true);   //ordena 
         painel.add(botoesPanel, BorderLayout.NORTH);
         painel.add(new JScrollPane(tabelaSalas), BorderLayout.CENTER);
         return painel;
     }
 
-    //funcao que cria a tela principal de reservas, com botões para nova reserva, alterar, buscar, informações de uma reserva, cancelar e voltar, e tabela com reservas existentes.
+    // cria a tela principal de reservas (nova reserva, alterar, buscar, informações de uma reserva, cancelar e voltar, e tabela com reservas existentes)
     private JPanel criarPainelGerenciarReservas(){
         JPanel painel = new JPanel(new BorderLayout(10, 10));
         painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -287,9 +279,8 @@ public class ReservaGUI extends JFrame {
         JButton btnAlterar = new JButton("Alterar Reserva");
         JButton btnListar = new JButton("Atualizar Lista");
         JButton btnExcluir = new JButton("Cancelar Reserva"); 
-        JButton btnInfos = new JButton("Infos Reserva");//botao extra adicionado para ver informacoes de uma reservas 
+        JButton btnInfos = new JButton("Infos Reserva");    // ver informacoes de uma reservas 
         JButton btnVoltar = new JButton("Voltar");
-        //alexandre criando o botao de buscar por id:
         JButton btnBuscar = new JButton("Buscar ID");
         btnBuscar.addActionListener(e -> executarAcaoBuscarReserva());
         botoesPanel.add(btnBuscar);
@@ -300,7 +291,7 @@ public class ReservaGUI extends JFrame {
         btnExcluir.addActionListener(e -> executarAcaoCancelarReserva()); 
         btnVoltar.addActionListener(e -> cardLayout.show(mainPanel, "MENU"));
 
-        //config botão de infos da reserva:
+        // botão de infos da reserva:
         btnInfos.addActionListener(e -> {
             // verifica se o usuario selecionou mais de uma linha
             int[] linhasSelecionadas = tabelaReservas.getSelectedRows();
@@ -343,7 +334,6 @@ public class ReservaGUI extends JFrame {
                     "Detalhes da Reserva", JOptionPane.INFORMATION_MESSAGE);
         });
 
-        //add botoes
         botoesPanel.add(btnNovaReserva);
         botoesPanel.add(btnAlterar);
         botoesPanel.add(btnListar);
@@ -352,14 +342,14 @@ public class ReservaGUI extends JFrame {
         botoesPanel.add(btnVoltar);
 
 
-        String[] colunas = {"ID Reserva", "Responsável"};//, "Sala", "Horário"};
+        String[] colunas = {"ID Reserva", "Responsável"};
 
         tableModelReservas = new DefaultTableModel(colunas, 0){
             @Override public boolean isCellEditable(int row, int column) { return false; }
         };
 
         tabelaReservas = new JTable(tableModelReservas);
-        tabelaReservas.setAutoCreateRowSorter(true);//ordena
+        tabelaReservas.setAutoCreateRowSorter(true);    //ordena
         painel.add(botoesPanel, BorderLayout.NORTH);
         painel.add(new JScrollPane(tabelaReservas), BorderLayout.CENTER);
         return painel;
@@ -382,7 +372,6 @@ public class ReservaGUI extends JFrame {
         }
     }
 
-    //abre caixa de dialogo pedindo nome, envia ao serviço para salvar e atualiza a tabela
     private void executarAcaoCadastrarPessoa() {
         try{
             String nome = JOptionPane.showInputDialog(this, "Digite o NOME da pessoa:", "Cadastrar", JOptionPane.QUESTION_MESSAGE);
@@ -406,7 +395,7 @@ public class ReservaGUI extends JFrame {
         int[] linhasSelecionadas = tabelaPessoas.getSelectedRows();
         
         if (linhasSelecionadas.length == 0) {
-            // se nada foi selecionado, ele pede o id da pessoas
+            // se nada for selecionado, pede o id da pessoas
             String idString = JOptionPane.showInputDialog(this, "Nenhuma linha selecionada.\nDigite o ID para EXCLUIR:");
             if (idString != null) {
                 try{
@@ -424,14 +413,13 @@ public class ReservaGUI extends JFrame {
             return;
         }
 
-        // listando os id´s selecionados que serao excluidos
+        // listando os id´s selecionados que serão excluidos
         StringBuilder idsParaExcluir = new StringBuilder();
         for (int i = 0; i < linhasSelecionadas.length; i++) {
             int modelRow = tabelaPessoas.convertRowIndexToModel(linhasSelecionadas[i]);
             idsParaExcluir.append(tableModel.getValueAt(modelRow, 0)).append(" ");
         }
 
-        //confirmaçao pra ver se o usuario realemnte quer excluir todos os ids selecionados
         int confirmacao = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja excluir os IDs de Pessoa: " + idsParaExcluir.toString().trim() + "?", 
             "Confirmar Exclusão", 
             JOptionPane.YES_NO_OPTION, 
@@ -440,16 +428,12 @@ public class ReservaGUI extends JFrame {
 
         if (confirmacao == JOptionPane.YES_OPTION){
             int excluidos = 0;
-            // loop reverso para evitar problemas de indice ao remover
+            // loop reverso para evitar problemas de índice ao remover
             for (int i = linhasSelecionadas.length - 1; i >= 0; i--) {
                 int modelRow = tabelaPessoas.convertRowIndexToModel(linhasSelecionadas[i]);
-                try {
-                    int id = (int) tableModel.getValueAt(modelRow, 0);
-                    if (service.excluirPessoa(id)) {
-                        excluidos++;
-                    }
-                } catch (Exception e) {
-                    // ignora erros individuais e continua
+                int id = (int) tableModel.getValueAt(modelRow, 0);
+                if (service.excluirPessoa(id)) {
+                    excluidos++;
                 }
             }
             
@@ -462,7 +446,6 @@ public class ReservaGUI extends JFrame {
         }
     }
 
-    //pede ID de pessoa, busca no sistemaReservaService e mostra apenas ela na tabela. se nao existir, informa erro e recarrega lista completa.
     private void executarAcaoBuscarPessoa() {
         String idString = JOptionPane.showInputDialog(this, "ID para BUSCAR:");
         if (idString != null) {
@@ -485,9 +468,8 @@ public class ReservaGUI extends JFrame {
         }
     }
 
-    //funcao de alterar pessoa, usa a pessoa selecionada na tabela com o mouse, ou informada pelo id, solicita um novo nome e atualiza na tabela
     private void executarAcaoAlterarPessoa() {
-        //protecao pra caso a pessoa selecione mais de um item pra alterar
+        //proteção pra caso a pessoa selecione mais de um item pra alterar
         int[] linhas = tabelaPessoas.getSelectedRows();
         if (linhas.length > 1) {
             JOptionPane.showMessageDialog(this, "Por favor, selecione apenas UMA linha para alterar.", "Aviso", JOptionPane.WARNING_MESSAGE);
@@ -534,8 +516,6 @@ public class ReservaGUI extends JFrame {
         }
     }
 
-    // MÉTODOS SALAS: 
-
     //limpa a tabela e lista todas as salas cadastradas
     private void listarTodasSalas(){
         tableModelSalas.setRowCount(0);
@@ -545,10 +525,9 @@ public class ReservaGUI extends JFrame {
                 tableModelSalas.addRow(new Object[]{s.getId(), s.getPredio(), s.getCapacidade()});
             }
         }else{
-            //alexandre aqui pode colocar um aviso se a lista estiver vazia
+            JOptionPane.showMessageDialog(this, "Nenhuma sala cadastrada.");
         }
     }
-
 
     //metodo para cadastrar uma sala, abre o formulario com predio, bloco e capacidade. salva no sistemareservaservice e atualiza tabela
     private void executarAcaoCadastrarSala() {
@@ -749,7 +728,7 @@ public class ReservaGUI extends JFrame {
     //metodo para criar reservas com varias salas
     private void executarAcaoNovaReserva(){
 
-        Function<Component, JPanel> wrap = comp -> {//função dentro do método pra facilitar - formatação
+        Function<Component, JPanel> wrap = comp -> {    //função dentro do método pra facilitar - formatação
             JPanel p = new JPanel(new BorderLayout());
             p.add(comp, BorderLayout.CENTER);
             return p;
@@ -757,17 +736,16 @@ public class ReservaGUI extends JFrame {
 
         List<ItemReserva> reservasTemp = new ArrayList<>(); //múltiplas salas em uma reserva
 
-        JPanel panel = new JPanel(new BorderLayout(10, 10));//painel principal com dois subpaineis: form e yabela 
-        //JPanel panelForm = new JPanel(new GridLayout(0, 2, 5, 5)); 
-        //ajuste formatação início
+        JPanel panel = new JPanel(new BorderLayout(10, 10));    //painel principal com dois subpaineis: form e yabela 
+        //ajuste formatação 
         JPanel panelForm = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
-        //ajuste formatação fim
 
-        JPanel panelTabela = new JPanel(new BorderLayout());//tem um sub painel
+
+        JPanel panelTabela = new JPanel(new BorderLayout());    //tem um sub painel
 
         java.util.List<Pessoa> pessoa = service.listarPessoas();
         JComboBox<Pessoa> comboPessoa = new JComboBox<>();
@@ -782,10 +760,9 @@ public class ReservaGUI extends JFrame {
 
 
         for(Sala s : salas){
-            comboSala.addItem(s);//preenche a lista 
+            comboSala.addItem(s);   //preenche a lista 
         }
 
-        //(Julia) pra não ficar apagando os parâmetros de data e hora
         MaskFormatter formatoDataHora = null;
         JFormattedTextField txtDataInicio;
         JFormattedTextField txtDataFim;
@@ -802,7 +779,6 @@ public class ReservaGUI extends JFrame {
         txtDataFim = new JFormattedTextField(formatoDataHora);
         txtDataFim.setPreferredSize(new Dimension(10, 28)); //formatação
 
-        //--------------------------------------------------------
         JButton btnAdicionar = new JButton("Adicionar sala");   
         JButton btnExcluir = new JButton("Excluir sala");   
         JPanel panelBotoes = new JPanel(new GridLayout(1, 2, 5, 5));
@@ -822,7 +798,7 @@ public class ReservaGUI extends JFrame {
 
         scrollTemp.setMaximumSize(new Dimension(280, 200));
         panelTabela.add(scrollTemp, BorderLayout.CENTER);
-            //(Julia) add mais de uma sala em uma única reserva
+            // add mais de uma sala em uma única reserva
                 btnAdicionar.addActionListener(e->{
 
                     Sala salaSelecionada = (Sala) comboSala.getSelectedItem();
@@ -886,7 +862,7 @@ public class ReservaGUI extends JFrame {
                         //reseta os valores pras próximas reservas
                         txtDataInicio.setValue(null);
                         txtDataFim.setValue(null);
-                    }catch(Exception ex){   //essa exceção já é tratada pelos if else acima, então tem que ver se vai tirar esse try catch ou lançar mais duas exceções (2 tipos de conflito)
+                    }catch(Exception ex){   
                         JOptionPane.showMessageDialog(panel, "Formato inválido de data/hora");
                     }
                 });
@@ -1051,19 +1027,17 @@ public class ReservaGUI extends JFrame {
                     DefaultTableModel modeloItens = new DefaultTableModel(colunasItens, 0) {
                         @Override
                         public boolean isCellEditable(int row, int column) {
-                            // coluna 0 (sala) retorna false (nao editavel).
-                            // colunas 1 e 2 (datas) retorna true (editavel).
                             return column != 0; 
                         }
                     };
-                    //bloquear a edicao do nome das salas
+                    //bloquear a edição do nome das salas
 
                     JTable tabelaItens = new JTable(modeloItens);
                     JScrollPane scrollItens = new JScrollPane(tabelaItens);
                     scrollItens.setPreferredSize(new Dimension(550, 150)); 
 
                     try {
-                        //formatacao bonitinha das datas e horarios pra facilitar
+                        //formatação bonitinha das datas e horarios pra facilitar
                         javax.swing.text.MaskFormatter mascaraData = new javax.swing.text.MaskFormatter("##/##/#### ##:##");
                         mascaraData.setPlaceholderCharacter('_');
                         
@@ -1245,7 +1219,6 @@ public class ReservaGUI extends JFrame {
             }
         }
     }
-
 
     //metodo para buscar uma reserva por id. pede o id, busca ela no service e mostra so ela na tabela
     private void executarAcaoBuscarReserva(){

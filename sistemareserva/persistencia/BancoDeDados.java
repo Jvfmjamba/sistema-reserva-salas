@@ -4,21 +4,16 @@ import sistemareserva.modelo.*;
 import sistemareserva.visao.*;
 
 public class BancoDeDados {
-    Persistente<Pessoa> pessoas = new Persistente<>(); //alexandre: de acordo com as especificacoes os dados tem que ficar nos objetos, ent removi o "static"
-    Persistente<Sala> salas = new Persistente<>(); //alexandre: de acordo com as especificacoes os dados tem que ficar nos objetos, ent removi o "static"
+    Persistente<Pessoa> pessoas = new Persistente<>(); 
+    Persistente<Sala> salas = new Persistente<>(); 
     Persistente<Reserva> reservas = new Persistente<>();
 
-    //(Julia) mais de uma sala na mesma reserva
-
-    // Salva uma reserva no banco usando o método inserir de Persistente.
-    // Inserir é usado em vez de add porque Persistente controla IDs e regras internas.
-
     public void salvarReserva(Reserva reserva) {    
-        reservas.inserir(reserva);  //talvez esse inserir de problema, mas n da pra usar add pq não é uma lista
+        reservas.inserir(reserva);  
     }
+
 // Percorre todas as reservas e retorna a reserva cujo ID corresponde ao informado.
 // Se não encontrar, retorna null.
-
     public Reserva buscarReserva(int id) {
         for (Reserva r : reservas.listarTodos()) {
             if (r.getId() == id) return r;
@@ -26,12 +21,12 @@ public class BancoDeDados {
         return null;
     }
 // Retorna uma cópia da lista de reservas armazenadas no Persistente.
-     public List<Reserva> getReservas2() {    //novo get reservas
+     public List<Reserva> getReservas2() {    
         return reservas.listarTodos();
     } 
 
     //adicionando getters e setters para pessoa, sala e reserva
-    public Persistente<Pessoa> getPessoas() { //retirei static
+    public Persistente<Pessoa> getPessoas() { 
         return pessoas;
     }
 
@@ -45,7 +40,7 @@ public class BancoDeDados {
         this.reservas = reservas;
     }
 
-    public Persistente<Sala> getSalas() { // retirei static
+    public Persistente<Sala> getSalas() { 
         return salas;
     }
 
@@ -62,7 +57,7 @@ public class BancoDeDados {
         return null;
     }
 
-    // Percorre todas as salas cadastradas e retorna aquela com o ID informado.
+// Percorre todas as salas cadastradas e retorna aquela com o ID informado.
 // Se não encontrar, retorna null.
     public Sala buscarSala(int id){
         for(Sala s : salas.listarTodos()){

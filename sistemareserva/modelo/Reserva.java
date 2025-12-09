@@ -6,8 +6,6 @@ import java.util.ArrayList;
 
 public class Reserva extends Entidade{
     private Pessoa responsavel;
-    //private LocalDateTime dataHoraInicio;
-    //private LocalDateTime dataHoraFim;
 
     private List<ItemReserva> itensDaReserva;
 
