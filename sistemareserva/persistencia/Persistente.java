@@ -29,15 +29,11 @@ public class Persistente<T extends Entidade> {
         return true;
     }
 
-    // Exclui o objeto cujo ID corresponde ao fornecido.
-    // Retorna true se encontrou e removeu, false caso contrário.
     public boolean excluir(int id) {
         return lista.removeIf(objeto-> objeto.getId() ==id);
     }
 
-    // Busca um objeto pelo ID percorrendo a lista.
-    // Se encontrar, retorna o objeto.
-    // Se percorrer tudo e não achar, lança a exceção IdInexistenteException.
+    //busca um objeto pelo ID percorrendo a lista, se encontrar retorna o objeto, se nao, lança excecao
     public T buscaId(int id) throws IdInexistenteException{
         for(T objeto : lista) {
             if(objeto.getId() == id) {
@@ -47,12 +43,12 @@ public class Persistente<T extends Entidade> {
         throw new IdInexistenteException("Entidade com ID " + id + " não encontrada.");
     }
 
-    // Retorna uma cópia da lista interna para evitar que ela seja alterada externamente.
+    // retorna uma cópia da lista interna para evitar que ela seja alterada externamente
     public List<T> listarTodos() {
         return new ArrayList<>(this.lista);
     }
 
-    // Retorna uma string com todos os itens da lista, um por linha.
+    //retorna uma string com todos os itens da lista, um por linha.
     @Override
     public String toString(){
         if(lista.isEmpty()){
@@ -66,9 +62,7 @@ public class Persistente<T extends Entidade> {
         return builder.toString();
     }
 
-    // Procura na lista um objeto com o mesmo ID do objeto modificado.
-    // Se encontrar, substitui pelo objeto novo e retorna true.
-    // Se não encontrar, retorna false.
+    // procura na lista um objeto com o mesmo ID do objeto modificado, se achar substitui pelo novo e retorna true, se nao false
     public boolean alterar(T objetoModificado){
     for(int i=0; i<lista.size();i++){
         if(lista.get(i).getId() ==objetoModificado.getId()){
