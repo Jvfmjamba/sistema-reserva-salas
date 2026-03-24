@@ -1,34 +1,37 @@
 # 🏢 Sistema de Reserva de Salas
 
-Este é um sistema desenvolvido em **Java** para gerenciar a reserva de salas em diferentes prédios (CCOMP, Economia, Zootecnia, etc.). O projeto permite o cadastro de usuários, salas e a gestão de reservas, garantindo que não haja conflitos de horários para a mesma sala.
+Este é um sistema robusto desenvolvido em **Java** para gerenciar a ocupação de espaços acadêmicos em diferentes departamentos (CCOMP, Economia, Zootecnia, etc.). O projeto foca em integridade de dados e usabilidade, utilizando uma interface gráfica para facilitar o gerenciamento de recursos.
 
-## 🚀 Funcionalidades
+## 🚀 Funcionalidades e Diferenciais
 
-* **Gestão de Pessoas**: Cadastro, listagem, edição e exclusão de usuários.
-* **Gestão de Salas**: Cadastro de salas com definição de prédio e capacidade de alunos.
-* **Reservas Inteligentes**: 
-    * Criação de reservas simples ou múltiplas (várias salas/horários em uma única reserva).
-    * Verificação automática de conflitos de horários.
-    * Cancelamento e atualização de reservas existentes.
-* **Dados Iniciais**: O sistema já inicia com uma lista pré-cadastrada de professores (como Prof. Matheus e Prof. Elverton) e salas da UFSJ para facilitar os testes.
+* **Gestão Completa (CRUD)**: Controle total sobre o cadastro de Pessoas e Salas, permitindo inserção, listagem, edição e exclusão.
+* **Reservas Inteligentes e Múltiplas**: 
+    * Permite criar uma única reserva contendo vários itens (diferentes salas e horários) para o mesmo responsável.
+    * **Algoritmo de Conflito**: O sistema realiza uma varredura automática em tempo real para garantir que uma sala não seja reservada em períodos sobrepostos.
+    * **Edição Flexível**: Possibilidade de atualizar reservas existentes, alterando o responsável ou os itens reservados, com revalidação imediata de horários.
+* **Segurança e Validação**: 
+    * Tratamento de exceções customizadas para IDs inexistentes ou entradas inválidas.
+    * Validação rigorosa de campos (ex: nomes que aceitam apenas letras).
+* **Dados Iniciais (Bootstrap)**: O sistema já inicia com uma base de dados pré-carregada com professores e salas da UFSJ para demonstração imediata.
 
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ Tecnologias e Arquitetura
 
 * **Linguagem**: Java.
-* **Persistência**: Sistema de persistência em memória (Simulação de Banco de Dados).
-* **Interface**: Swing (GUI).
-* **Testes**: JUnit 4 (bibliotecas inclusas no projeto).
+* **Arquitetura**: Organizada em pacotes seguindo a separação de responsabilidades (Modelo, Persistência e Visão/Serviço).
+* **Camada de Serviço**: Centralização da lógica de negócio na classe `SistemaReservaService`.
+* **Persistência**: Implementação de um banco de dados em memória utilizando tipos genéricos (`Persistente<T>`).
+* **Interface**: Swing (GUI) para uma interação amigável com o usuário.
+* **Testes**: Suporte a testes automatizados com JUnit 4.
 
 ## 📂 Estrutura do Projeto
 
-O código está organizado seguindo padrões de separação de responsabilidades:
-* `modelo`: Classes de entidade (Pessoa, Sala, Reserva, ItemReserva).
-* `persistencia`: Lógica de armazenamento e tratamento de exceções.
-* `visao`: Interface gráfica e a camada de serviço (`SistemaReservaService`) que conecta a interface ao banco.
+* `sistemareserva.modelo`: Entidades principais como `Pessoa`, `Sala` e `Reserva`.
+* `sistemareserva.persistencia`: Gerenciamento do `BancoDeDados` e exceções personalizadas.
+* `sistemareserva.visao`: Interface gráfica (`ReservaGUI`) e o motor de regras do sistema (`SistemaReservaService`).
 
 ## ⚙️ Como Executar
 
-Para compilar e rodar o projeto via terminal, siga os passos abaixo (certifique-se de estar na raiz do projeto):
+Certifique-se de estar na raiz do diretório do projeto e execute os comandos abaixo no terminal:
 
 ### 1. Compilar
 ```bash
