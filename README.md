@@ -14,7 +14,7 @@ Este é um sistema robusto desenvolvido em **Java** para gerenciar a ocupação 
     * Validação rigorosa de campos (ex: nomes que aceitam apenas letras).
 * **Dados Iniciais (Bootstrap)**: O sistema já inicia com uma base de dados pré-carregada com professores e salas da UFSJ para demonstração imediata.
 
-## 🛠️ Tecnologias e Arquitetura
+## 🛠️ Tecnologias e Arquitetura:
 
 * **Linguagem**: Java.
 * **Arquitetura**: Organizada em pacotes seguindo a separação de responsabilidades (Modelo, Persistência e Visão/Serviço).
